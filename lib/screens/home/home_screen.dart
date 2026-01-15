@@ -239,26 +239,31 @@ class HomeScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.group, color: AppColors.accentGold, size: 28),
+              const Icon(Icons.group, color: AppColors.textTertiary, size: 28),
               const SizedBox(width: 12),
-              Text('Partida Privada', style: AppTextStyles.title),
+              Text(
+                'Partida Privada',
+                style: AppTextStyles.title.copyWith(
+                  color: AppColors.textTertiary,
+                ),
+              ),
             ],
           ),
 
           const SizedBox(height: 12),
 
           Text(
-            'Crea una mesa para jugar\ncon tus amigos del club.',
-            style: AppTextStyles.body,
+            'Próximamente...\nCrea mesas para jugar con amigos.',
+            style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           ),
 
           const SizedBox(height: 20),
 
           SecondaryButton(
-            text: 'INVITAR',
+            text: 'PRÓXIMAMENTE',
             onPressed: () {},
             width: double.infinity,
-            icon: Icons.person_add,
+            icon: Icons.lock_clock,
           ),
         ],
       ),
@@ -274,20 +279,15 @@ class HomeScreen extends StatelessWidget {
             children: [
               const Icon(
                 Icons.emoji_events,
-                color: AppColors.accentGold,
+                color: AppColors.textTertiary,
                 size: 28,
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text('Torneos Elite', style: AppTextStyles.title),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.accentRed,
-                  borderRadius: BorderRadius.circular(4),
+              Text(
+                'Torneos Elite',
+                style: AppTextStyles.title.copyWith(
+                  color: AppColors.textTertiary,
                 ),
-                child: Text('EVENTO ACTIVO', style: AppTextStyles.labelSmall),
               ),
             ],
           ),
@@ -295,14 +295,14 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            'Compite por premios en\nmetálico y gloria nacional.',
-            style: AppTextStyles.body,
+            'Próximamente...\nCompite por la gloria nacional.',
+            style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           ),
 
           const SizedBox(height: 20),
 
           ActionButton(
-            text: 'ENTRAR',
+            text: 'PRÓXIMAMENTE',
             onPressed: () {},
             width: double.infinity,
           ),
@@ -321,17 +321,8 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'NOVEDADES Y CLUB',
+                'NOVEDADES',
                 style: AppTextStyles.caption.copyWith(letterSpacing: 1.2),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'Ver todo',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.accentGold,
-                  ),
-                ),
               ),
             ],
           ),
@@ -346,14 +337,9 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: [
               _buildNewsCard(
-                'NUEVO DISEÑO',
-                'Baraja \'Iberia Clásica\' ya disponible en la tienda',
-                Icons.style,
-              ),
-              _buildNewsCard(
                 'PRÓXIMAMENTE',
-                'Torneo Nacional ¡Ilustres! - Inscripciones abiertas',
-                Icons.calendar_today,
+                'Estamos preparando grandes novedades para ti.',
+                Icons.construction,
               ),
             ],
           ),
@@ -374,7 +360,7 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.accentGold,
+                color: AppColors.textTertiary,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -387,13 +373,15 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            Icon(icon, color: AppColors.textSecondary, size: 32),
+            Icon(icon, color: AppColors.textTertiary, size: 32),
 
             const Spacer(),
 
             Text(
               text,
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textTertiary,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

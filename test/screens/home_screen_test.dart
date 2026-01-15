@@ -31,22 +31,25 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
       expect(find.text('Partida Privada'), findsOneWidget);
-      expect(find.text('INVITAR'), findsOneWidget);
+      expect(
+        find.text('PRÓXIMAMENTE'),
+        findsNWidgets(3),
+      ); // Private + Tournaments + News Badge
     });
 
     testWidgets('displays tournaments card', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
       expect(find.text('Torneos Elite'), findsOneWidget);
-      expect(find.text('EVENTO ACTIVO'), findsOneWidget);
-      expect(find.text('ENTRAR'), findsOneWidget);
+      // 'EVENTO ACTIVO' was removed
+      expect(find.text('PRÓXIMAMENTE'), findsNWidgets(3));
     });
 
     testWidgets('displays news section', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
-      expect(find.text('NOVEDADES Y CLUB'), findsOneWidget);
-      expect(find.text('Ver todo'), findsOneWidget);
+      expect(find.text('NOVEDADES'), findsOneWidget);
+      // 'Ver todo' button was removed
     });
 
     testWidgets('is scrollable', (WidgetTester tester) async {

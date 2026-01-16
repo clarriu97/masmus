@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../widgets/buttons/action_button.dart';
 import '../../widgets/buttons/primary_button.dart';
 import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/cards/game_card.dart';
 import '../../widgets/cards/info_card.dart';
+import '../partner_selection_screen.dart';
 
 /// Pantalla principal de MASMUS
 class HomeScreen extends StatelessWidget {
@@ -30,19 +30,11 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Partida Rápida
-              _buildQuickMatchCard(context),
+              // Un Jugador (Bots)
+              _buildSinglePlayerCard(context),
 
-              // Partida Privada
-              _buildPrivateMatchCard(),
-
-              // Torneos Elite
-              _buildTournamentsCard(),
-
-              const SizedBox(height: 24),
-
-              // Novedades y Club
-              _buildNewsSection(),
+              // Online (Coming Soon)
+              _buildOnlineCard(),
 
               const SizedBox(height: 24),
             ],
@@ -78,7 +70,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Text('MASMUS', style: AppTextStyles.title),
                 Text(
-                  'MIEMBRO ORO · CLUB MASMUS',
+                  'JUGADOR',
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.accentGold,
                   ),
@@ -87,11 +79,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // Icons
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
+          // Settings Icon only
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {},
@@ -113,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'TU NIVEL DE JUEGO',
+                    'TU NIVEL',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.textTertiary,
                     ),
@@ -134,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Text(
-                            'ELO PTS',
+                            'ELO',
                             style: AppTextStyles.caption.copyWith(fontSize: 10),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -146,74 +134,28 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: InfoCard(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'GLOBAL RANKING',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '#420',
-                          style: AppTextStyles.display.copyWith(fontSize: 28),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            'Top 5%',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.success,
-                              fontSize: 10,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickMatchCard(BuildContext context) {
+  Widget _buildSinglePlayerCard(BuildContext context) {
     return GameCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.flash_on, color: AppColors.accentGold, size: 28),
+              const Icon(Icons.person, color: AppColors.accentGold, size: 28),
               const SizedBox(width: 12),
-              Text('Partida Rápida', style: AppTextStyles.title),
+              Text('Un Jugador', style: AppTextStyles.title),
             ],
           ),
 
           const SizedBox(height: 12),
 
           Text(
-            'Matchmaking instantáneo\ncon jugadores de tu nivel.',
+            'Juega contra bots y mejora tu estrategia.\nPartida local.',
             style: AppTextStyles.body,
           ),
 
@@ -222,7 +164,11 @@ class HomeScreen extends StatelessWidget {
           PrimaryButton(
             text: 'JUGAR',
             onPressed: () {
-              Navigator.of(context).pushNamed('/game-setup');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const PartnerSelectionScreen(),
+                ),
+              );
             },
             width: double.infinity,
             icon: Icons.play_arrow,
@@ -232,17 +178,17 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPrivateMatchCard() {
+  Widget _buildOnlineCard() {
     return GameCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.group, color: AppColors.textTertiary, size: 28),
+              const Icon(Icons.public, color: AppColors.textTertiary, size: 28),
               const SizedBox(width: 12),
               Text(
-                'Partida Privada',
+                'Multijugador Online',
                 style: AppTextStyles.title.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -253,7 +199,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            'Próximamente...\nCrea mesas para jugar con amigos.',
+            'Próximamente...\nCompite contra jugadores de todo el mundo.',
             style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           ),
 
@@ -269,125 +215,5 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildTournamentsCard() {
-    return GameCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.emoji_events,
-                color: AppColors.textTertiary,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Torneos Elite',
-                style: AppTextStyles.title.copyWith(
-                  color: AppColors.textTertiary,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          Text(
-            'Próximamente...\nCompite por la gloria nacional.',
-            style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
-          ),
-
-          const SizedBox(height: 20),
-
-          ActionButton(
-            text: 'PRÓXIMAMENTE',
-            onPressed: () {},
-            width: double.infinity,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNewsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'NOVEDADES',
-                style: AppTextStyles.caption.copyWith(letterSpacing: 1.2),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        SizedBox(
-          height: 180,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildNewsCard(
-                'PRÓXIMAMENTE',
-                'Estamos preparando grandes novedades para ti.',
-                Icons.construction,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewsCard(String badge, String text, IconData icon) {
-    return Container(
-      width: 280,
-      margin: const EdgeInsets.only(right: 12),
-      child: InfoCard(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.textTertiary,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                badge,
-                style: AppTextStyles.labelSmall.copyWith(
-                  color: AppColors.backgroundDark,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            Icon(icon, color: AppColors.textTertiary, size: 32),
-
-            const Spacer(),
-
-            Text(
-              text,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textTertiary,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
+

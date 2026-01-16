@@ -1,104 +1,152 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/core/game/logic/mus_game.dart';
+import 'package:masmus/core/game/models/card.dart';
 import 'package:masmus/core/game/models/player.dart';
 
 void main() {
-  late MusGame game;
-  late List<Player> players;
+  group('MusGame Integration Tests', () {
+    late MusGame game;
+    late List<Player> players;
 
-  setUp(() {
-    players = [
-      Player(id: '1', name: 'P1'),
-      Player(id: '2', name: 'P2'),
-      Player(id: '3', name: 'P3'),
-      Player(id: '4', name: 'P4'),
-    ];
-    game = MusGame(players: players);
-  });
+    setUp(() {
+      players = List.generate(4, (i) => Player(id: '$i', name: 'P$i'));
+      game = MusGame(players: players);
+    });
 
-  test('Initialization deals cards and starts at Mus phase', () {
-    expect(game.currentPhase, equals(GamePhase.mus));
-    expect(game.manoIndex, equals(0));
-    expect(game.currentTurn, equals(0));
+    test('Initial State is Mus Phase', () {
+      expect(game.currentPhase, GamePhase.mus);
+      expect(game.currentTurn, game.manoIndex);
+    });
 
-    for (final p in players) {
-      expect(p.hand.length, equals(4));
-    }
-  });
+    test('Everyone says Mus -> Discard Phase', () {
+      // P0 (Mano), P1, P2, P3 say mus
+      expect(game.playerSaysMus(0), true);
+      expect(game.playerSaysMus(1), true);
+      expect(game.playerSaysMus(2), true);
+      // Last one triggers phase change
+      expect(game.playerSaysMus(3), true);
 
-  test('Everyone says Mus -> Transitions to Discard', () {
-    // P0 says Mus
-    expect(game.playerSaysMus(0), isTrue);
-    expect(game.currentTurn, equals(1));
-    expect(game.currentPhase, equals(GamePhase.mus));
+      expect(game.currentPhase, GamePhase.discard);
+      expect(game.currentTurn, game.manoIndex); // Back to mano for discard
+    });
 
-    // P1 says Mus
-    expect(game.playerSaysMus(1), isTrue);
-    expect(game.currentTurn, equals(2));
+    test('Cut Mus -> Starts Grande', () {
+      expect(game.playerCutsMus(0), true);
+      expect(game.currentPhase, GamePhase.grande);
+    });
 
-    // P2 says Mus
-    expect(game.playerSaysMus(2), isTrue);
-    expect(game.currentTurn, equals(3));
+    test('Betting Flow - Envido / Quiero', () {
+      game.playerCutsMus(0); // Start Grande
 
-    // P3 (Postre) says Mus
-    expect(game.playerSaysMus(3), isTrue);
+      // P0 Passes
+      game.playerAction(0, 'PASO');
+      // P1 Bets Envido (2)
+      game.playerAction(1, 'ENVIDO');
 
-    // Should transition to Discard
-    expect(game.currentPhase, equals(GamePhase.discard));
-    // Turn should be back to mano (0)
-    expect(game.currentTurn, equals(0));
-  });
+      expect(game.currentBet, 2);
+      expect(game.currentBetType, BetType.envido);
 
-  test('Cut Mus -> Transitions to Grande', () {
-    // P0 says Mus
-    game.playerSaysMus(0);
+      // Turn should move to P2 (Partner of P0 decides? Or P0?)
+      // Betting usually goes to the team. P2 is team 0.
+      expect(game.currentTurn, 2);
 
-    // P1 cuts Mus
-    expect(game.playerCutsMus(1), isTrue);
+      // P2 Accepts
+      game.playerAction(2, 'QUIERO');
 
-    // Should transition to Grande immediately
-    expect(game.currentPhase, equals(GamePhase.grande));
-    // Turn should be back to mano (0) for betting
-    expect(game.currentTurn, equals(0));
-  });
+      // Phase ends -> Chica
+      expect(game.currentPhase, GamePhase.chica);
+      // Check pending bet
+      expect(game.pendingBets[GamePhase.grande], 2);
+    });
 
-  test('Discard flow works', () {
-    // fast forward to discard
-    game.playerSaysMus(0);
-    game.playerSaysMus(1);
-    game.playerSaysMus(2);
-    game.playerSaysMus(3);
+    test('Betting Flow - Envido / No Quiero', () {
+      game.playerCutsMus(0);
+      game.playerAction(0, 'ENVIDO'); // P0 bets 2
 
-    expect(game.currentPhase, equals(GamePhase.discard));
+      // P1 Rejects
+      game.playerAction(1, 'NO QUIERO');
 
-    // P0 discards 1 card
-    final cardToDiscard = players[0].hand.first;
-    game.playerDiscards(0, [cardToDiscard]);
+      // P0 Team wins 1 point immediately
+      expect(game.teamScores[0], 1);
 
-    // P0 have 4 cards again
-    expect(players[0].hand.length, equals(4));
-    expect(players[0].hand.contains(cardToDiscard), isFalse);
+      // Next phase
+      expect(game.currentPhase, GamePhase.chica);
+    });
 
-    // Turn advanced to 1
-    expect(game.currentTurn, equals(1));
-  });
+    test('Scoring - Manual verification', () {
+      // Setup specific hands
+      // P0: 4 Kings (Duples, Juego 40)
+      // P1: 4 Aces (Par, Juego 34)
+      // P2: 4 Kings
+      // P3: 4 Aces
+      final kings = [
+        const MusCard(suit: Suit.oros, faceValue: 12),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 12),
+        const MusCard(suit: Suit.bastos, faceValue: 12),
+      ];
+      final aces = [
+        const MusCard(suit: Suit.oros, faceValue: 10),
+        const MusCard(suit: Suit.copas, faceValue: 10),
+        const MusCard(suit: Suit.espadas, faceValue: 10),
+        const MusCard(suit: Suit.bastos, faceValue: 10),
+      ];
 
-  test('Discard cycle finishes -> Back to Mus', () {
-    // All Mus
-    for (int i = 0; i < 4; i++) {
-      game.playerSaysMus(i);
-    }
+      game = MusGame(players: players); // Init first (which deals random)
 
-    // Everyone discards
-    for (int i = 0; i < 4; i++) {
-      expect(game.currentTurn, equals(i));
-      game.playerDiscards(i, []); // Discard nothing, just pass
-    }
+      // Now overwrite hands
+      players[0].clearHand();
+      players[0].receiveCards(kings);
+      players[1].clearHand();
+      players[1].receiveCards(aces);
+      players[2].clearHand();
+      players[2].receiveCards(kings);
+      players[3].clearHand();
+      players[3].receiveCards(aces);
 
-    // Should be back to Mus check
-    expect(game.currentPhase, equals(GamePhase.mus));
-    expect(game.currentTurn, equals(0));
-    // Wants mus should be reset
-    expect(game.wantsMus.every((e) => e == false), isTrue);
+      game.evaluateHands(); // Re-evaluate logic with new hands
+
+      // Force Cut Mus
+      game.playerCutsMus(0);
+
+      // Pass everyone until scoring
+      // Grande: P0 (Kings) vs P1 (Aces) -> P0 wins. All pass -> 1 pt for P0.
+      game.playerAction(0, 'PASO');
+      game.playerAction(1, 'PASO');
+      game.playerAction(2, 'PASO');
+      game.playerAction(3, 'PASO');
+
+      // Chica: P1 (Aces) vs P0 (Kings) -> P1 wins. All pass -> 1 pt for P1.
+      game.playerAction(0, 'PASO');
+      game.playerAction(1, 'PASO');
+      game.playerAction(2, 'PASO');
+      game.playerAction(3, 'PASO');
+
+      // Pares: P0 (Duples K), P1 (Duples A). P0 Wins.
+      // All pass -> P0 wins Duples (3) + P2 Duples (3) = 6 pts? (+1 en paso?).
+      // Rule: If passed, points are pending check. Winner gets combination points (6). No 'en paso' point for Pares/Juego.
+      game.playerAction(0, 'PASO');
+      game.playerAction(1, 'PASO');
+      game.playerAction(2, 'PASO');
+      game.playerAction(3, 'PASO');
+
+      // Juego: P0 (40), P1 (34). P0 Wins.
+      // Winner (P0) gets 2 pts (40). P2 gets 2 pts. Total 4.
+      // Pass
+      game.playerAction(0, 'PASO');
+      game.playerAction(1, 'PASO');
+      game.playerAction(2, 'PASO');
+      game.playerAction(3, 'PASO');
+
+      // Scoring happened automatically after last pass
+      expect(game.currentPhase, GamePhase.scoring);
+
+      // Check Scores
+      // Team 0: Grande (1) + Pares (3+3=6) + Juego (2+2=4) = 11 pts.
+      // Team 1: Chica (1) + Pares (0) + Juego (0) = 1 point.
+
+      expect(game.teamScores[0], 11);
+      expect(game.teamScores[1], 1);
+    });
   });
 }

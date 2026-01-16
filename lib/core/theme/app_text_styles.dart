@@ -65,6 +65,13 @@ class AppTextStyles {
     height: 1.5,
   );
 
+  static TextStyle bodyBold = GoogleFonts.inter(
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+    height: 1.5,
+  );
+
   static TextStyle bodyMedium = GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,

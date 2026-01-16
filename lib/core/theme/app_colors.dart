@@ -18,9 +18,11 @@ class AppColors {
   static const Color backgroundDark = Color(0xFF1A1D23);
   static const Color backgroundCard = Color(0xFF242830);
   static const Color backgroundElevated = Color(0xFF2A2F3A);
+  static const Color surfaceLight = Color(0xFF2A2F3A); // Alias for elevated
 
   // Colores de Texto
   static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textMain = Color(0xFFFFFFFF); // Alias
   static const Color textSecondary = Color(0xFFB8BCC4);
   static const Color textTertiary = Color(0xFF6B7280);
   static const Color textDisabled = Color(0xFF4B5563);

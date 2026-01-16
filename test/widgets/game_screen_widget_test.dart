@@ -18,20 +18,20 @@ void main() {
     // Mock path_provider
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      return '.';
-    });
+          return '.';
+        });
 
     // Mock vibration
     const MethodChannel vibrationChannel = MethodChannel('vibration');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(vibrationChannel, (
-      MethodCall methodCall,
-    ) async {
-      if (methodCall.method == 'hasVibrator') {
-        return true;
-      }
-      return null;
-    });
+          MethodCall methodCall,
+        ) async {
+          if (methodCall.method == 'hasVibrator') {
+            return true;
+          }
+          return null;
+        });
   });
 
   tearDown(() {

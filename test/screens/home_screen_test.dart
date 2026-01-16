@@ -8,49 +8,34 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
       expect(find.text('MASMUS'), findsOneWidget);
-      expect(find.text('MIEMBRO ORO · CLUB MASMUS'), findsOneWidget);
+      expect(find.text('JUGADOR'), findsOneWidget);
     });
 
     testWidgets('displays stats cards', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
-      expect(find.text('TU NIVEL DE JUEGO'), findsOneWidget);
+      expect(find.text('TU NIVEL'), findsOneWidget);
       expect(find.text('1,450'), findsOneWidget);
-      expect(find.text('GLOBAL RANKING'), findsOneWidget);
-      expect(find.text('#420'), findsOneWidget);
     });
 
     testWidgets('displays quick match card', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
-      expect(find.text('Partida Rápida'), findsOneWidget);
+      expect(find.text('Un Jugador'), findsOneWidget);
       expect(find.text('JUGAR'), findsOneWidget);
     });
 
-    testWidgets('displays private match card', (WidgetTester tester) async {
+    testWidgets('displays online match card', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpAndSettle();
 
-      expect(find.text('Partida Privada'), findsOneWidget);
-      expect(
-        find.text('PRÓXIMAMENTE'),
-        findsNWidgets(3),
-      ); // Private + Tournaments + News Badge
+      expect(find.text('Multijugador Online'), findsOneWidget);
+      expect(find.text('PRÓXIMAMENTE'), findsOneWidget); // Only Online card now
     });
 
-    testWidgets('displays tournaments card', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+    // Tournaments section removed
 
-      expect(find.text('Torneos Elite'), findsOneWidget);
-      // 'EVENTO ACTIVO' was removed
-      expect(find.text('PRÓXIMAMENTE'), findsNWidgets(3));
-    });
-
-    testWidgets('displays news section', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
-
-      expect(find.text('NOVEDADES'), findsOneWidget);
-      // 'Ver todo' button was removed
-    });
+    // News section removed
 
     testWidgets('is scrollable', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
@@ -58,12 +43,9 @@ void main() {
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
 
-    testWidgets('has notification and settings icons', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('has settings icon', (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
 
-      expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
       expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
     });
   });

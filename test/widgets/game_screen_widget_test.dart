@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/core/game/models/card.dart';
 import 'package:masmus/core/game/models/player.dart';
+import 'package:masmus/core/theme/app_text_styles.dart';
 import 'package:masmus/screens/game_screen.dart';
 import 'package:masmus/widgets/mus_table.dart';
 import 'package:masmus/widgets/playing_card_widget.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  AppTextStyles.useGoogleFonts = false;
 
   const MethodChannel channel = MethodChannel(
     'plugins.flutter.io/path_provider',
@@ -75,8 +77,8 @@ void main() {
     );
 
     expect(find.byType(PlayingCardWidget), findsWidgets);
-    expect(find.text('1'), findsOneWidget);
-    expect(find.text('12'), findsOneWidget);
+    expect(find.text('1'), findsNWidgets(2));
+    expect(find.text('12'), findsNWidgets(2));
   });
 
   testWidgets('Tapping card toggles selection visualization', (

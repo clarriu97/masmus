@@ -298,7 +298,7 @@ class MusGame {
     }
     // Clear declarations if we were in Pares/Juego
     if (currentPhase == GamePhase.pares || currentPhase == GamePhase.juego) {
-       declarations.clear();
+      declarations.clear();
     }
     _nextPhase();
   }
@@ -307,10 +307,10 @@ class MusGame {
     final int winnerTeam = getTeam(speakerIndex!);
     final int points = currentBet > 0 ? (currentBet > 2 ? 1 : 1) : 1;
     teamScores[winnerTeam] = (teamScores[winnerTeam] ?? 0) + points;
-    
+
     // Clear declarations
     if (currentPhase == GamePhase.pares || currentPhase == GamePhase.juego) {
-       declarations.clear();
+      declarations.clear();
     }
     _nextPhase();
   }
@@ -332,15 +332,15 @@ class MusGame {
         return;
       }
     } else if (currentPhase == GamePhase.paresDeclaration) {
-        // Advance declaration or move to betting
-        // This is controlled by performDeclarationStep usually
-        // If we fall through here, it means we are done declaring
-        currentPhase = GamePhase.pares;
+      // Advance declaration or move to betting
+      // This is controlled by performDeclarationStep usually
+      // If we fall through here, it means we are done declaring
+      currentPhase = GamePhase.pares;
     } else if (currentPhase == GamePhase.pares) {
       _checkJuegoPhase();
       return;
     } else if (currentPhase == GamePhase.juegoDeclaration) {
-       currentPhase = GamePhase.juego;
+      currentPhase = GamePhase.juego;
     } else if (currentPhase == GamePhase.juego ||
         currentPhase == GamePhase.punto) {
       _calculateScores();
@@ -356,8 +356,8 @@ class MusGame {
       currentTurn = manoIndex;
       _notify();
     } else {
-       currentPhase = GamePhase.punto;
-       _initPhase();
+      currentPhase = GamePhase.punto;
+      _initPhase();
     }
   }
 
@@ -371,15 +371,15 @@ class MusGame {
       final hasPares = ev.paresType != ParesType.none;
       declarations[idx] = hasPares ? 'SÍ' : 'NO';
     } else if (currentPhase == GamePhase.juegoDeclaration) {
-       final hasJuego = ev.hasJuego;
-       declarations[idx] = hasJuego ? 'SÍ' : 'NO'; 
+      final hasJuego = ev.hasJuego;
+      declarations[idx] = hasJuego ? 'SÍ' : 'NO';
     }
 
     // Advance
     if (_isPostre(currentTurn)) {
-       // End of declaration round
-       _nextPhase(); // Move to actual betting phase
-       return true;
+      // End of declaration round
+      _nextPhase(); // Move to actual betting phase
+      return true;
     } else {
       currentTurn = (currentTurn + 1) % 4;
       _notify();
@@ -524,7 +524,7 @@ class MusGame {
           teamScores[teamIndex] = (teamScores[teamIndex] ?? 0) + 1;
           totalAdded += 1;
         }
-        return totalAdded; 
+        return totalAdded;
       }
     }
     return totalAdded;

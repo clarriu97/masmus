@@ -7,6 +7,7 @@ void main() {
 
     setUp(() {
       authService = LazyAuthService();
+      authService.logout(); // Reset singleton state
     });
 
     test('starts as guest by default', () {

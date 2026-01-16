@@ -28,8 +28,8 @@ class PartnerSelectionScreen extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder:
-                      (context) => GameConfigScreen(partnerProfile: partner),
+                  builder: (context) =>
+                      GameConfigScreen(partnerProfile: partner),
                 ),
               );
             },
@@ -128,8 +128,8 @@ class _StatRow extends StatelessWidget {
                 value > 0.7
                     ? AppColors.accentRed
                     : value > 0.4
-                        ? AppColors.accentGold
-                        : AppColors.primaryGreen,
+                    ? AppColors.accentGold
+                    : AppColors.primaryGreen,
               ),
               minHeight: 6,
             ),

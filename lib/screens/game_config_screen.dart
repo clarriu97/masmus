@@ -131,8 +131,9 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                       color: _eightKings
                           ? AppColors.primaryGreen
                           : AppColors.textSecondary,
-                      fontWeight:
-                          _eightKings ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: _eightKings
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ),
@@ -160,8 +161,9 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                       color: !_eightKings
                           ? AppColors.primaryGreen
                           : AppColors.textSecondary,
-                      fontWeight:
-                          !_eightKings ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: !_eightKings
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ),
@@ -202,7 +204,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
             value: value,
             onChanged: onChanged,
             activeTrackColor: AppColors.primaryGreen.withAlpha(100),
-            activeColor: AppColors.primaryGreen,
+            activeThumbColor: AppColors.primaryGreen,
           ),
         ],
       ),
@@ -241,10 +243,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
               color: AppColors.textSecondary,
             ),
             items: [30, 40].map((int value) {
-              return DropdownMenuItem<int>(
-                value: value,
-                child: Text('$value'),
-              );
+              return DropdownMenuItem<int>(value: value, child: Text('$value'));
             }).toList(),
             onChanged: (int? newValue) {
               if (newValue != null) {
@@ -290,10 +289,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
             Text(
               label,
               style: AppTextStyles.caption.copyWith(
-                color:
-                    isSelected
-                        ? AppColors.textMain
-                        : AppColors.textTertiary,
+                color: isSelected ? AppColors.textMain : AppColors.textTertiary,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               textAlign: TextAlign.center,
@@ -316,11 +312,8 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder:
-            (context) => GameScreen(
-              partnerProfile: widget.partnerProfile,
-              config: config,
-            ),
+        builder: (context) =>
+            GameScreen(partnerProfile: widget.partnerProfile, config: config),
       ),
     );
   }

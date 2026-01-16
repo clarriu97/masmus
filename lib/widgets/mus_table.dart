@@ -105,7 +105,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         color: Colors.white.withAlpha(20),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withAlpha(50), width: 1),
+        border: Border.all(color: Colors.white.withAlpha(50)),
       ),
       child: const Center(
         child: Icon(Icons.style, color: Colors.white24, size: 40),
@@ -161,10 +161,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
           children: [
             // Cards
             if (isCurrentUser)
-              Positioned(
-                bottom: 0,
-                child: _buildUserHand(player, index),
-              )
+              Positioned(bottom: 0, child: _buildUserHand(player, index))
             else
               Positioned(
                 top: isTop ? 60 : 40,
@@ -182,24 +179,24 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   Stack(
+                  Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                       // Turn Glow
-                       if (isTurn)
+                      // Turn Glow
+                      if (isTurn)
                         Container(
-                          width: isCurrentUser ? 74 : 64,
-                          height: isCurrentUser ? 74 : 64,
-                           decoration: BoxDecoration(
+                          width: 74,
+                          height: 74,
+                          decoration: const BoxDecoration(
                             shape: BoxShape.circle,
-                             boxShadow: [
-                               BoxShadow(
-                                 color: AppColors.accentGold,
-                                 blurRadius: 15,
-                                 spreadRadius: 2,
-                               ),
-                             ],
-                           ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.accentGold,
+                                blurRadius: 15,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
                         ),
                       Container(
                         width: isCurrentUser ? 60 : 50,
@@ -207,7 +204,9 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isTurn ? AppColors.accentGold : (isMano ? Colors.white : AppColors.border),
+                            color: isTurn
+                                ? AppColors.accentGold
+                                : (isMano ? Colors.white : AppColors.border),
                             width: isTurn ? 3 : 2,
                           ),
                           color: AppColors.backgroundCard,
@@ -235,7 +234,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             color: AppColors.accentGold,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.black, width: 1),
+                            border: Border.all(),
                           ),
                           child: const Center(
                             child: Text(
@@ -243,7 +242,6 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -259,14 +257,18 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                     decoration: BoxDecoration(
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(4),
-                      border: isTurn ? Border.all(color: AppColors.accentGold, width: 1) : null,
+                      border: isTurn
+                          ? Border.all(color: AppColors.accentGold)
+                          : null,
                     ),
                     child: Text(
                       player.name,
                       style: AppTextStyles.caption.copyWith(
                         color: Colors.white,
                         fontSize: 10,
-                        fontWeight: isTurn ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isTurn
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
@@ -277,79 +279,81 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
             // Speech Bubble (Last Action)
             if (widget.lastActionPlayerIndex == index &&
                 widget.lastAction.isNotEmpty)
-               _buildPositionedBubble(
+              _buildPositionedBubble(
                 text: widget.lastAction,
                 isTop: isTop,
                 isBottom: isCurrentUser,
                 isLeft: isLeft,
                 isRight: isRight,
                 type: BubbleType.action,
-               ),
+              ),
 
             // Declaration Bubble (Persistent)
             if (widget.declarations.containsKey(index))
-                _buildPositionedBubble(
-                  text: widget.declarations[index]!,
-                  isTop: isTop,
-                  isBottom: isCurrentUser,
-                  isLeft: isLeft,
-                  isRight: isRight,
-                  type: BubbleType.declaration,
-                ),
+              _buildPositionedBubble(
+                text: widget.declarations[index]!,
+                isTop: isTop,
+                isBottom: isCurrentUser,
+                isLeft: isLeft,
+                isRight: isRight,
+                type: BubbleType.declaration,
+              ),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildPositionedBubble({
-      required String text,
-      required bool isTop,
-      required bool isBottom,
-      required bool isLeft,
-      required bool isRight,
-      required BubbleType type,
+    required String text,
+    required bool isTop,
+    required bool isBottom,
+    required bool isLeft,
+    required bool isRight,
+    required BubbleType type,
   }) {
-      double shiftY = type == BubbleType.declaration ? -35 : 0;
-      if (isLeft || isRight) shiftY = type == BubbleType.declaration ? 35 : 0;
-      
-      // Closer positioning
-      double? top, bottom, left, right;
-      
-      if (isBottom) {
-         bottom = 190 + shiftY;
-         // Center horizontally
-      } else if (isTop) {
-         top = 85 - shiftY;
-      } else if (isLeft) {
-         top = 80 + shiftY;
-         left = 85; 
-      } else if (isRight) {
-         top = 80 + shiftY;
-         right = 85;
-      }
-      
-      return Positioned(
-         top: top,
-         bottom: bottom,
-         left: left,
-         right: right,
-         child: Center(child: _buildSpeechBubble(text, type)),
-      );
+    double shiftY = type == BubbleType.declaration ? -35 : 0;
+    if (isLeft || isRight) {
+      shiftY = type == BubbleType.declaration ? 35 : 0;
+    }
+
+    // Closer positioning
+    double? top, bottom, left, right;
+
+    if (isBottom) {
+      bottom = 190 + shiftY;
+      // Center horizontally
+    } else if (isTop) {
+      top = 85 - shiftY;
+    } else if (isLeft) {
+      top = 80 + shiftY;
+      left = 85;
+    } else if (isRight) {
+      top = 80 + shiftY;
+      right = 85;
+    }
+
+    return Positioned(
+      top: top,
+      bottom: bottom,
+      left: left,
+      right: right,
+      child: Center(child: _buildSpeechBubble(text, type)),
+    );
   }
 
   Widget _buildSpeechBubble(String text, BubbleType type) {
     Color bg = Colors.white;
     Color txt = Colors.black87;
-    
+
     if (type == BubbleType.declaration) {
-       if (text == 'NO') {
-          bg = Colors.grey.shade300;
-          txt = Colors.grey.shade700;
-       } else {
-          bg = AppColors.accentGold;
-          txt = Colors.black;
-       }
+      if (text == 'NO') {
+        bg = Colors.grey.shade300;
+        txt = Colors.grey.shade700;
+      } else {
+        bg = AppColors.accentGold;
+        txt = Colors.black;
+      }
     }
 
     return Container(
@@ -367,11 +371,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
       ),
       child: Text(
         text,
-        style: TextStyle(
-          color: txt,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        ),
+        style: TextStyle(color: txt, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );
   }
@@ -405,7 +405,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                   card: card,
                   width: 70,
                   isSelected: widget.selectedCards.contains(card),
-                  onTap: () => widget.onCardTap(playerIndex, card),
+                  onTap: (card) => widget.onCardTap(playerIndex, card),
                 ),
               ),
             ),
@@ -430,10 +430,10 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: Colors.white24),
               boxShadow: [
-                 BoxShadow(
+                BoxShadow(
                   color: Colors.black.withAlpha(50),
                   blurRadius: 2,
-                   offset: const Offset(1, 1),
+                  offset: const Offset(1, 1),
                 ),
               ],
             ),

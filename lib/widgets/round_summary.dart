@@ -28,11 +28,7 @@ class RoundSummary extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.accentGold),
             boxShadow: const [
-              BoxShadow(
-                color: Colors.black54,
-                blurRadius: 20,
-                spreadRadius: 5,
-              ),
+              BoxShadow(color: Colors.black54, blurRadius: 20, spreadRadius: 5),
             ],
           ),
           child: Column(
@@ -80,7 +76,9 @@ class RoundSummary extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: AppTextStyles.bodyBold.copyWith(color: AppColors.textSecondary),
+              style: AppTextStyles.bodyBold.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           Expanded(

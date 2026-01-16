@@ -122,6 +122,12 @@ void main() {
       game.playerAction(2, 'PASO');
       game.playerAction(3, 'PASO');
 
+      // Chica ends -> starts Pares Declaration
+      for (int i = 0; i < 4; i++) {
+        game.performDeclarationStep();
+      }
+      expect(game.currentPhase, GamePhase.pares);
+
       // Pares: P0 (Duples K), P1 (Duples A). P0 Wins.
       // All pass -> P0 wins Duples (3) + P2 Duples (3) = 6 pts? (+1 en paso?).
       // Rule: If passed, points are pending check. Winner gets combination points (6). No 'en paso' point for Pares/Juego.
@@ -129,6 +135,12 @@ void main() {
       game.playerAction(1, 'PASO');
       game.playerAction(2, 'PASO');
       game.playerAction(3, 'PASO');
+
+      // Pares ends -> starts Juego Declaration
+      for (int i = 0; i < 4; i++) {
+        game.performDeclarationStep();
+      }
+      expect(game.currentPhase, GamePhase.juego);
 
       // Juego: P0 (40), P1 (34). P0 Wins.
       // Winner (P0) gets 2 pts (40). P2 gets 2 pts. Total 4.

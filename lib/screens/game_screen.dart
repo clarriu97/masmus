@@ -15,11 +15,7 @@ import '../widgets/mus_table.dart';
 import '../widgets/round_summary.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({
-    super.key,
-    this.partnerProfile,
-    this.config,
-  });
+  const GameScreen({super.key, this.partnerProfile, this.config});
 
   final AiProfile? partnerProfile;
   final GameConfig? config;
@@ -92,7 +88,9 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _checkAiTurn() async {
     // If game finished, do nothing
-    if (_game.currentPhase == GamePhase.finished) return;
+    if (_game.currentPhase == GamePhase.finished) {
+      return;
+    }
     if (_game.currentPhase == GamePhase.scoring) {
       // Wait a bit then show summary or auto-restart
       return;
@@ -107,23 +105,27 @@ class _GameScreenState extends State<GameScreen> {
 
     final turnPlayer = _game.players[_game.currentTurn];
     if (turnPlayer.isAi) {
-    // Random think time: 1s to 4s
-    final random = math.Random();
-    final int thinkTime = 1000 + random.nextInt(3000);
-       
+      // Random think time: 1s to 4s
+      final random = math.Random();
+      final int thinkTime = 1000 + random.nextInt(3000);
+
       await Future.delayed(Duration(milliseconds: thinkTime));
-      if (mounted) _playAiTurn(turnPlayer);
+      if (mounted) {
+        _playAiTurn(turnPlayer);
+      }
     }
   }
 
   Future<void> _handleDeclarationRound() async {
     // 1 second delay between declarations as requested
     await Future.delayed(const Duration(seconds: 1));
-    if (!mounted) return;
-    
+    if (!mounted) {
+      return;
+    }
+
     // Perform step
     _game.performDeclarationStep();
-    
+
     // Recursion handled by onChange listener -> _checkAiTurn logic
   }
 
@@ -153,8 +155,7 @@ class _GameScreenState extends State<GameScreen> {
         ev: ev,
         phase: _game.currentPhase,
         currentBet: _game.currentBet,
-        isPartnerWinning:
-            false, // TODO: Check partner state
+        isPartnerWinning: false, // TODO: Check partner state
       );
 
       String action = 'PASO';
@@ -183,7 +184,9 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _handleCardTap(int playerIndex, MusCard card) async {
-    if (playerIndex != 0) return;
+    if (playerIndex != 0) {
+      return;
+    }
 
     if (_game.currentPhase == GamePhase.discard && _game.currentTurn == 0) {
       setState(() {
@@ -199,7 +202,9 @@ class _GameScreenState extends State<GameScreen> {
 
   // User Actions
   void _onUserAction(String action) {
-    if (_game.currentTurn != 0) return;
+    if (_game.currentTurn != 0) {
+      return;
+    }
 
     if (action == 'DESCARTAR') {
       _game.playerDiscards(0, _selectedCards.toList());
@@ -256,7 +261,8 @@ class _GameScreenState extends State<GameScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.black, // Fill notch area with black or theme color
+      backgroundColor:
+          Colors.black, // Fill notch area with black or theme color
       body: SafeArea(
         top: false, // Let MusTable handle its own background/stack
         child: Stack(
@@ -345,10 +351,9 @@ class _GameScreenState extends State<GameScreen> {
                 children: [
                   if (_game.currentPhase == GamePhase.discard && isMyTurn)
                     ElevatedButton(
-                      onPressed:
-                          _selectedCards.isNotEmpty
-                              ? () => _onUserAction('DESCARTAR')
-                              : null,
+                      onPressed: _selectedCards.isNotEmpty
+                          ? () => _onUserAction('DESCARTAR')
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                       ),

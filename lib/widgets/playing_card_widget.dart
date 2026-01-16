@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:flutter/material.dart';
 import '../core/game/models/card.dart';
 
 class PlayingCardWidget extends StatelessWidget {
@@ -14,7 +14,7 @@ class PlayingCardWidget extends StatelessWidget {
 
   final MusCard card;
   final bool isSelected;
-  final VoidCallback? onTap;
+  final void Function(MusCard)? onTap;
   final double width;
   final bool isFaceUp;
 
@@ -23,7 +23,7 @@ class PlayingCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap != null ? () => onTap!(card) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         transform: Matrix4.translationValues(0, isSelected ? -20 : 0, 0),
@@ -86,7 +86,7 @@ class PlayingCardWidget extends StatelessWidget {
         // Center Art
         Center(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: CustomPaint(
               size: Size(width * 0.6, height * 0.6),
               painter: SpanishSuitPainter(
@@ -166,25 +166,23 @@ class SpanishSuitPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.fill;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
 
     // Center point
     final cx = size.width / 2;
     final cy = size.height / 2;
-    final r = size.width / 2.5;
+    final double r = size.width * 0.4;
 
     if (suit == Suit.oros) {
       // Draw Coin (Sun-like)
       canvas.drawCircle(Offset(cx, cy), r, paint);
       // Inner ring
-      final paintInner =
-          Paint()
-            ..color = Colors.white.withValues(alpha: 0.5)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2;
+      final paintInner = Paint()
+        ..color = Colors.white.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
       canvas.drawCircle(Offset(cx, cy), r * 0.7, paintInner);
       // Face detail placeholder?
     } else if (suit == Suit.copas) {

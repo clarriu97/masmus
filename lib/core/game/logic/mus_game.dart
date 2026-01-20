@@ -8,7 +8,7 @@ import '../models/game_config.dart';
 import '../models/player.dart';
 
 enum GamePhase {
-  mus,
+  musDeclaration,
   discard,
   grande,
   chica,
@@ -42,7 +42,7 @@ class MusGame {
   // Game State
   int manoIndex = 0; // Who is 'mano'
   int currentTurn = 0; // Current speaking player
-  GamePhase currentPhase = GamePhase.mus;
+  GamePhase currentPhase = GamePhase.musDeclaration;
 
   // Betting State
   int currentBet = 0; // Points at stake in current exchange
@@ -50,12 +50,14 @@ class MusGame {
   int? speakerIndex; // Who made the last bet/raise
   bool phaseFrozen =
       false; // If a phase is "closed" (all passed or bet accepted)
+  int? firstResponderIndex; // First player asked to respond in current cycle
 
   // Pending points to be resolved at end of hand
   // grande, chica, pares, juego. If > 0, it means "Quiero" was said.
   Map<GamePhase, int> pendingBets = {};
   Map<GamePhase, int> phaseWinners =
       {}; // Who won the phase (for visualization)
+  Set<GamePhase> rejectedPhases = {}; // Phases closed with "No Quiero"
 
   // Scores
   Map<int, int> teamScores = {0: 0, 1: 0}; // Team 0 (0&2), Team 1 (1&3)
@@ -91,7 +93,7 @@ class MusGame {
     }
 
     currentTurn = manoIndex;
-    currentPhase = GamePhase.mus;
+    currentPhase = GamePhase.musDeclaration;
     wantsMus = [false, false, false, false];
 
     currentBet = 0;
@@ -100,9 +102,10 @@ class MusGame {
     phaseFrozen = false;
     pendingBets.clear();
     phaseWinners.clear();
+    rejectedPhases.clear();
     scoreDetails.clear();
     declarations.clear();
-    declarations.clear(); // Clear bubbles
+    firstResponderIndex = null;
 
     evaluateHands();
     _notify();
@@ -131,26 +134,40 @@ class MusGame {
   // --- Actions ---
 
   bool playerSaysMus(int playerIndex) {
-    if (currentPhase != GamePhase.mus || currentTurn != playerIndex) {
+    if (currentPhase != GamePhase.musDeclaration ||
+        currentTurn != playerIndex) {
       return false;
     }
 
     wantsMus[playerIndex] = true;
+    declarations[playerIndex] = 'MUS';
 
     if (_isPostre(playerIndex)) {
-      currentPhase = GamePhase.discard;
-      currentTurn = manoIndex;
+      // All said Mus?
+      if (wantsMus.every((w) => w)) {
+        currentPhase = GamePhase.discard;
+        currentTurn = manoIndex;
+        declarations.clear();
+      } else {
+        // This shouldn't happen if someone cut it, but for safety:
+        _startPhases();
+      }
     } else {
-      _advanceTurn();
+      currentTurn = (currentTurn + 1) % 4;
     }
     _notify();
     return true;
   }
 
   bool playerCutsMus(int playerIndex) {
-    if (currentPhase != GamePhase.mus || currentTurn != playerIndex) {
+    if (currentPhase != GamePhase.musDeclaration ||
+        currentTurn != playerIndex) {
       return false;
     }
+
+    declarations[playerIndex] = 'NO HAY MUS';
+    lastAction = 'NO HAY MUS';
+    lastActionPlayerIndex = playerIndex;
 
     // Cut Mus -> Start Phases
     _startPhases();
@@ -170,9 +187,10 @@ class MusGame {
     evaluations[playerIndex] = HandEvaluator.evaluate(player.hand, config);
 
     if (_isPostre(playerIndex)) {
-      currentPhase = GamePhase.mus;
+      currentPhase = GamePhase.musDeclaration;
       currentTurn = manoIndex;
       wantsMus = [false, false, false, false];
+      declarations.clear();
     } else {
       _advanceTurn();
     }
@@ -248,16 +266,22 @@ class MusGame {
       return;
     }
 
-    if (action == 'PASO') {
-      if (currentBet > 0) {
-        return;
-      }
+    lastAction = action;
+    lastActionPlayerIndex = playerIndex;
 
-      if (_isPostreForPhase(playerIndex) ||
-          (speakerIndex != null && playerIndex == _prevPlayer(speakerIndex!))) {
-        _closePhase(null);
+    if (action == 'PASO' || action == 'NO QUIERO') {
+      if (currentBet > 0) {
+        if (currentTurn == firstResponderIndex) {
+          _advanceToPartner();
+        } else {
+          _rejectBet();
+        }
       } else {
-        _advanceTurn();
+        if (_isPostreForPhase(playerIndex)) {
+          _closePhase(null);
+        } else {
+          _advanceTurn();
+        }
       }
     } else if (action == 'ENVIDO' || action == 'ORDAGO' || amount > 0) {
       int raise = amount > 0 ? amount : 2;
@@ -268,15 +292,14 @@ class MusGame {
       currentBet = (currentBet == 0) ? raise : currentBet + raise;
       currentBetType = action == 'ORDAGO' ? BetType.ordago : BetType.envido;
       speakerIndex = playerIndex;
-      _advanceLimitToSupport();
+      firstResponderIndex = null; // Reset for new response cycle
+      _jumpToRival();
     } else if (action == 'QUIERO') {
       _closePhase(currentBet);
     } else if (action == 'NO QUIERO') {
       _rejectBet();
     }
 
-    lastAction = action;
-    lastActionPlayerIndex = playerIndex;
     _notify();
   }
 
@@ -295,13 +318,45 @@ class MusGame {
     currentTurn = next;
   }
 
-  void _advanceLimitToSupport() {
-    final int currentTeam = getTeam(currentTurn);
-    int next = (currentTurn + 1) % 4;
-    while (getTeam(next) == currentTeam) {
-      next = (next + 1) % 4;
+  void _jumpToRival() {
+    // Jump to rival team, closest to mano
+    final int rivalTeam = 1 - getTeam(currentTurn);
+    // Closest to mano in rival team:
+    // If mano is 0: rival team is 1&3. Closest is 1.
+    // If mano is 1: rival team is 0&2. Closest is 2. (Wait, mano=1, so 2 is next)
+    // Actually, closest to mano means smallest (pos - mano + 4) % 4
+    final int pA = rivalTeam == 0 ? 0 : 1;
+    final int pB = rivalTeam == 0 ? 2 : 3;
+
+    final int distA = (pA - manoIndex + 4) % 4;
+    final int distB = (pB - manoIndex + 4) % 4;
+
+    int next = distA < distB ? pA : pB;
+
+    // Check if they can play
+    if (!_canPlayPhase(next)) {
+      // Try the other partner
+      next = next == pA ? pB : pA;
+      if (!_canPlayPhase(next)) {
+        // Nobody in rival team has it? Should not happen if validations are correct
+        _closePhase(currentBet);
+        return;
+      }
     }
     currentTurn = next;
+    firstResponderIndex = next;
+  }
+
+  void _advanceToPartner() {
+    final int partner = (currentTurn + 2) % 4;
+    if (_canPlayPhase(partner)) {
+      currentTurn = partner;
+    } else {
+      // Partner can't play, so we must decide or it's implicitly NO QUIERO?
+      // Actually, if we are responding to a bet and we "Pass", and partner can't play,
+      // then we must have decided. But let's assume UI only shows PASO if partner can play.
+      _rejectBet();
+    }
   }
 
   bool _canPlayPhase(int idx) {
@@ -337,8 +392,10 @@ class MusGame {
 
   void _rejectBet() {
     final int winnerTeam = getTeam(speakerIndex!);
-    final int points = currentBet > 0 ? (currentBet > 2 ? 1 : 1) : 1;
+    const int points = 1;
     teamScores[winnerTeam] = (teamScores[winnerTeam] ?? 0) + points;
+
+    rejectedPhases.add(currentPhase);
 
     // Clear declarations
     if (currentPhase == GamePhase.pares || currentPhase == GamePhase.juego) {
@@ -460,6 +517,11 @@ class MusGame {
   }
 
   void _resolvePhasePoints(GamePhase phase) {
+    if (rejectedPhases.contains(phase)) {
+      scoreDetails[phase] = 'Rechazado (1 pt)';
+      return;
+    }
+
     if (!pendingBets.containsKey(phase) &&
         phase != GamePhase.punto &&
         phase != GamePhase.juego &&
@@ -608,12 +670,7 @@ class MusGame {
       return HandEvaluator.compareChica(rankA, rankB);
     }
     if (phase == GamePhase.pares) {
-      // Assumes both have pares
-      return HandEvaluator.compareParesLogic(
-        rankA,
-        rankB,
-        evaluations[idxA]!.paresType,
-      );
+      return HandEvaluator.comparePares(evaluations[idxA]!, evaluations[idxB]!);
     }
     if (phase == GamePhase.juego) {
       return HandEvaluator.compareJuego(
@@ -649,8 +706,6 @@ class MusGame {
   bool _isPostreForPhase(int idx) {
     return idx == (manoIndex + 3) % 4;
   }
-
-  int _prevPlayer(int idx) => (idx - 1 + 4) % 4;
 
   void _notify() {
     _streamController.add(null);

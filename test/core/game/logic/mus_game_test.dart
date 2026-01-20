@@ -16,7 +16,7 @@ void main() {
     });
 
     test('Initial State is Mus Phase', () {
-      expect(game.currentPhase, GamePhase.mus);
+      expect(game.currentPhase, GamePhase.musDeclaration);
       expect(game.currentTurn, game.manoIndex);
     });
 
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('Betting Flow - Envido / Quiero', () {
-      game.playerCutsMus(0); // Start Grande
+      game.playerCutsMus(0); // Start Grande (Mano 0)
 
       // P0 Passes
       game.playerAction(0, 'PASO');
@@ -48,11 +48,11 @@ void main() {
       expect(game.currentBet, 2);
       expect(game.currentBetType, BetType.envido);
 
-      // Turn should move to P2
-      expect(game.currentTurn, 2);
+      // Turn should jump to rival team (Team 0), closest to mano (P0) -> P0
+      expect(game.currentTurn, 0);
 
-      // P2 Accepts
-      game.playerAction(2, 'QUIERO');
+      // P0 Accepts
+      game.playerAction(0, 'QUIERO');
 
       // Phase ends -> Chica
       expect(game.currentPhase, GamePhase.chica);
@@ -64,8 +64,12 @@ void main() {
       game.playerCutsMus(0);
       game.playerAction(0, 'ENVIDO'); // P0 bets 2
 
-      // P1 Rejects
+      // P1 Rejects -> Turn jumps to P3
       game.playerAction(1, 'NO QUIERO');
+      expect(game.currentTurn, 3);
+
+      // P3 Rejects -> Rejected
+      game.playerAction(3, 'NO QUIERO');
 
       // P0 Team wins 1 point immediately
       expect(game.teamScores[0], 1);

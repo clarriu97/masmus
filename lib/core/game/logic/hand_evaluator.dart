@@ -154,8 +154,24 @@ class HandEvaluator {
   }
 
   /// Compara pares.
-  /// Asume que ambas manos TIENEN pares y del MISMO tipo (Par, Medias, Duples).
-  /// Si tipos distintos, gana el tipo superior (Duples > Medias > Par).
+  /// Gana el tipo superior (Duples > Medias > Par).
+  /// Si son del mismo tipo, se compara según la jerarquía de las cartas.
+  static int comparePares(
+    HandEvaluationResult resA,
+    HandEvaluationResult resB,
+  ) {
+    if (resA.paresType != resB.paresType) {
+      return resA.paresType.index - resB.paresType.index;
+    }
+
+    return compareParesLogic(
+      resA.sortedRanks,
+      resB.sortedRanks,
+      resA.paresType,
+    );
+  }
+
+  /// Compara pares del mismo tipo.
   static int compareParesLogic(
     List<int> ranksA,
     List<int> ranksB,
@@ -168,12 +184,7 @@ class HandEvaluator {
       // Buscar el valor del par en A y B
       final parA = _findPairValue(ranksA);
       final parB = _findPairValue(ranksB);
-      if (parA != parB) {
-        return parA - parB;
-      }
-      // Empate en el par: no se mira el resto ('kicker' no importa en mus para ganar la fase,
-      // solo importa el par. Si mismo par -> empate de posición decide mano).
-      return 0;
+      return parA - parB;
     }
 
     if (type == ParesType.medias) {

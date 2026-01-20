@@ -141,7 +141,7 @@ class _GameScreenState extends State<GameScreen> {
     // Logic delegation
     final ev = _game.evaluations[idx]!;
 
-    if (_game.currentPhase == GamePhase.mus) {
+    if (_game.currentPhase == GamePhase.musDeclaration) {
       final wantsMus = AiLogic.shouldAcceptMus(
         player,
         ev,
@@ -246,7 +246,7 @@ class _GameScreenState extends State<GameScreen> {
         canNoQuiero = false;
 
     if (isMyTurn) {
-      if (_game.currentPhase == GamePhase.mus) {
+      if (_game.currentPhase == GamePhase.musDeclaration) {
         canMus = true;
         canCut = true;
       } else if (_game.currentPhase != GamePhase.discard &&
@@ -290,23 +290,49 @@ class _GameScreenState extends State<GameScreen> {
               top: 0,
               left: 20,
               child: SafeArea(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  margin: const EdgeInsets.only(top: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Fase: ${_game.currentPhase.name.toUpperCase()}\nApuesta: ${_game.currentBet > 0 ? _game.currentBet : "N/A"}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Fase: ${_game.currentPhase.name.toUpperCase()}\nApuesta: ${_game.currentBet > 0 ? _game.currentBet : "N/A"}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (!isMyTurn &&
+                        _game.currentPhase != GamePhase.scoring &&
+                        _game.currentPhase != GamePhase.finished)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withAlpha(204), // 0.8 * 255
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Esperando a ${_game.players[_game.currentTurn].name}...',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -382,22 +408,43 @@ class _GameScreenState extends State<GameScreen> {
                       canQuiero: canQuiero,
                       canNoQuiero: canNoQuiero,
                     ),
-
-                  if (!isMyTurn && _game.currentPhase != GamePhase.scoring)
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        'Esperando a ${_game.players[_game.currentTurn].name}...',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
+
+            // NO HAY MUS Overlay
+            if (_game.lastAction == 'NO HAY MUS')
+              Center(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 500),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: 1.0 + (value * 0.5),
+                      child: Opacity(
+                        opacity: 1.0 - value,
+                        child: Container(
+                          padding: const EdgeInsets.all(32),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withAlpha(230),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4),
+                          ),
+                          child: const Text(
+                            '¡NO HAY\nMUS!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
 
             // Round Summary Overlay
             if (_game.currentPhase == GamePhase.scoring ||

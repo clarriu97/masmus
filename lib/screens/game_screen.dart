@@ -15,10 +15,16 @@ import '../widgets/mus_table.dart';
 import '../widgets/round_summary.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key, this.partnerProfile, this.config});
+  const GameScreen({
+    super.key,
+    this.partnerProfile,
+    this.config,
+    this.initialMano,
+  });
 
   final AiProfile? partnerProfile;
   final GameConfig? config;
+  final int? initialMano;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -70,6 +76,7 @@ class _GameScreenState extends State<GameScreen> {
     _game = MusGame(
       players: players,
       config: widget.config ?? const GameConfig(),
+      initialMano: widget.initialMano,
     );
     _gameSub = _game.onChange.listen((event) {
       if (mounted) {
@@ -201,7 +208,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   // User Actions
-  void _onUserAction(String action) {
+  void _onUserAction(String action, {int? amount}) {
     if (_game.currentTurn != 0) {
       return;
     }
@@ -217,7 +224,7 @@ class _GameScreenState extends State<GameScreen> {
     } else if (action == 'NO HAY MUS') {
       _game.playerCutsMus(0);
     } else {
-      _game.playerAction(0, action);
+      _game.playerAction(0, action, amount: amount ?? 0);
     }
   }
 

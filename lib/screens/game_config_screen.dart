@@ -20,7 +20,6 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
   // Config state
   bool _eightKings = false; // 4 Reyes default
   bool _laReal = false;
-  bool _autoOrdago = false;
   int _maxPoints = 40;
 
   // Visual selection (not functional yet for logic, just visual)
@@ -58,16 +57,6 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                 subtitle: 'Combinación de Tres Sietes y Sota.',
                 value: _laReal,
                 onChanged: (v) => setState(() => _laReal = v),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Órdago Automático
-              _buildSwitchTile(
-                title: 'Órdago Automático',
-                subtitle: 'Finalizar al primer órdago aceptado.',
-                value: _autoOrdago,
-                onChanged: (v) => setState(() => _autoOrdago = v),
               ),
 
               const SizedBox(height: 16),
@@ -118,7 +107,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: _eightKings
-                      ? AppColors.primaryGreen.withAlpha(100)
+                      ? AppColors.primaryGreen
                       : Colors.transparent,
                   borderRadius: const BorderRadius.horizontal(
                     left: Radius.circular(11),
@@ -129,7 +118,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                     '8 Reyes (Estándar)',
                     style: TextStyle(
                       color: _eightKings
-                          ? AppColors.primaryGreen
+                          ? Colors.white
                           : AppColors.textSecondary,
                       fontWeight: _eightKings
                           ? FontWeight.bold
@@ -148,7 +137,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: !_eightKings
-                      ? AppColors.primaryGreen.withAlpha(100)
+                      ? AppColors.primaryGreen
                       : Colors.transparent,
                   borderRadius: const BorderRadius.horizontal(
                     right: Radius.circular(11),
@@ -159,7 +148,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                     '4 Reyes (Vasco)',
                     style: TextStyle(
                       color: !_eightKings
-                          ? AppColors.primaryGreen
+                          ? Colors.white
                           : AppColors.textSecondary,
                       fontWeight: !_eightKings
                           ? FontWeight.bold
@@ -307,7 +296,6 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
       eightKings: _eightKings,
       real31: _laReal,
       maxPoints: _maxPoints,
-      autoOrdago: _autoOrdago,
     );
 
     Navigator.of(context).push(

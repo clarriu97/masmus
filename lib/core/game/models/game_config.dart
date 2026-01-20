@@ -3,7 +3,6 @@ class GameConfig {
     this.maxPoints = 30,
     this.eightKings = false,
     this.real31 = false,
-    this.autoOrdago = false,
   });
 
   /// Puntos para ganar (30, 40)
@@ -14,7 +13,4 @@ class GameConfig {
 
   /// ¿31 Real? (La 31 con la Jota/Sota gana a la 31 normal)
   final bool real31;
-
-  /// Si es true, la partida se acaba al aceptar el primer órdago
-  final bool autoOrdago;
 }

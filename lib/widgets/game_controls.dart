@@ -15,7 +15,7 @@ class GameControls extends StatelessWidget {
     this.canNoQuiero = false,
   });
 
-  final Function(String action) onAction;
+  final Function(String action, {int? amount}) onAction;
   final bool canMus;
   final bool canCut;
   final bool canPass;
@@ -33,7 +33,8 @@ class GameControls extends StatelessWidget {
         children: [
           _GameButton(
             label: 'MUS',
-            color: AppColors.primaryGreen,
+            color: AppColors.accentGold, // Changed color for contrast
+            textColor: Colors.black,
             onPressed: canMus ? () => onAction('MUS') : null,
           ),
           _GameButton(
@@ -47,8 +48,10 @@ class GameControls extends StatelessWidget {
 
     // Response Phase (Quiero / No Quiero)
     if (canQuiero || canNoQuiero) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      return Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 12,
+        runSpacing: 12,
         children: [
           _GameButton(
             label: 'QUIERO',
@@ -60,13 +63,18 @@ class GameControls extends StatelessWidget {
             color: AppColors.accentRed,
             onPressed: canNoQuiero ? () => onAction('NO QUIERO') : null,
           ),
-          // Can also raise in response? Usually yes.
-          if (canEnvido)
+          if (canEnvido) ...[
             _GameButton(
-              label: 'ENVIDO',
-              color: AppColors.accentGold,
-              onPressed: () => onAction('ENVIDO'),
+              label: 'ENVIDO (2)',
+              color: AppColors.primaryGreenLight,
+              onPressed: () => onAction('ENVIDO', amount: 2),
             ),
+            _GameButton(
+              label: 'ENVIDAR...',
+              color: AppColors.primaryGreenDark,
+              onPressed: () => _showBetOptions(context),
+            ),
+          ],
           if (canOrdago)
             _GameButton(
               label: 'ÓRDAGO',
@@ -88,11 +96,18 @@ class GameControls extends StatelessWidget {
           color: AppColors.textDisabled,
           onPressed: canPass ? () => onAction('PASO') : null,
         ),
-        _GameButton(
-          label: 'ENVIDO',
-          color: AppColors.accentGold,
-          onPressed: canEnvido ? () => onAction('ENVIDO') : null,
-        ),
+        if (canEnvido) ...[
+          _GameButton(
+            label: 'ENVIDO (2)',
+            color: AppColors.primaryGreenLight,
+            onPressed: () => onAction('ENVIDO', amount: 2),
+          ),
+          _GameButton(
+            label: 'ENVIDAR...',
+            color: AppColors.primaryGreenDark,
+            onPressed: () => _showBetOptions(context),
+          ),
+        ],
         _GameButton(
           label: 'ÓRDAGO',
           color: AppColors.accentRedDark,
@@ -101,13 +116,71 @@ class GameControls extends StatelessWidget {
       ],
     );
   }
+
+  void _showBetOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.backgroundDark,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                '¿Cuánto quieres envidar?',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [5, 10, 20, 30].map((amount) {
+                  return _GameButton(
+                    label: '$amount',
+                    color: AppColors.primaryGreenLight,
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onAction('ENVIDO', amount: amount);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Cancelar',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _GameButton extends StatelessWidget {
-  const _GameButton({required this.label, required this.color, this.onPressed});
+  const _GameButton({
+    required this.label,
+    required this.color,
+    this.onPressed,
+    this.textColor = Colors.white,
+  });
 
   final String label;
   final Color color;
+  final Color textColor;
   final VoidCallback? onPressed;
 
   @override
@@ -116,7 +189,7 @@ class _GameButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        foregroundColor: Colors.white,
+        foregroundColor: textColor,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),

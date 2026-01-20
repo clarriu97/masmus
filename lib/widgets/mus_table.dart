@@ -139,7 +139,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
       bottom = 20;
     } else if (isTop) {
       left = position.dx - 150;
-      top = 20;
+      top = 45; // Moved down to avoid notch
     } else if (isRight) {
       right = 20;
       top = position.dy - 100;
@@ -155,27 +155,27 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
       bottom: bottom,
       child: SizedBox(
         width: 300,
-        height: 200,
+        height: 250,
         child: Stack(
           alignment: Alignment.center,
           children: [
             // Cards
             if (isCurrentUser)
-              Positioned(bottom: 0, child: _buildUserHand(player, index))
+              Positioned(bottom: 20, child: _buildUserHand(player, index))
             else
               Positioned(
-                top: isTop ? 60 : 40,
-                left: isLeft ? 60 : null,
-                right: isRight ? 60 : null,
+                top: isTop ? 105 : (isRight || isLeft ? 120 : 40),
+                left: isLeft ? 15 : (isTop ? null : null),
+                right: isRight ? 15 : null,
                 child: _buildOpponentCards(player.hand.length),
               ),
 
             // Avatar & Name & Indicators
             Positioned(
-              top: isCurrentUser ? null : (isTop ? 0 : 60),
-              bottom: isCurrentUser ? 130 : null,
-              left: isLeft ? 0 : (isRight ? null : 110),
-              right: isRight ? 0 : (isLeft ? null : 110),
+              top: isCurrentUser ? null : (isTop ? 10 : 60),
+              bottom: isCurrentUser ? 150 : null,
+              left: isLeft ? 10 : (isRight ? null : 110),
+              right: isRight ? 10 : (isLeft ? null : 110),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -185,15 +185,15 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                       // Turn Glow
                       if (isTurn)
                         Container(
-                          width: 74,
-                          height: 74,
+                          width: (isCurrentUser ? 60 : 50) + 16,
+                          height: (isCurrentUser ? 60 : 50) + 16,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.accentGold,
-                                blurRadius: 15,
-                                spreadRadius: 2,
+                                blurRadius: 12,
+                                spreadRadius: 3,
                               ),
                             ],
                           ),
@@ -380,8 +380,8 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
 
   Widget _buildUserHand(Player player, int playerIndex) {
     return SizedBox(
-      height: 120,
-      width: 200,
+      height: 150,
+      width: 220,
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: player.hand.asMap().entries.map((entry) {
@@ -420,20 +420,20 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
+        return Transform.translate(
+          offset: Offset(index * -15.0, 0), // Tight overlap
           child: Container(
-            width: 30, // Smaller for opponents
-            height: 45,
+            width: 28,
+            height: 40,
             decoration: BoxDecoration(
               color: AppColors.accentBlue,
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.white24),
-              boxShadow: [
+              border: Border.all(color: Colors.white30, width: 0.5),
+              boxShadow: const [
                 BoxShadow(
-                  color: Colors.black.withAlpha(50),
-                  blurRadius: 2,
-                  offset: const Offset(1, 1),
+                  color: Colors.black38,
+                  blurRadius: 3,
+                  offset: Offset(1, 1),
                 ),
               ],
             ),

@@ -47,8 +47,11 @@ void main() {
     // We expect some errors from AudioPlayer if not mocked, but usually it just logs error on missing asset/file.
     // To suppress, we might need more mocks, but let's try.
 
-    await tester.pumpWidget(const MaterialApp(home: GameScreen()));
-    await tester.pumpAndSettle(); // Wait for game init
+    await tester.pumpWidget(
+      const MaterialApp(home: GameScreen(initialMano: 0)),
+    );
+    await tester.pump(const Duration(seconds: 1)); // Wait for initial delay
+    await tester.pumpAndSettle();
 
     expect(find.byType(MusTable), findsOneWidget);
     expect(find.text('MUS'), findsOneWidget);
@@ -85,32 +88,14 @@ void main() {
     WidgetTester tester,
   ) async {
     // We test Logic via UI state update in GameScreen
-    await tester.pumpWidget(const MaterialApp(home: GameScreen()));
+    await tester.pumpWidget(
+      const MaterialApp(home: GameScreen(initialMano: 0)),
+    );
+    await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
-
-    // We need to be in Discard phase for selection to work visually in our Logic provided
-    // BUT PlayingCardWidget has 'isSelected' prop.
-    // In GameScreen default state (Mus phase), tapping might NOT toggle selection if we restricted it.
-    // Let's check GameScreen code: "if (_game.currentPhase == GamePhase.discard) ..."
-
-    // So in default state, tapping does nothing.
-    // We verify that first.
 
     final cardFinder = find.byType(PlayingCardWidget).first;
     await tester.tap(cardFinder);
     await tester.pump();
-
-    // Visual check? 'isSelected' changes Transform.
-    // Hard to check Transform directly without key.
-    // But we can check internal logic in a separate unit test or integration test.
-
-    // Let's try to reach Discard Phase.
-    // P0 says Mus -> P1, P2, P3 must say Mus.
-    // Our 'GameScreen' has `_advanceAiTurns` which is empty/mocked: `setState(() {});`
-    // So P1, P2, P3 NEVER say Mus.
-    // So we are stuck in 'Mus' phase.
-
-    // CONCLUSION: To test Discard phase, we need to inject a Game instance with pre-set phase.
-    // Refactoring GameScreen to accept a MusGame instance would help.
   });
 }

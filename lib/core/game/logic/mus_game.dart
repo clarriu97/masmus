@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import '../logic/hand_evaluator.dart';
 import '../models/card.dart';
@@ -23,14 +24,19 @@ enum GamePhase {
 enum BetType { none, envido, ordago }
 
 class MusGame {
-  MusGame({required this.players, this.config = const GameConfig()})
-    : deck = Deck(),
-      assert(players.length == 4) {
+  MusGame({
+    required this.players,
+    this.config = const GameConfig(),
+    this.initialMano,
+  }) : deck = Deck(),
+       assert(players.length == 4) {
+    manoIndex = initialMano ?? math.Random().nextInt(4);
     _startNewHand();
   }
 
   final List<Player> players;
   final GameConfig config;
+  final int? initialMano;
   final Deck deck;
 
   // Game State
@@ -188,9 +194,11 @@ class MusGame {
     speakerIndex = null;
     phaseFrozen = false;
 
-    if (currentPhase == GamePhase.pares && !_anyPlayerHasPares()) {
-      _nextPhase();
-      return;
+    if (currentPhase == GamePhase.pares) {
+      if (!_anyPlayerHasPares() || _onlyOneTeamHasPares()) {
+        _nextPhase();
+        return;
+      }
     }
     if (currentPhase == GamePhase.juego) {
       if (!_anyPlayerHasJuego()) {
@@ -198,9 +206,33 @@ class MusGame {
         _initPhase();
         return;
       }
+      if (_onlyOneTeamHasJuego()) {
+        _nextPhase();
+        return;
+      }
     }
 
     _ensureValidTurn();
+  }
+
+  bool _onlyOneTeamHasPares() {
+    final bool team0 =
+        (evaluations[0]?.paresType != ParesType.none) ||
+        (evaluations[2]?.paresType != ParesType.none);
+    final bool team1 =
+        (evaluations[1]?.paresType != ParesType.none) ||
+        (evaluations[3]?.paresType != ParesType.none);
+    return team0 != team1;
+  }
+
+  bool _onlyOneTeamHasJuego() {
+    final bool team0 =
+        (evaluations[0]?.hasJuego ?? false) ||
+        (evaluations[2]?.hasJuego ?? false);
+    final bool team1 =
+        (evaluations[1]?.hasJuego ?? false) ||
+        (evaluations[3]?.hasJuego ?? false);
+    return team0 != team1;
   }
 
   bool _anyPlayerHasPares() {
@@ -412,11 +444,15 @@ class MusGame {
     // 2. Chica
     _resolvePhasePoints(GamePhase.chica);
     // 3. Pares
-    _resolvePhasePoints(GamePhase.pares);
+    if (_anyPlayerHasPares()) {
+      _resolvePhasePoints(GamePhase.pares);
+    }
     // 4. Juego/Punto
-    _resolvePhasePoints(
-      _anyPlayerHasJuego() ? GamePhase.juego : GamePhase.punto,
-    );
+    if (_anyPlayerHasJuego()) {
+      _resolvePhasePoints(GamePhase.juego);
+    } else {
+      _resolvePhasePoints(GamePhase.punto);
+    }
 
     currentPhase = GamePhase.scoring;
 
@@ -552,8 +588,16 @@ class MusGame {
     return _comparePlayers(p1, p2, phase) > 0 ? p1 : p2;
   }
 
-  // >0 if A wins, <0 if B wins
   int _comparePlayers(int idxA, int idxB, GamePhase phase) {
+    if (idxA < 0 ||
+        idxA >= evaluations.length ||
+        idxB < 0 ||
+        idxB >= evaluations.length) {
+      return 0;
+    }
+    if (evaluations[idxA] == null || evaluations[idxB] == null) {
+      return 0;
+    }
     final rankA = evaluations[idxA]!.sortedRanks;
     final rankB = evaluations[idxB]!.sortedRanks;
 

@@ -11,6 +11,8 @@ void main() {
     setUp(() {
       players = List.generate(4, (i) => Player(id: '$i', name: 'P$i'));
       game = MusGame(players: players);
+      game.manoIndex = 3;
+      game.restartHand(); // This will increment manoIndex to 0 and call _startNewHand
     });
 
     test('Initial State is Mus Phase', () {
@@ -46,8 +48,7 @@ void main() {
       expect(game.currentBet, 2);
       expect(game.currentBetType, BetType.envido);
 
-      // Turn should move to P2 (Partner of P0 decides? Or P0?)
-      // Betting usually goes to the team. P2 is team 0.
+      // Turn should move to P2
       expect(game.currentTurn, 2);
 
       // P2 Accepts
@@ -92,7 +93,9 @@ void main() {
         const MusCard(suit: Suit.bastos, faceValue: 10),
       ];
 
-      game = MusGame(players: players); // Init first (which deals random)
+      game = MusGame(players: players);
+      game.manoIndex = 3;
+      game.restartHand(); // mano 0
 
       // Now overwrite hands
       players[0].clearHand();
@@ -104,7 +107,7 @@ void main() {
       players[3].clearHand();
       players[3].receiveCards(aces);
 
-      game.evaluateHands(); // Re-evaluate logic with new hands
+      game.evaluateHands();
 
       // Force Cut Mus
       game.playerCutsMus(0);
@@ -129,8 +132,6 @@ void main() {
       expect(game.currentPhase, GamePhase.pares);
 
       // Pares: P0 (Duples K), P1 (Duples A). P0 Wins.
-      // All pass -> P0 wins Duples (3) + P2 Duples (3) = 6 pts? (+1 en paso?).
-      // Rule: If passed, points are pending check. Winner gets combination points (6). No 'en paso' point for Pares/Juego.
       game.playerAction(0, 'PASO');
       game.playerAction(1, 'PASO');
       game.playerAction(2, 'PASO');
@@ -143,8 +144,6 @@ void main() {
       expect(game.currentPhase, GamePhase.juego);
 
       // Juego: P0 (40), P1 (34). P0 Wins.
-      // Winner (P0) gets 2 pts (40). P2 gets 2 pts. Total 4.
-      // Pass
       game.playerAction(0, 'PASO');
       game.playerAction(1, 'PASO');
       game.playerAction(2, 'PASO');
@@ -153,12 +152,91 @@ void main() {
       // Scoring happened automatically after last pass
       expect(game.currentPhase, GamePhase.scoring);
 
-      // Check Scores
-      // Team 0: Grande (1) + Pares (3+3=6) + Juego (2+2=4) = 11 pts.
-      // Team 1: Chica (1) + Pares (0) + Juego (0) = 1 point.
-
       expect(game.teamScores[0], 11);
       expect(game.teamScores[1], 1);
+    });
+
+    test('Pares - Only one team has it -> Skip betting', () {
+      // P0 has pares, others don't.
+      players[0].clearHand();
+      players[0].receiveCards([
+        const MusCard(suit: Suit.oros, faceValue: 12),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 1),
+        const MusCard(suit: Suit.bastos, faceValue: 2),
+      ]);
+      // Others have no combinations
+      for (int i = 1; i < 4; i++) {
+        players[i].clearHand();
+        players[i].receiveCards([
+          const MusCard(suit: Suit.oros, faceValue: 1),
+          const MusCard(suit: Suit.copas, faceValue: 2),
+          const MusCard(suit: Suit.espadas, faceValue: 3),
+          const MusCard(suit: Suit.bastos, faceValue: 4),
+        ]);
+      }
+      game.evaluateHands();
+
+      // Move to Pares Declaration via Chica
+      game.currentPhase = GamePhase.chica;
+      for (int i = 0; i < 4; i++) {
+        game.playerAction(i, 'PASO');
+      }
+
+      // Now in Pares Declaration
+      expect(game.currentPhase, GamePhase.paresDeclaration);
+      for (int i = 0; i < 4; i++) {
+        game.performDeclarationStep();
+      }
+
+      // Should skip Pares betting (since only one team has it) and go to Juego Declaration
+      // Since no one has Juego, it will further skip to Punto or Scoring depending on currentPhase logic
+      // Actually, after paresDeclaration if skipped it goes to _checkJuegoPhase
+      expect(game.currentPhase, GamePhase.punto);
+    });
+
+    test('Juego - Only one team has it -> Skip betting', () {
+      // P0 has Juego (31), others have Punto.
+      players[0].clearHand();
+      players[0].receiveCards([
+        const MusCard(suit: Suit.oros, faceValue: 12),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 12),
+        const MusCard(suit: Suit.bastos, faceValue: 1),
+      ]);
+      // Others have no juego
+      for (int i = 1; i < 4; i++) {
+        players[i].clearHand();
+        players[i].receiveCards([
+          const MusCard(suit: Suit.oros, faceValue: 1),
+          const MusCard(suit: Suit.copas, faceValue: 2),
+          const MusCard(suit: Suit.espadas, faceValue: 3),
+          const MusCard(suit: Suit.bastos, faceValue: 4),
+        ]);
+      }
+      game.evaluateHands();
+
+      // Start from Chica to ensure clean transition to Pares then Juego
+      game.currentPhase = GamePhase.chica;
+      game.currentTurn = 0; // Mano
+      for (int i = 0; i < 4; i++) {
+        game.playerAction(i, 'PASO');
+      }
+
+      // Now it should be in Pares Declaration
+      expect(game.currentPhase, GamePhase.paresDeclaration);
+      for (int i = 0; i < 4; i++) {
+        game.performDeclarationStep();
+      }
+
+      // Now it should have skipped Pares (no one has it) and be in Juego Declaration
+      expect(game.currentPhase, GamePhase.juegoDeclaration);
+      for (int i = 0; i < 4; i++) {
+        game.performDeclarationStep();
+      }
+
+      // Should skip Juego betting and go to scoring
+      expect(game.currentPhase, GamePhase.scoring);
     });
   });
 }

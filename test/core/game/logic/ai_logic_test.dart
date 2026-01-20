@@ -28,7 +28,6 @@ void main() {
     });
 
     test('shouldAcceptMus - Cuts mus with 31', () {
-      // 31: 10 + 10 + 7 + 4? No. 10+10+10+1 = 31.
       final hand31 = [
         const MusCard(suit: Suit.oros, faceValue: 1),
         const MusCard(suit: Suit.copas, faceValue: 12),
@@ -39,23 +38,16 @@ void main() {
       aiPlayer.receiveCards(hand31);
       final ev = HandEvaluator.evaluate(hand31, const GameConfig());
 
-      // Should mostly accept (cut) Mus
-      final cut = AiLogic.shouldAcceptMus(
-        aiPlayer,
-        ev,
-      ); // removed isDealer: false as it is default
-      // Logic says: if points == 31 -> 95% cut.
-      // Since it is random, we can't assert 100% but we can check logic path or mock random.
-      // For now, let's assume it returns true.
-      expect(cut, true); // High probability
+      final cut = AiLogic.shouldAcceptMus(aiPlayer, ev);
+      expect(cut, true);
     });
 
     test('getCardsToDiscard - Keeps Kings and Aces', () {
       final hand = [
-        const MusCard(suit: Suit.oros, faceValue: 1), // Keep
-        const MusCard(suit: Suit.copas, faceValue: 12), // Keep
-        const MusCard(suit: Suit.espadas, faceValue: 4), // Discard
-        const MusCard(suit: Suit.bastos, faceValue: 5), // Discard
+        const MusCard(suit: Suit.oros, faceValue: 1),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 4),
+        const MusCard(suit: Suit.bastos, faceValue: 5),
       ];
       aiPlayer.receiveCards(hand);
       final ev = HandEvaluator.evaluate(hand, const GameConfig());
@@ -71,7 +63,7 @@ void main() {
         const MusCard(suit: Suit.copas, faceValue: 12),
         const MusCard(suit: Suit.espadas, faceValue: 12),
         const MusCard(suit: Suit.bastos, faceValue: 12),
-      ]; // 31
+      ];
       aiPlayer = Player(id: 'ai', name: 'AI', aiProfile: aggressiveProfile);
       aiPlayer.receiveCards(hand);
       final ev = HandEvaluator.evaluate(hand, const GameConfig());
@@ -93,7 +85,7 @@ void main() {
         const MusCard(suit: Suit.copas, faceValue: 5),
         const MusCard(suit: Suit.espadas, faceValue: 6),
         const MusCard(suit: Suit.bastos, faceValue: 7),
-      ]; // Bad hand for Grande/Pares/Juego
+      ];
       aiPlayer = Player(id: 'ai', name: 'AI', aiProfile: conservativeProfile);
       aiPlayer.receiveCards(hand);
       final ev = HandEvaluator.evaluate(hand, const GameConfig());

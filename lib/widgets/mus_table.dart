@@ -20,6 +20,7 @@ class MusTable extends StatefulWidget {
     this.lastAction = '',
     this.lastActionPlayerIndex = -1,
     this.declarations = const {},
+    this.musCutterIndex,
   });
 
   final List<Player> players;
@@ -31,6 +32,7 @@ class MusTable extends StatefulWidget {
   final String lastAction;
   final int lastActionPlayerIndex;
   final Map<int, String> declarations;
+  final int? musCutterIndex;
 
   @override
   State<MusTable> createState() => _MusTableState();
@@ -130,6 +132,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
 
     final bool isMano = widget.manoIndex == index;
     final bool isTurn = widget.currentTurn == index;
+    final bool isCutter = widget.musCutterIndex == index;
 
     // Avatar Position
     double? left, top, right, bottom;
@@ -217,16 +220,25 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        child: Center(
-                          child: Text(
-                            player.name[0],
-                            style: AppTextStyles.headline.copyWith(
-                              color: AppColors.textPrimary,
-                              fontSize: isCurrentUser ? 24 : 18,
+                      ),
+                      if (isCutter)
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.content_cut,
+                              size: 12,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-                      ),
                       if (isMano)
                         Container(
                           width: 24,

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import '../logic/hand_evaluator.dart';
 import '../models/card.dart';
 import '../models/deck.dart';
+import '../models/game_action.dart';
 import '../models/game_config.dart';
 import '../models/player.dart';
 
@@ -66,6 +67,10 @@ class MusGame {
   List<bool> wantsMus = [false, false, false, false];
   List<HandEvaluationResult?> evaluations = [null, null, null, null];
 
+  // Player Action Tracking
+  final List<GameAction> actionHistory = [];
+  int? musCutterIndex; // Who cut the mus in the current hand
+
   // Action Tracking for UI
   String lastAction = '';
   int lastActionPlayerIndex = -1;
@@ -106,6 +111,7 @@ class MusGame {
     scoreDetails.clear();
     declarations.clear();
     firstResponderIndex = null;
+    musCutterIndex = null;
 
     evaluateHands();
     _notify();
@@ -141,6 +147,13 @@ class MusGame {
 
     wantsMus[playerIndex] = true;
     declarations[playerIndex] = 'MUS';
+    actionHistory.add(
+      GameAction(
+        playerIndex: playerIndex,
+        phase: GamePhase.musDeclaration,
+        type: ActionType.mus,
+      ),
+    );
 
     if (_isPostre(playerIndex)) {
       // All said Mus?
@@ -165,9 +178,18 @@ class MusGame {
       return false;
     }
 
+    declarations.clear();
     declarations[playerIndex] = 'NO HAY MUS';
     lastAction = 'NO HAY MUS';
     lastActionPlayerIndex = playerIndex;
+    musCutterIndex = playerIndex;
+    actionHistory.add(
+      GameAction(
+        playerIndex: playerIndex,
+        phase: GamePhase.musDeclaration,
+        type: ActionType.noHayMus,
+      ),
+    );
 
     // Cut Mus -> Start Phases
     _startPhases();
@@ -274,9 +296,25 @@ class MusGame {
         if (currentTurn == firstResponderIndex) {
           _advanceToPartner();
         } else {
+          actionHistory.add(
+            GameAction(
+              playerIndex: playerIndex,
+              phase: currentPhase,
+              type: ActionType.noQuiero,
+              amount: currentBet,
+            ),
+          );
           _rejectBet();
         }
       } else {
+        declarations[playerIndex] = 'PASO';
+        actionHistory.add(
+          GameAction(
+            playerIndex: playerIndex,
+            phase: currentPhase,
+            type: ActionType.paso,
+          ),
+        );
         if (_isPostreForPhase(playerIndex)) {
           _closePhase(null);
         } else {
@@ -284,6 +322,7 @@ class MusGame {
         }
       }
     } else if (action == 'ENVIDO' || action == 'ORDAGO' || amount > 0) {
+      declarations.clear(); // Clear "PASO" messages when someone bets
       int raise = amount > 0 ? amount : 2;
       if (action == 'ORDAGO') {
         raise = 40;
@@ -293,11 +332,25 @@ class MusGame {
       currentBetType = action == 'ORDAGO' ? BetType.ordago : BetType.envido;
       speakerIndex = playerIndex;
       firstResponderIndex = null; // Reset for new response cycle
+      actionHistory.add(
+        GameAction(
+          playerIndex: playerIndex,
+          phase: currentPhase,
+          type: action == 'ORDAGO' ? ActionType.ordago : ActionType.envido,
+          amount: raise,
+        ),
+      );
       _jumpToRival();
     } else if (action == 'QUIERO') {
+      actionHistory.add(
+        GameAction(
+          playerIndex: playerIndex,
+          phase: currentPhase,
+          type: ActionType.quiero,
+          amount: currentBet,
+        ),
+      );
       _closePhase(currentBet);
-    } else if (action == 'NO QUIERO') {
-      _rejectBet();
     }
 
     _notify();
@@ -405,6 +458,7 @@ class MusGame {
   }
 
   void _nextPhase() {
+    declarations.clear();
     if (currentPhase == GamePhase.grande) {
       currentPhase = GamePhase.chica;
     } else if (currentPhase == GamePhase.chica) {

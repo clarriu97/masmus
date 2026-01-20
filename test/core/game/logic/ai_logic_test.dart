@@ -39,7 +39,81 @@ void main() {
       final ev = HandEvaluator.evaluate(hand31, const GameConfig());
 
       final cut = AiLogic.shouldAcceptMus(aiPlayer, ev);
-      expect(cut, true);
+      expect(cut, false); // false means Cut Mus
+    });
+
+    test('shouldAcceptMus - Cuts as Mano with Kings', () {
+      final hand = [
+        const MusCard(suit: Suit.oros, faceValue: 12),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 4),
+        const MusCard(suit: Suit.bastos, faceValue: 5),
+      ];
+      aiPlayer.receiveCards(hand);
+      final ev = HandEvaluator.evaluate(
+        hand,
+        const GameConfig(eightKings: true),
+      );
+
+      final cut = AiLogic.shouldAcceptMus(aiPlayer, ev, isMano: true);
+      expect(cut, false); // Mano with Kings cuts
+    });
+
+    test('getCardsToDiscard - Discards 4th card with 3 Kings', () {
+      final hand = [
+        const MusCard(suit: Suit.oros, faceValue: 12),
+        const MusCard(suit: Suit.copas, faceValue: 12),
+        const MusCard(suit: Suit.espadas, faceValue: 12),
+        const MusCard(suit: Suit.bastos, faceValue: 5),
+      ];
+      aiPlayer.receiveCards(hand);
+      final ev = HandEvaluator.evaluate(
+        hand,
+        const GameConfig(eightKings: true),
+      );
+
+      final toDiscard = AiLogic.getCardsToDiscard(aiPlayer, ev);
+      expect(toDiscard.length, 1);
+      expect(toDiscard.first.faceValue, 5);
+    });
+
+    test('evaluateBet - El Farolero bluffs in Grande as Mano', () {
+      final hand = [
+        const MusCard(suit: Suit.oros, faceValue: 4),
+        const MusCard(suit: Suit.copas, faceValue: 5),
+        const MusCard(suit: Suit.espadas, faceValue: 6),
+        const MusCard(suit: Suit.bastos, faceValue: 7),
+      ];
+      final farolero = Player(
+        id: 'f',
+        name: 'Faro',
+        aiProfile: const AiProfile(
+          name: 'El Farolero',
+          boldness: 0.9,
+          bluffing: 0.9,
+        ),
+      );
+      farolero.receiveCards(hand);
+      final ev = HandEvaluator.evaluate(hand, const GameConfig());
+
+      // Try multiple times since it's 80%
+      int envidos = 0;
+      for (int i = 0; i < 20; i++) {
+        final decision = AiLogic.makeBettingDecision(
+          player: farolero,
+          ev: ev,
+          phase: GamePhase.grande,
+          currentBet: 0,
+          isPartnerWinning: false,
+          isMano: true,
+          isPostre: false,
+          history: [],
+        );
+        if (decision.type == BettingType.envido) {
+          envidos++;
+        }
+      }
+      expect(envidos, greaterThan(10));
     });
 
     test('getCardsToDiscard - Keeps Kings and Aces', () {
@@ -74,6 +148,9 @@ void main() {
         phase: GamePhase.juego,
         currentBet: 0,
         isPartnerWinning: false,
+        isMano: true,
+        isPostre: false,
+        history: [],
       );
 
       expect(decision.type, anyOf(BettingType.envido, BettingType.ordago));
@@ -96,6 +173,9 @@ void main() {
         phase: GamePhase.grande,
         currentBet: 5,
         isPartnerWinning: false,
+        isMano: false,
+        isPostre: false,
+        history: [],
       );
 
       expect(decision.type, BettingType.noQuiero);

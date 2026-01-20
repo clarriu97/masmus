@@ -142,11 +142,8 @@ class _GameScreenState extends State<GameScreen> {
     final ev = _game.evaluations[idx]!;
 
     if (_game.currentPhase == GamePhase.musDeclaration) {
-      final wantsMus = AiLogic.shouldAcceptMus(
-        player,
-        ev,
-        isDealer: _game.manoIndex == idx,
-      );
+      final isMano = _game.manoIndex == idx;
+      final wantsMus = AiLogic.shouldAcceptMus(player, ev, isMano: isMano);
       if (wantsMus) {
         _game.playerSaysMus(idx);
       } else {
@@ -157,12 +154,18 @@ class _GameScreenState extends State<GameScreen> {
       _game.playerDiscards(idx, toDiscard);
     } else {
       // Betting Phases
+      final int partnerIdx = (idx + 2) % 4;
+      final bool isPartnerWinning = _game.speakerIndex == partnerIdx;
+
       final decision = AiLogic.makeBettingDecision(
         player: player,
         ev: ev,
         phase: _game.currentPhase,
         currentBet: _game.currentBet,
-        isPartnerWinning: false, // TODO: Check partner state
+        isPartnerWinning: isPartnerWinning,
+        isMano: _game.manoIndex == idx,
+        isPostre: idx == (_game.manoIndex + 3) % 4,
+        history: _game.actionHistory,
       );
 
       String action = 'PASO';
@@ -283,6 +286,7 @@ class _GameScreenState extends State<GameScreen> {
               lastAction: _game.lastAction,
               lastActionPlayerIndex: _game.lastActionPlayerIndex,
               declarations: _game.declarations, // Pass declarations
+              musCutterIndex: _game.musCutterIndex,
             ),
 
             // Phase Indicator (Safe Area)

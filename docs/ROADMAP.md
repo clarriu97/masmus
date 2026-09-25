@@ -33,7 +33,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M1 · Reglas y motor | ✅ done (#11 waits for the owner's review in #49) | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **🔜 next** | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
-| M4 · Bots y señas | planned | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
+| M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
 | Post-v1 | backlog | #46 | Online with friends, catching señas, vacas and regional variants, statistics, tutorial, languages… |
@@ -44,16 +44,35 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** the owner's review of the rules defaults (#49) and the
-wireframes (#51). Meanwhile, #19: two or three visual directions for the
-owner to pick from, and M4 (#32 → #37), which only needs the engine. Work
-one issue per branch and PR, following AGENTS.md → Workflow.
+**Next step:** the owner's review of the rules defaults (#49), the
+wireframes (#51) and the visual directions (#58, to finish #19). Meanwhile,
+M4: the partner who consults (#36) and the personalities measured in the
+arena (#37); señas (#35) wait for the owner's call on señas in v1. Work one
+issue per branch and PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · A bot that estimates (#33, #34).** `StrategicBot` decides
+  from estimates instead of rules of thumb. `Knowledge`
+  (`lib/bots/estimate.dart`) deals the hands its seat can't see at random
+  from the unseen cards, each again until it agrees with what that player
+  declared at pares and juego, and scores a table by its points en paso
+  (ours minus theirs if nobody bet). Mus: cut with a positive advantage, the
+  mano a little sooner. Discards: the 15 ways are tried on the same 60 deals
+  and the best three on 400 more, so that near ties don't flip. Bets: the
+  chance of winning the lance against the break-even of the stake (tantos of
+  pares and juego included), discounted by 0.12 when a rival has bet; the
+  first to answer is more careful if the partner still can; the órdago only
+  near the end or when the match is lost anyway, and it is accepted when the
+  chance beats that of winning the match by refusing. On 500 matches it
+  beats `HeuristicBot` 63.4 % (59.1–67.5) and `RandomBot` 81.4 %; a test
+  fails if its lower bound against `HeuristicBot` drops to 50 %, and the CI
+  summary now reports that match-up. It plays every bot seat at the table,
+  with the personalities' boldness and bluffing. Not used yet: how many
+  cards each player asked for.
 - **2026-09-25 · The bot arena (#32).** Bots are measured, not judged by
   eye: `playArena` plays every deal twice with the teams swapped (duplicate
   format, so the cards' luck cancels out) and reports the win rate with its

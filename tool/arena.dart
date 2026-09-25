@@ -2,14 +2,16 @@
 //
 //   dart run tool/arena.dart [a] [b] [pairs]
 //
-// a and b: random, heuristic (El Calculador) or a personality (prudente,
-// temeraria, calculador, farolero). Defaults: heuristic random 250. Each pair
-// is two matches on the same deal with the teams swapped.
+// a and b: random, heuristic or strategic (both El Calculador), or a
+// heuristic personality (prudente, temeraria, calculador, farolero).
+// Defaults: strategic heuristic 250. Each pair is two matches on the same
+// deal with the teams swapped.
 import 'dart:io';
 
 import 'package:masmus/bots/arena.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/bots/random_bot.dart';
+import 'package:masmus/bots/strategic_bot.dart';
 
 final _bots = <String, BotFactory>{
   'random': RandomBot.new,
@@ -18,11 +20,12 @@ final _bots = <String, BotFactory>{
   'temeraria': (random) => HeuristicBot(Personality.temeraria, random),
   'calculador': (random) => HeuristicBot(Personality.calculador, random),
   'farolero': (random) => HeuristicBot(Personality.farolero, random),
+  'strategic': (random) => StrategicBot(Personality.calculador, random),
 };
 
 void main(List<String> args) {
-  final a = args.isNotEmpty ? args[0] : 'heuristic';
-  final b = args.length > 1 ? args[1] : 'random';
+  final a = args.isNotEmpty ? args[0] : 'strategic';
+  final b = args.length > 1 ? args[1] : 'heuristic';
   final pairs = args.length > 2 ? int.parse(args[2]) : 250;
   if (!_bots.containsKey(a) || !_bots.containsKey(b)) {
     stderr.writeln('Bots: ${_bots.keys.join(', ')}');

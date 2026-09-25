@@ -87,7 +87,7 @@ void main() {
 
   testWidgets('in the discard you mark the cards to change, then discard '
       'them', (tester) async {
-    final scheduler = await pumpTable(tester, seed: 2);
+    final scheduler = await pumpTable(tester, seed: 3);
     await tester.tap(find.text('MUS'));
     await tester.pump();
     for (var bot = 0; bot < 3; bot++) {

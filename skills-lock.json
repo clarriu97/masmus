@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "skills": {
+    "dart-best-practices": {
+      "source": "kevmoo/dash_skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "37da3773e51308a56bfc011659ba609b658be3308f9282b4e4d028da88bdeba2"
+    },
+    "flutter-animations": {
+      "source": "madteacher/mad-agents-skills",
+      "sourceType": "github",
+      "skillPath": "flutter-animations/SKILL.md",
+      "computedHash": "a0f81c4bbff81b43be42cd11ebf33b6a4e50e2f94134d3071e441785fc4872e8"
+    },
+    "flutter-testing": {
+      "source": "madteacher/mad-agents-skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "9de813d81db8ad38630a28b893494c1ebfe5def0e5d47cfb46c632ea7d2d92e5"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "autoskills-registry",
+      "computedHash": "82fb11a63fb1e35ee2469516ed02d54695f783115b1540c0e783197af4240a3a"
+    }
+  }
+}

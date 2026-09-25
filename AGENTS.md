@@ -41,7 +41,7 @@ Turn tasks into verifiable goals ("fix the bug" → "write a failing test, then 
 
 ## Architecture
 
-`lib/core/`, `lib/screens/`, `lib/widgets/` and `lib/navigation/` are the **legacy prototype**: a mutable engine with known rule bugs and a game flow driven from widgets. Milestones M1–M3 replace them; don't extend them. New code goes into the target layout, which follows the official Flutter architecture guide without extra state-management packages:
+`lib/core/theme/`, `lib/screens/`, `lib/widgets/` and `lib/navigation/` are the **legacy prototype UI**. Since #17 it draws the new engine through `MatchController`, but its layout, hardcoded strings and styles are what M2–M3 replace; don't extend it. New code goes into the target layout, which follows the official Flutter architecture guide without extra state-management packages:
 
 ```
 lib/

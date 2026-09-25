@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../core/game/models/card.dart';
+import '../game/cards.dart';
 
 class PlayingCardWidget extends StatelessWidget {
   const PlayingCardWidget({
@@ -12,9 +12,9 @@ class PlayingCardWidget extends StatelessWidget {
     this.isFaceUp = true,
   });
 
-  final MusCard card;
+  final PlayingCard card;
   final bool isSelected;
-  final void Function(MusCard)? onTap;
+  final void Function(PlayingCard)? onTap;
   final double width;
   final bool isFaceUp;
 
@@ -57,7 +57,7 @@ class PlayingCardWidget extends StatelessWidget {
           top: 4,
           left: 4,
           child: Text(
-            '${card.faceValue}',
+            '${card.number}',
             style: TextStyle(
               fontSize: width * 0.25,
               fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class PlayingCardWidget extends StatelessWidget {
           child: Transform.rotate(
             angle: math.pi,
             child: Text(
-              '${card.faceValue}',
+              '${card.number}',
               style: TextStyle(
                 fontSize: width * 0.25,
                 fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class PlayingCardWidget extends StatelessWidget {
               size: Size(width * 0.6, height * 0.6),
               painter: SpanishSuitPainter(
                 suit: card.suit,
-                value: card.faceValue,
+                value: card.number,
                 color: _getSuitColor(card.suit),
               ),
             ),

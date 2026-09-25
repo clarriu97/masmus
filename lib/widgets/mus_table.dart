@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
 
-import '../core/game/models/card.dart';
-import '../core/game/models/player.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
+import '../game/cards.dart';
 import 'playing_card_widget.dart';
+
+/// What the table shows of a seat: who sits there and their cards (face up
+/// only for the human).
+class TableSeat {
+  const TableSeat({required this.name, required this.cards});
+
+  final String name;
+  final List<PlayingCard> cards;
+}
 
 class MusTable extends StatefulWidget {
   const MusTable({
-    required this.players,
+    required this.seats,
     required this.onCardTap,
     super.key,
     this.selectedCards = const {},
     this.animationDuration = const Duration(milliseconds: 600),
     this.manoIndex = 0,
     this.currentTurn = -1,
-    this.lastAction = '',
-    this.lastActionPlayerIndex = -1,
     this.declarations = const {},
     this.musCutterIndex,
   });
 
-  final List<Player> players;
-  final void Function(int playerIndex, MusCard card) onCardTap;
-  final Set<MusCard> selectedCards;
+  final List<TableSeat> seats;
+  final void Function(int playerIndex, PlayingCard card) onCardTap;
+  final Set<PlayingCard> selectedCards;
   final Duration animationDuration;
   final int manoIndex;
   final int currentTurn;
-  final String lastAction;
-  final int lastActionPlayerIndex;
   final Map<int, String> declarations;
   final int? musCutterIndex;
 
@@ -98,7 +102,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
     Offset position,
     BoxConstraints constraints,
   ) {
-    final player = widget.players.length > index ? widget.players[index] : null;
+    final player = widget.seats.length > index ? widget.seats[index] : null;
     if (player == null) {
       return const SizedBox();
     }
@@ -148,7 +152,7 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
                 top: isTop ? 105 : (isRight || isLeft ? 120 : 40),
                 left: isLeft ? 15 : (isTop ? null : null),
                 right: isRight ? 15 : null,
-                child: _buildOpponentCards(player.hand.length),
+                child: _buildOpponentCards(player.cards.length),
               ),
 
             // Avatar & Name & Indicators
@@ -266,18 +270,6 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
               ),
             ),
 
-            // Speech Bubble (Last Action)
-            if (widget.lastActionPlayerIndex == index &&
-                widget.lastAction.isNotEmpty)
-              _buildPositionedBubble(
-                text: widget.lastAction,
-                isTop: isTop,
-                isBottom: isCurrentUser,
-                isLeft: isLeft,
-                isRight: isRight,
-                type: BubbleType.action,
-              ),
-
             // Declaration Bubble (Persistent)
             if (widget.declarations.containsKey(index))
               _buildPositionedBubble(
@@ -368,16 +360,16 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
 
   // ... (rest of methods)
 
-  Widget _buildUserHand(Player player, int playerIndex) {
+  Widget _buildUserHand(TableSeat player, int playerIndex) {
     return SizedBox(
       height: 150,
       width: 220,
       child: Stack(
         alignment: Alignment.bottomCenter,
-        children: player.hand.asMap().entries.map((entry) {
+        children: player.cards.asMap().entries.map((entry) {
           final idx = entry.key;
           final card = entry.value;
-          final total = player.hand.length;
+          final total = player.cards.length;
           final centerIdx = (total - 1) / 2;
           final offset = idx - centerIdx;
           final angle = offset * 0.1;

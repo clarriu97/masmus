@@ -1,189 +1,85 @@
 import 'dart:async';
-import 'dart:math' as math; // Add import
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 
-import '../core/game/logic/ai_logic.dart';
-import '../core/game/logic/mus_game.dart';
-import '../core/game/models/ai_profile.dart';
-import '../core/game/models/card.dart';
-import '../core/game/models/game_config.dart';
-import '../core/game/models/player.dart';
+import '../bots/heuristic_bot.dart';
+import '../controllers/match_controller.dart';
+import '../game/cards.dart';
+import '../game/event.dart';
+import '../game/hand_state.dart';
+import '../game/hand_value.dart';
+import '../game/match.dart';
+import '../game/move.dart';
+import '../game/rules.dart';
+import '../services/match_store.dart';
+import '../services/scheduler.dart';
 import '../widgets/game_controls.dart';
 import '../widgets/mus_table.dart';
 import '../widgets/round_summary.dart';
 
+/// The legacy table, now drawing the match controller: you in seat 0, your
+/// partner in seat 2, the rivals in seats 1 and 3. Redesigned in M3.
 class GameScreen extends StatefulWidget {
   const GameScreen({
+    required this.partner,
     super.key,
-    this.partnerProfile,
-    this.config,
-    this.initialMano,
+    this.rules = const Rules(),
+    this.seed,
+    this.mano,
+    this.scheduler,
+    this.store,
   });
 
-  final AiProfile? partnerProfile;
-  final GameConfig? config;
-  final int? initialMano;
+  final Personality partner;
+  final Rules rules;
+
+  /// Fixes the deal and the bots' choices, for tests.
+  final int? seed;
+  final int? mano;
+  final Scheduler? scheduler;
+  final MatchStore? store;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
-  late MusGame _game;
-  bool _isLoading = true;
-  StreamSubscription<void>? _gameSub;
-  final Set<MusCard> _selectedCards = {};
+  late final MatchController _controller;
+  late final List<String> _names;
+  final Set<PlayingCard> _selectedCards = {};
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
+    final seed = widget.seed ?? math.Random().nextInt(1 << 32);
+    final rivals = Personality.all
+        .where((personality) => personality != widget.partner)
+        .take(2)
+        .toList();
+    _names = ['Tú', rivals[0].name, widget.partner.name, rivals[1].name];
+    _controller = MatchController(
+      match: MatchState.start(
+        seed: seed,
+        rules: widget.rules,
+        mano: widget.mano,
+      ),
+      bots: {
+        1: HeuristicBot(rivals[0], math.Random(seed + 1)),
+        2: HeuristicBot(widget.partner, math.Random(seed + 2)),
+        3: HeuristicBot(rivals[1], math.Random(seed + 3)),
+      },
+      scheduler: widget.scheduler ?? Scheduler(),
+      store: widget.store ?? MatchStore.inMemory(),
+    );
+    unawaited(_vibrateShort());
   }
 
   @override
   void dispose() {
-    _gameSub?.cancel();
+    _controller.dispose();
     super.dispose();
-  }
-
-  void _initializeGame() {
-    final human = Player(id: 'p0', name: 'Tú');
-
-    final partnerProfile = widget.partnerProfile;
-    final partner = Player(
-      id: 'p2',
-      name: partnerProfile?.name ?? 'Compañero',
-      aiProfile:
-          partnerProfile ??
-          const AiProfile(name: 'Compañero', boldness: 0.5, bluffing: 0.1),
-    );
-
-    final rival1 = Player(
-      id: 'p1',
-      name: 'Rival 1',
-      aiProfile: const AiProfile(name: 'Rival 1', boldness: 0.4, bluffing: 0.2),
-    );
-    final rival3 = Player(
-      id: 'p3',
-      name: 'Rival 2',
-      aiProfile: const AiProfile(name: 'Rival 2', boldness: 0.7, bluffing: 0.5),
-    );
-
-    final players = [human, rival1, partner, rival3];
-
-    _game = MusGame(
-      players: players,
-      config: widget.config ?? const GameConfig(),
-      initialMano: widget.initialMano,
-    );
-    _gameSub = _game.onChange.listen((event) {
-      if (mounted) {
-        setState(() {});
-        _checkAiTurn();
-      }
-    });
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    _vibrateShort();
-    _checkAiTurn(); // Check initial turn
-  }
-
-  Future<void> _checkAiTurn() async {
-    // If game finished, do nothing
-    if (_game.currentPhase == GamePhase.finished) {
-      return;
-    }
-    if (_game.currentPhase == GamePhase.scoring) {
-      // Wait a bit then show summary or auto-restart
-      return;
-    }
-
-    // Handle Declaration Rounds (Special Auto-Flow)
-    if (_game.currentPhase == GamePhase.paresDeclaration ||
-        _game.currentPhase == GamePhase.juegoDeclaration) {
-      await _handleDeclarationRound();
-      return;
-    }
-
-    final turnPlayer = _game.players[_game.currentTurn];
-    if (turnPlayer.isAi) {
-      // Random think time: 1s to 4s
-      final random = math.Random();
-      final int thinkTime = 1000 + random.nextInt(3000);
-
-      await Future<void>.delayed(Duration(milliseconds: thinkTime));
-      if (mounted) {
-        _playAiTurn(turnPlayer);
-      }
-    }
-  }
-
-  Future<void> _handleDeclarationRound() async {
-    // 1 second delay between declarations as requested
-    await Future<void>.delayed(const Duration(seconds: 1));
-    if (!mounted) {
-      return;
-    }
-
-    // Perform step
-    _game.performDeclarationStep();
-
-    // Recursion handled by onChange listener -> _checkAiTurn logic
-  }
-
-  void _playAiTurn(Player player) {
-    final idx = _game.players.indexOf(player);
-    // Logic delegation
-    final ev = _game.evaluations[idx]!;
-
-    if (_game.currentPhase == GamePhase.musDeclaration) {
-      final isMano = _game.manoIndex == idx;
-      final wantsMus = AiLogic.shouldAcceptMus(player, ev, isMano: isMano);
-      if (wantsMus) {
-        _game.playerSaysMus(idx);
-      } else {
-        _game.playerCutsMus(idx);
-      }
-    } else if (_game.currentPhase == GamePhase.discard) {
-      final toDiscard = AiLogic.getCardsToDiscard(player, ev);
-      _game.playerDiscards(idx, toDiscard);
-    } else {
-      // Betting Phases
-      final int partnerIdx = (idx + 2) % 4;
-      final bool isPartnerWinning = _game.speakerIndex == partnerIdx;
-
-      final decision = AiLogic.makeBettingDecision(
-        player: player,
-        ev: ev,
-        phase: _game.currentPhase,
-        currentBet: _game.currentBet,
-        isPartnerWinning: isPartnerWinning,
-        isMano: _game.manoIndex == idx,
-        isPostre: idx == (_game.manoIndex + 3) % 4,
-        history: _game.actionHistory,
-      );
-
-      String action = 'PASO';
-      if (decision.type == BettingType.envido) {
-        action = 'ENVIDO';
-      }
-      if (decision.type == BettingType.ordago) {
-        action = 'ORDAGO';
-      }
-      if (decision.type == BettingType.quiero) {
-        action = 'QUIERO';
-      }
-      if (decision.type == BettingType.noQuiero) {
-        action = 'NO QUIERO';
-      }
-
-      _game.playerAction(idx, action, amount: decision.amount);
-    }
   }
 
   Future<void> _vibrateShort() async {
@@ -193,103 +89,81 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  Future<void> _handleCardTap(int playerIndex, MusCard card) async {
-    if (playerIndex != 0) {
+  Future<void> _handleCardTap(int playerIndex, PlayingCard card) async {
+    if (playerIndex != 0 ||
+        !_controller.humanMoves.contains(MoveKind.discard)) {
       return;
     }
+    setState(() {
+      if (!_selectedCards.remove(card)) {
+        _selectedCards.add(card);
+      }
+    });
+    await _vibrateShort();
+  }
 
-    if (_game.currentPhase == GamePhase.discard && _game.currentTurn == 0) {
-      setState(() {
-        if (_selectedCards.contains(card)) {
-          _selectedCards.remove(card);
-        } else {
-          _selectedCards.add(card);
-        }
-      });
-      await _vibrateShort();
+  void _onUserAction(String action, {int? amount}) {
+    final move = switch (action) {
+      'MUS' => const Mus(),
+      'NO HAY MUS' => const NoHayMus(),
+      'PASO' => const Paso(),
+      'ENVIDO' => Envido(amount ?? minEnvido),
+      'QUIERO' => const Quiero(),
+      'NO QUIERO' => const NoQuiero(),
+      'ORDAGO' => const Ordago(),
+      _ => null,
+    };
+    if (move != null && _controller.match.isLegal(0, move)) {
+      _controller.play(move);
     }
   }
 
-  // User Actions
-  void _onUserAction(String action, {int? amount}) {
-    if (_game.currentTurn != 0) {
-      return;
-    }
-
-    if (action == 'DESCARTAR') {
-      _game.playerDiscards(0, _selectedCards.toList());
-      _selectedCards.clear();
-      return;
-    }
-
-    if (action == 'MUS') {
-      _game.playerSaysMus(0);
-    } else if (action == 'NO HAY MUS') {
-      _game.playerCutsMus(0);
-    } else {
-      _game.playerAction(0, action, amount: amount ?? 0);
+  void _discard() {
+    final move = Discard(_selectedCards.toList());
+    if (_controller.match.isLegal(0, move)) {
+      _controller.play(move);
+      setState(_selectedCards.clear);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) => _table(context),
+    );
+  }
 
-    final bool isMyTurn = _game.currentTurn == 0;
-
-    // Determine buttons logic
-    bool canMus = false,
-        canCut = false,
-        canPass = false,
-        canEnvido = false,
-        canOrdago = false,
-        canQuiero = false,
-        canNoQuiero = false;
-
-    if (isMyTurn) {
-      if (_game.currentPhase == GamePhase.musDeclaration) {
-        canMus = true;
-        canCut = true;
-      } else if (_game.currentPhase != GamePhase.discard &&
-          _game.currentPhase != GamePhase.scoring) {
-        // Check if we are responding to a bet
-        if (_game.currentBet > 0) {
-          // Must accept/reject/raise
-          canQuiero = true;
-          canNoQuiero = true;
-          canEnvido = true; // Raise
-          canOrdago = true;
-        } else {
-          // Open betting
-          canPass = true;
-          canEnvido = true;
-          canOrdago = true;
-        }
-      }
-    }
+  Widget _table(BuildContext context) {
+    final match = _controller.match;
+    final hand = match.hand;
+    final moves = _controller.humanMoves;
+    final isMyTurn = _controller.isHumanTurn;
+    final score = match.scoreNow;
+    final canDiscard = moves.contains(MoveKind.discard);
 
     return Scaffold(
-      backgroundColor:
-          Colors.black, // Fill notch area with black or theme color
+      backgroundColor: Colors.black,
       body: SafeArea(
-        top: false, // Let MusTable handle its own background/stack
+        top: false,
         child: Stack(
           children: [
             MusTable(
-              players: _game.players,
+              seats: [
+                for (final seat in [0, 1, 2, 3])
+                  TableSeat(name: _names[seat], cards: hand.hands[seat]),
+              ],
               onCardTap: _handleCardTap,
               selectedCards: _selectedCards,
-              manoIndex: _game.manoIndex,
-              currentTurn: _game.currentTurn, // Pass current turn
-              lastAction: _game.lastAction,
-              lastActionPlayerIndex: _game.lastActionPlayerIndex,
-              declarations: _game.declarations, // Pass declarations
-              musCutterIndex: _game.musCutterIndex,
+              manoIndex: hand.mano,
+              currentTurn: hand.turn ?? -1,
+              declarations: _bubbles(hand),
+              musCutterIndex: hand.log
+                  .whereType<NoHayMusSaid>()
+                  .map((said) => said.seat)
+                  .firstOrNull,
             ),
 
-            // Phase Indicator (Safe Area)
             Positioned(
               top: 0,
               left: 20,
@@ -308,16 +182,14 @@ class _GameScreenState extends State<GameScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        'Fase: ${_game.currentPhase.name.toUpperCase()}\nApuesta: ${_game.currentBet > 0 ? _game.currentBet : "N/A"}',
+                        _phaseLabel(hand),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    if (!isMyTurn &&
-                        _game.currentPhase != GamePhase.scoring &&
-                        _game.currentPhase != GamePhase.finished)
+                    if (!isMyTurn && hand.turn != null && !match.isOver)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -325,11 +197,11 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                         margin: const EdgeInsets.only(top: 8),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withAlpha(204), // 0.8 * 255
+                          color: Colors.orange.withAlpha(204),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Esperando a ${_game.players[_game.currentTurn].name}...',
+                          'Esperando a ${_names[hand.turn!]}...',
                           style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -341,7 +213,6 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
 
-            // Score Board (Safe Area Top Right)
             Positioned(
               top: 0,
               right: 20,
@@ -359,14 +230,14 @@ class _GameScreenState extends State<GameScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Nosotros: ${_game.teamScores[0]}',
+                        'Nosotros: ${score[0]}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        'Ellos: ${_game.teamScores[1]}',
+                        'Ellos: ${score[1]}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -378,7 +249,6 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
 
-            // Controls Area
             Positioned(
               bottom: 20,
               left: 0,
@@ -386,38 +256,30 @@ class _GameScreenState extends State<GameScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (_game.currentPhase == GamePhase.discard && isMyTurn)
+                  if (canDiscard)
                     ElevatedButton(
-                      onPressed: _selectedCards.isNotEmpty
-                          ? () => _onUserAction('DESCARTAR')
-                          : null,
+                      onPressed: _selectedCards.isNotEmpty ? _discard : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                       ),
                       child: Text('DESCARTAR (${_selectedCards.length})'),
                     ),
-
-                  if (_game.currentPhase != GamePhase.discard &&
-                      _game.currentPhase != GamePhase.scoring &&
-                      _game.currentPhase != GamePhase.paresDeclaration &&
-                      _game.currentPhase != GamePhase.juegoDeclaration &&
-                      isMyTurn)
+                  if (isMyTurn && !canDiscard)
                     GameControls(
                       onAction: _onUserAction,
-                      canMus: canMus,
-                      canCut: canCut,
-                      canPass: canPass,
-                      canEnvido: canEnvido,
-                      canOrdago: canOrdago,
-                      canQuiero: canQuiero,
-                      canNoQuiero: canNoQuiero,
+                      canMus: moves.contains(MoveKind.mus),
+                      canCut: moves.contains(MoveKind.noHayMus),
+                      canPass: moves.contains(MoveKind.paso),
+                      canEnvido: moves.contains(MoveKind.envido),
+                      canOrdago: moves.contains(MoveKind.ordago),
+                      canQuiero: moves.contains(MoveKind.quiero),
+                      canNoQuiero: moves.contains(MoveKind.noQuiero),
                     ),
                 ],
               ),
             ),
 
-            // NO HAY MUS Overlay
-            if (_game.lastAction == 'NO HAY MUS')
+            if (_controller.lastEvents.any((event) => event is NoHayMusSaid))
               Center(
                 child: TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: 1),
@@ -450,16 +312,18 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               ),
 
-            // Round Summary Overlay
-            if (_game.currentPhase == GamePhase.scoring ||
-                _game.currentPhase == GamePhase.finished)
+            if (match.isCounted || match.isOver)
               RoundSummary(
-                scoreDetails: _game.scoreDetails,
+                count: match.count,
+                names: _names,
+                hands: hand.hands,
+                score: score,
+                winner: match.winner,
                 onContinue: () {
-                  if (_game.currentPhase == GamePhase.finished) {
-                    Navigator.of(context).pop(); // Back to menu
+                  if (match.isOver) {
+                    Navigator.of(context).pop();
                   } else {
-                    _game.restartHand();
+                    _controller.nextHand();
                   }
                 },
               ),
@@ -467,5 +331,49 @@ class _GameScreenState extends State<GameScreen> {
         ),
       ),
     );
+  }
+
+  String _phaseLabel(HandState hand) => switch (hand.phase) {
+    MusTurn() => 'Mus',
+    DiscardTurn() => 'Descarte',
+    LanceTurn(:final lance, :final envite) =>
+      '${_lanceName(lance)}${envite == null ? '' : ' · en la mesa ${envite.ordago ? 'órdago' : envite.stake}'}',
+    HandOver() => 'Recuento',
+  };
+
+  String _lanceName(Lance lance) => switch (lance) {
+    Lance.grande => 'Grande',
+    Lance.chica => 'Chica',
+    Lance.pares => 'Pares',
+    Lance.juego => 'Juego',
+    Lance.punto => 'Punto',
+  };
+
+  /// What each seat said last in the current lance (or in the mus), from the
+  /// table's log.
+  Map<int, String> _bubbles(HandState hand) {
+    final start = hand.log.lastIndexWhere((event) => event is LanceClosed) + 1;
+    final bubbles = <int, String>{};
+    for (final event in hand.log.skip(start)) {
+      final said = switch (event) {
+        MusSaid(:final seat) => (seat, 'MUS'),
+        NoHayMusSaid(:final seat) => (seat, 'NO HAY MUS'),
+        Discarded(:final seat, :final count) => (seat, 'PIDE $count'),
+        Declared(:final seat, :final has) => (seat, has ? 'SÍ' : 'NO'),
+        PasoSaid(:final seat) => (seat, 'PASO'),
+        EnvidoSaid(:final seat, :final amount, :final stake) => (
+          seat,
+          amount == stake ? 'ENVIDO $amount' : '$amount MÁS',
+        ),
+        QuieroSaid(:final seat) => (seat, 'QUIERO'),
+        NoQuieroSaid(:final seat) => (seat, 'NO QUIERO'),
+        OrdagoSaid(:final seat) => (seat, '¡ÓRDAGO!'),
+        _ => null,
+      };
+      if (said != null) {
+        bubbles[said.$1] = said.$2;
+      }
+    }
+    return bubbles;
   }
 }

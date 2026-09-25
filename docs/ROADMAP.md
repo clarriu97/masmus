@@ -52,6 +52,12 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · Randomness is a value (#12).** The engine carries its random
+  source in the match state: a 32-bit mulberry32 generator stored as one
+  number, so applying an action stays a pure function, a match replays
+  exactly from its seed and a saved match resumes the same shuffles. A test
+  pins the sequence against an independent implementation: changing it
+  breaks saved matches and regression seeds.
 - **2026-09-25 · v1 scope (#4).** One human and three bots, offline, no
   account, Spanish, no ads mid-hand, no coins or bets with value (most Mus
   apps are PEGI 18 for "simulated gambling"). Default rules as the rulebooks

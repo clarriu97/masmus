@@ -1,98 +1,60 @@
-# 🎴 Más Mus
+# Más Mus
 
-<div align="center">
-  <p>
-    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
-    <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
-    <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
-    <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS" />
-    <a href="https://github.com/clarriu97/masmus/actions/workflows/flutter.yml">
-    <img src="https://github.com/clarriu97/masmus/actions/workflows/flutter.yml/badge.svg" alt="CI Status">
-  </p>
-  
-  <p>
-    <img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License" />
-    <img src="https://img.shields.io/badge/Status-Beta-orange?style=flat-square" alt="Status" />
-    <img src="https://img.shields.io/badge/coverage-¯\_(ツ)_/¯-blueviolet?style=flat-square" alt="Coverage shrug">
-    <img src="https://img.shields.io/badge/build-success%20(usually,%20ask%20ChatGPT)-orange?style=flat-square" alt="Build success (usually, ask ChatGPT)">
-    <img src="https://img.shields.io/badge/type%20checked-LOL-red?style=flat-square" alt="Type checked LOL">
-    <img src="https://img.shields.io/badge/PRs-welcome%20(but%20judged)-yellow?style=flat-square" alt="PRs welcome (but judged)">
-    <img src="https://img.shields.io/badge/maintainer-sleep%20deprived-blue?style=flat-square" alt="Maintainer sleep deprived">
-    <img src="https://img.shields.io/badge/works%20on-my%20machine-lightgrey?style=flat-square" alt="Works on my machine">
-    <img src="https://img.shields.io/badge/built%20with-anger%20and%20coffee-brown?style=flat-square" alt="Built with anger and coffee">
-  </p>
+> *Four players, two teams, forty cards, and one órdago away from glory.*
 
-  <h3>The ultimate Mus experience on your mobile.</h3>
-  <p>Premium design, authentic gameplay, and all the excitement of Mus, now on Android and iOS.</p>
-</div>
+[![Build Status](https://img.shields.io/github/actions/workflow/status/clarriu97/masmus/flutter.yml?branch=master&style=flat-square&logo=githubactions&logoColor=white)](https://github.com/clarriu97/masmus/actions/workflows/flutter.yml)
+[![Flutter](https://img.shields.io/badge/flutter-3.47-02569B?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/dart-3.13-0175C2?style=flat-square&logo=dart&logoColor=white)](https://dart.dev)
+[![Platform](https://img.shields.io/badge/platform-android%20|%20ios-blue?style=flat-square)]()
 
 ---
 
-### ✨ Features
+## What is this?
 
-- 🎴 **Realistic Gameplay:** A faithful experience following the classic Mus rules.
-- 🎨 **Premium Aesthetics:** Modern interface based on a custom design system and elegant typography (Lora & Inter).
-- 🚀 **Smooth Experience:** High-fidelity animations and seamless transitions powered by the Flutter engine.
-- 📱 **Mobile First:** Specifically optimized for touchscreens on tablets and smartphones.
+A Flutter app to play **Mus**, the Spanish card game, on the phone: you and a bot partner against two bot rivals. Offline, no accounts, nothing leaves the device.
 
----
+**Status: prototype, being rebuilt.** The current app deals, bets and scores, but its rules engine has known bugs and the table is hard to follow. The plan to turn it into a first real version is in [docs/ROADMAP.md](docs/ROADMAP.md) and tracked as [issues and milestones](https://github.com/clarriu97/masmus/milestones).
 
-### 📸 Quick Look
+## Getting Started
 
-<div align="center">
-  <table>
-    <tr>
-      <td>
-        <img src="screenshots/screen_1.png" width="220" alt="Game Match" style="border-radius: 20px;" />
-      </td>
-      <td>
-        <img src="screenshots/screen_2.png" width="220" alt="Main Menu" style="border-radius: 20px;" />
-      </td>
-      <td>
-        <img src="screenshots/screen_3.png" width="220" alt="Game Setup" style="border-radius: 20px;" />
-      </td>
-    </tr>
-    <tr align="center">
-      <td><b>Game in Progress</b></td>
-      <td><b>Main Menu</b></td>
-      <td><b>Game Settings</b></td>
-    </tr>
-  </table>
-</div>
+```bash
+git clone https://github.com/clarriu97/masmus.git
+cd masmus
+flutter pub get
+flutter run            # pick a simulator, emulator or device
+```
 
----
+## Testing
 
-### 🛠️ Tech Stack
+```bash
+tool/ci.sh             # format, analyze, unit and widget tests: what every PR runs (~1 min)
+tool/ci.sh all         # + release builds for Android and iOS
+```
 
-The project is built with a focus on maintainability and scalability:
+Run the checks automatically before every push (once per clone):
 
-*   **Framework:** [Flutter](https://flutter.dev) (v3.10+)
-*   **State Management:** BloC / Provider (following current architecture)
-*   **Design:** Custom Theme System with native support for Dark/Light mode.
-*   **Typography:** Google Fonts (Inter for readability, Lora for the classic touch).
+```bash
+git config core.hooksPath tool/git-hooks
+```
 
----
+Pull requests run `analyze` and `test` on GitHub and `master` only accepts green ones. Release builds run after every merge. The test strategy (rules tested against a written spec, scripted hands on a stacked deck, thousands of simulated matches checked for invariants, and later layout matrix, goldens and end-to-end flows) is in [AGENTS.md](AGENTS.md#testing-paranoid-mindset).
 
-### 🚀 Getting Started
+## Working on it
 
-To run this project locally, ensure you have Flutter installed on your system.
+Built with coding agents in mind: [AGENTS.md](AGENTS.md) holds the architecture, the rules for code, UI and tests, and the workflow; [docs/ROADMAP.md](docs/ROADMAP.md) holds the state of the project and its decisions. Both load into every Claude Code session through `CLAUDE.md`, and the `continue` skill picks up the next issue.
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/carlos/masmus.git
-    ```
-2.  **Install dependencies**
-    ```bash
-    cd masmus
-    flutter pub get
-    ```
-3.  **Run the application**
-    ```bash
-    flutter run
-    ```
+## Built With
+
+| Tool | Purpose |
+|---|---|
+| [Flutter](https://flutter.dev) | UI framework |
+| [Dart](https://dart.dev) | Language |
+| [flutter_lints](https://pub.dev/packages/flutter_lints) | Strict lint rules |
+| [GitHub Actions](https://github.com/features/actions) | CI |
 
 ---
 
-<div align="center">
-  <sub>Developed with ❤️ for card game lovers.</sub>
-</div>
+<p align="center">
+  <i>¿Hay mus?</i><br>
+  <img src="https://img.shields.io/badge/built%20with-anger%20and%20coffee-brown?style=flat-square" alt="Built with anger and coffee">
+</p>

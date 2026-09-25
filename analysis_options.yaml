@@ -114,7 +114,3 @@ analyzer:
     - ".dart_tool/**"
     - android/**
     - ios/**
-    - web/**
-    - windows/**
-    - macos/**
-    - linux/**

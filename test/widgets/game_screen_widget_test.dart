@@ -12,19 +12,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   AppTextStyles.useGoogleFonts = false;
 
-  const MethodChannel channel = MethodChannel(
-    'plugins.flutter.io/path_provider',
-  );
+  const MethodChannel vibrationChannel = MethodChannel('vibration');
 
   setUp(() {
-    // Mock path_provider
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          return '.';
-        });
-
-    // Mock vibration
-    const MethodChannel vibrationChannel = MethodChannel('vibration');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(vibrationChannel, (
           MethodCall methodCall,
@@ -38,15 +28,12 @@ void main() {
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
+        .setMockMethodCallHandler(vibrationChannel, null);
   });
 
   testWidgets('GameScreen renders main components', (
     WidgetTester tester,
   ) async {
-    // We expect some errors from AudioPlayer if not mocked, but usually it just logs error on missing asset/file.
-    // To suppress, we might need more mocks, but let's try.
-
     await tester.pumpWidget(
       const MaterialApp(home: GameScreen(initialMano: 0)),
     );

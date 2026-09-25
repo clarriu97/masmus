@@ -11,10 +11,10 @@ GitHub is the source of truth for tasks: issues, milestones and PRs in
 bodies.
 
 ```bash
-gh issue list --milestone "M0 · Cimientos"      # open work of a milestone
-gh issue view <n>                               # full scope of an issue
-gh pr list                                      # anything in flight
-gh run list --branch master --limit 3           # CI health on master
+gh issue list --milestone "M1 · Reglas y motor"   # open work of a milestone
+gh issue view <n>                                 # full scope of an issue
+gh pr list                                        # anything in flight
+gh run list --branch master --limit 3             # CI health on master
 ```
 
 ## Product
@@ -22,26 +22,52 @@ gh run list --branch master --limit 3           # CI health on master
 Más Mus: Mus, the Spanish card game, on the phone. You and a bot partner
 against two bot rivals, offline, no accounts, no data leaving the device.
 iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
-(`clarriu97`).
+(`clarriu97`). Who plays it, what they need and the v1 scope:
+`docs/PRODUCT.md`.
 
 ## Phases and milestones
 
-| Milestone | Status | What it delivers |
-|---|---|---|
-| **M0 · Cimientos** | **🔜 in progress** | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan (#4) |
-| M1 · Reglas y motor | planned | Rules spec (`docs/RULES.md`) and a deterministic, fully tested engine; turns driven by a controller instead of widgets |
-| M2 · Producto y diseño | planned | What players need, validated v1 scope, design system, own Spanish deck and identity |
-| M3 · Mesa jugable | planned | The whole match redesigned: start, table, bets, discards, hand count with every hand shown, end of match, resume |
-| M4 · Bots con criterio | planned | Bots that play like a decent player: discards, bets by position and score, a coherent partner, personalities |
-| M5 · Calidad de lanzamiento | planned | Accessibility, texts, motion, layout matrix, goldens, e2e, release configuration |
-| Fase 2 · Publicación | planned | Store accounts, TestFlight/Play, real devices, screenshots, ASO, monetization |
-| Post-v1 | backlog | Ideas deferred until after launch |
+| Milestone | Status | Issues, in order | What it delivers |
+|---|---|---|---|
+| M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
+| **M1 · Reglas y motor** | **🔜 next** | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
+| M2 · Producto y diseño | planned | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
+| M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M4 · Bots y señas | planned | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
+| M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
+| Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
+| Post-v1 | backlog | #46 | Online with friends, catching señas, vacas and regional variants, statistics, tutorial, languages… |
 
-**Next step:** finish M0 with the v1 plan (#4). Work one issue per branch and
-PR, following AGENTS.md → Workflow.
+**Order of work:** #11 (rules spec) and #18 (wireframes) first, because both
+need the owner's review; while they are reviewed, the engine (#12 → #17).
+Then the design system, deck and identity (#19 → #21), the table (M3), the
+bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
+review), quality (M5) and publication.
+
+**Next step:** #11, the rules spec. Work one issue per branch and PR,
+following AGENTS.md → Workflow.
+
+**Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
+or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · v1 scope (#4).** One human and three bots, offline, no
+  account, Spanish, no ads mid-hand, no coins or bets with value (most Mus
+  apps are PEGI 18 for "simulated gambling"). Default rules as the rulebooks
+  say: 8 reyes, 40 points, mus corrido on the first hand, no 31 real, no extra
+  deje; 4 reyes and 30 points as options. Señas between partners and
+  consulting the partner are in v1 (pending the owner's confirmation):
+  incoherent señas are the main complaint about the only big offline rival.
+  Online play is the most requested thing after that, and the most expensive:
+  after v1, with the engine ready for it. Evidence and scope in
+  `docs/PRODUCT.md`.
+- **2026-09-25 · Correct before pretty.** M1 ends with the current table
+  playing on the new engine (#17), so the app follows the rules long before
+  the redesign lands.
+- **2026-09-25 · Naming.** Code is in English; Mus terms without an English
+  equivalent stay in Spanish (mano, postre, envido, órdago, grande, chica,
+  pares, juego, punto, señas).
 - **2026-09-25 · Cleanup (#3).** Removed what nobody could reach or use: the
   mock setup and table screens, the simulated login, the generated deal sound
   (and `audioplayers`/`path_provider`), and the Linux, macOS, Windows and web
@@ -49,7 +75,7 @@ PR, following AGENTS.md → Workflow.
   `dev.larri.masmus`, following `dev.larri.onerm`. The README's screenshots
   were concept mockups, not the app; they now live in `docs/design/concept/`
   as the original vision, without Git LFS. What the player sees (fake tabs,
-  made-up ELO, login button) goes with the redesign in M3.
+  made-up ELO, login button) goes with the redesign (#23).
 - **2026-09-25 · CI (#2).** Pull requests run `analyze` (format + analyzer)
   and `test` (unit and widget tests in random order, line coverage in the job
   summary); both are required on `master`, which is protected (up to date,
@@ -81,10 +107,11 @@ PR, following AGENTS.md → Workflow.
 | What | Where |
 |---|---|
 | App code | this repo; architecture and rules in AGENTS.md |
-| Rules of the game | `docs/RULES.md` (M1) |
+| Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
+| Rules of the game | `docs/RULES.md` (#11) |
 | CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
-| Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins |
+| Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
-| App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until the identity work in M2 |
+| App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

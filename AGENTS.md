@@ -5,7 +5,7 @@ you and a bot partner against two bot rivals. Offline, no backend, no accounts.
 Goal of phase 1: a first real version (v1) that plays by the rules, with bots
 worth playing against and a table anyone can follow, ready for the stores.
 
-**Project state, decisions and what's next: `docs/ROADMAP.md`** (loaded with this file). To resume work ("sigue", "sigue con M1"), follow the `continue` skill. Update the roadmap in the same PR whenever a milestone finishes, a decision is made or something moves.
+**Project state, decisions and what's next: `docs/ROADMAP.md`** (loaded with this file). Who plays, what they need and the v1 scope: `docs/PRODUCT.md`; every addition must pass "would a real Mus player need this?". To resume work ("sigue", "sigue con M1"), follow the `continue` skill. Update the roadmap in the same PR whenever a milestone finishes, a decision is made or something moves.
 
 ## 1. Think Before Coding
 
@@ -57,7 +57,8 @@ lib/
 
 Rules:
 - **The engine is a pure state machine.** Applying an action to a state returns the next state and the events that happened. It never reads the clock or an unseeded `Random`: shuffles take an injected `Random`, so every hand can be replayed exactly in a test.
-- **`docs/RULES.md` is the specification** (written in M1). The engine implements that document; a rule change edits the spec and its tests in the same PR. Variants (8 or 4 kings, 30 or 40 points…) are fields of the rules config, not `if`s scattered around.
+- **`docs/RULES.md` is the specification** (#11). The engine implements that document; a rule change edits the spec and its tests in the same PR. Variants (8 or 4 kings, 30 or 40 points…) are fields of the rules config, not `if`s scattered around.
+- Code is in English; Mus terms without an English equivalent stay in Spanish (`mano`, `postre`, `envido`, `ordago`, `grande`, `chica`, `pares`, `juego`, `punto`, `senas`).
 - Actions and phases are typed (sealed classes / enums), never strings. The UI offers exactly the legal actions the engine returns for the human's seat; it never decides legality itself.
 - Bots only see their own seat's view: their cards and the public history. Never other hands or the deck.
 - Timing (bots "thinking", pauses so a player can read what happened) lives in controllers behind an injected clock, never in widgets or game logic.

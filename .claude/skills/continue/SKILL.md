@@ -28,7 +28,9 @@ rest from the sources below and only ask about real decisions.
    (Unset `GH_TOKEN` before `gh` if it fails with a bad-credentials error.)
 3. Choose the target: the issue or milestone the user named, else the next
    open issue in the order the roadmap gives. An open PR or a red run on
-   `master` comes first: finish or fix it before starting something new.
+   `master` comes first: finish or fix it before starting something new. A
+   PR labeled `owner-review` waits for the owner: remind them of it and go
+   on with the next issue meanwhile.
 4. Read the whole issue (`gh issue view <n> --comments`); its body includes
    follow-ups added later. Read the code it touches and its tests. For the
    engine or the bots, read the parts of `docs/RULES.md` involved as well.

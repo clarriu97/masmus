@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wireframes de Más Mus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@600;700&family=Alegreya+Sans:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root {
+  --ground: #edf0ec;
+  --surface: #f8f9f7;
+  --ink: #1b221e;
+  --muted: #56605a;
+  --rule: #cbd2cd;
+  --accent: #1d6a46;
+  --accent-ink: #ffffff;
+  --bezel: #1b221e;
+  --wf-screen: #fbfcfa;
+  --wf-box: #e4e8e4;
+  --wf-box-2: #c7cec8;
+  --wf-ink: #262e29;
+  --wf-muted: #69736c;
+  --wf-card: #ffffff;
+  --wf-card-edge: #97a199;
+  --wf-primary: #262e29;
+  --wf-primary-ink: #fbfcfa;
+  --wf-focus: #1d6a46;
+  --wf-dim: rgba(22, 27, 24, 0.5);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #101412;
+    --surface: #171c19;
+    --ink: #e5eae6;
+    --muted: #9aa59e;
+    --rule: #2d3530;
+    --accent: #5cba89;
+    --accent-ink: #0f1311;
+    --bezel: #050706;
+    --wf-screen: #1b211d;
+    --wf-box: #29302b;
+    --wf-box-2: #3b443e;
+    --wf-ink: #e5eae6;
+    --wf-muted: #a2aca5;
+    --wf-card: #2c342f;
+    --wf-card-edge: #6f7b73;
+    --wf-primary: #e5eae6;
+    --wf-primary-ink: #151a17;
+    --wf-focus: #5cba89;
+    --wf-dim: rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #101412;
+  --surface: #171c19;
+  --ink: #e5eae6;
+  --muted: #9aa59e;
+  --rule: #2d3530;
+  --accent: #5cba89;
+  --accent-ink: #0f1311;
+  --bezel: #050706;
+  --wf-screen: #1b211d;
+  --wf-box: #29302b;
+  --wf-box-2: #3b443e;
+  --wf-ink: #e5eae6;
+  --wf-muted: #a2aca5;
+  --wf-card: #2c342f;
+  --wf-card-edge: #6f7b73;
+  --wf-primary: #e5eae6;
+  --wf-primary-ink: #151a17;
+  --wf-focus: #5cba89;
+  --wf-dim: rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Alegreya Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 44px 96px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+h1, h2, h3 { font-family: "Alegreya", Georgia, "Times New Roman", serif; text-wrap: balance; }
+h1 { font-size: clamp(36px, 6vw, 56px); line-height: 1.02; margin: 0 0 14px; font-weight: 700; }
+.lede { max-width: 64ch; font-size: 19px; color: var(--muted); margin: 0; }
+.lede strong { color: var(--ink); }
+h2 { font-size: clamp(26px, 3.4vw, 32px); line-height: 1.1; margin: 72px 0 10px; font-weight: 700; }
+.intro { max-width: 64ch; color: var(--muted); margin: 0 0 32px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.review {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+.review section {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.review h3 { font-size: 20px; margin: 0 0 8px; }
+.review ol, .review ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+.flow { margin-top: 12px; overflow-x: auto; }
+.flow-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+.node {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  background: var(--surface);
+}
+.node small { font-weight: 400; color: var(--muted); font-size: 14px; }
+.node.loop { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); max-width: 30ch; }
+.arrow { align-self: center; color: var(--muted); font-size: 20px; }
+.flow-note { max-width: 64ch; color: var(--muted); margin: 14px 0 0; }
+
+.shots { display: grid; gap: 56px; }
+.shot {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  margin: 0;
+}
+.shot h3 { font-size: 23px; line-height: 1.15; margin: 2px 0 6px; }
+.shot .when { color: var(--muted); margin: 0 0 16px; max-width: 60ch; }
+.notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 62ch; }
+.notes li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: start; }
+.num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 12.5px/24px "IBM Plex Mono", ui-monospace, monospace;
+  text-align: center; margin-top: 1px;
+}
+.flag {
+  display: inline-block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 8px;
+}
+@media (max-width: 760px) {
+  .shot { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .phone { margin-inline: auto; }
+}
+
+/* The phone: a 390 × 844 pt screen drawn 1:1 and scaled to the frame. */
+.phone {
+  --k: 0.8205;
+  width: 320px;
+  max-width: 100%;
+  height: calc(844px * var(--k));
+  border-radius: 36px;
+  background: var(--bezel);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 6px var(--bezel), 0 22px 44px -28px rgba(0, 0, 0, 0.5);
+}
+.screen {
+  width: 390px;
+  height: 844px;
+  transform: scale(var(--k));
+  transform-origin: 0 0;
+  background: var(--wf-screen);
+  color: var(--wf-ink);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  font-family: "Alegreya Sans", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.25;
+  overflow: hidden;
+}
+.sb { height: 47px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 6px; font-weight: 800; font-size: 15px; }
+.sb::after { content: ""; width: 54px; height: 12px; border-radius: 4px; border: 1.5px solid var(--wf-ink); opacity: 0.7; }
+.home { height: 34px; flex: none; display: flex; align-items: center; justify-content: center; }
+.home::before { content: ""; width: 134px; height: 5px; border-radius: 3px; background: var(--wf-ink); opacity: 0.75; }
+
+.topbar { height: 50px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; }
+.score { display: flex; align-items: baseline; gap: 6px; font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; }
+.score span { color: var(--wf-muted); font-weight: 500; }
+.score small { color: var(--wf-muted); font-weight: 500; font-size: 12px; margin-left: 2px; }
+
+.tracker { flex: none; list-style: none; margin: 2px 12px 0; padding: 0; display: grid; grid-template-columns: 0.8fr repeat(4, 1fr); gap: 4px; }
+.tracker li { border: 1.5px solid var(--wf-box-2); border-radius: 9px; padding: 5px 3px; text-align: center; font-weight: 800; font-size: 12.5px; color: var(--wf-muted); display: grid; gap: 1px; min-height: 44px; align-content: center; }
+.tracker li small { font-weight: 500; font-size: 10.5px; line-height: 1.1; }
+.tracker li.done { background: var(--wf-box); border-color: var(--wf-box); color: var(--wf-ink); }
+.tracker li.now { border-color: var(--wf-focus); box-shadow: inset 0 0 0 1.5px var(--wf-focus); color: var(--wf-ink); }
+
+.table { flex: 1; display: grid; grid-template-columns: 108px minmax(0, 1fr) 108px; grid-template-rows: auto minmax(0, 1fr); gap: 4px 4px; padding: 10px 8px 0; min-height: 0; }
+.seat { display: grid; justify-items: center; align-content: start; gap: 5px; position: relative; }
+.seat.top { grid-column: 1 / -1; grid-row: 1; }
+.seat.left { grid-column: 1; grid-row: 2; align-self: center; }
+.seat.right { grid-column: 3; grid-row: 2; align-self: center; }
+.center { grid-column: 2; grid-row: 2; display: grid; align-content: center; justify-items: center; gap: 8px; text-align: center; min-width: 0; }
+.who { display: flex; align-items: center; gap: 8px; }
+.seat.left .who, .seat.right .who { flex-direction: column; gap: 4px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--wf-box-2); display: grid; place-items: center; font-weight: 800; font-size: 16px; flex: none; position: relative; }
+.avatar.thinking { box-shadow: 0 0 0 3px var(--wf-screen), 0 0 0 5.5px var(--wf-focus); }
+.name { font-size: 13.5px; font-weight: 800; line-height: 1.1; text-align: center; }
+.name small { display: block; font-weight: 500; font-size: 11px; color: var(--wf-muted); }
+.backs { display: flex; }
+.backs i { width: 22px; height: 32px; border-radius: 4px; border: 1.5px solid var(--wf-card-edge); background: repeating-linear-gradient(45deg, var(--wf-box) 0 3px, var(--wf-box-2) 3px 6px); margin-left: -9px; }
+.backs i:first-child { margin-left: 0; }
+.bubble { background: var(--wf-card); border: 1.5px solid var(--wf-ink); border-radius: 12px; padding: 4px 10px; font-weight: 800; font-size: 13px; white-space: nowrap; }
+.bubble.soft { border-style: dashed; font-weight: 500; }
+.chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 3px 9px; font-size: 11.5px; font-weight: 800; background: var(--wf-box); color: var(--wf-ink); white-space: nowrap; }
+.chip.mano { background: var(--wf-ink); color: var(--wf-screen); }
+.chip.yes { background: var(--wf-card); border: 1.5px solid var(--wf-focus); }
+.chip.no { background: transparent; border: 1.5px dashed var(--wf-box-2); color: var(--wf-muted); }
+.chip.sena { background: var(--wf-card); border: 1.5px solid var(--wf-ink); font-size: 12px; }
+.pot { border: 1.5px dashed var(--wf-box-2); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; color: var(--wf-muted); display: grid; gap: 1px; }
+.pot b { font-size: 24px; color: var(--wf-ink); font-variant-numeric: tabular-nums; }
+.banner { border: 2px solid var(--wf-ink); border-radius: 14px; padding: 10px 12px; background: var(--wf-card); font-weight: 800; font-size: 15px; line-height: 1.2; max-width: 170px; }
+.banner small { display: block; font-weight: 500; font-size: 12px; color: var(--wf-muted); margin-top: 5px; line-height: 1.25; }
+.banner.big { font-size: 22px; max-width: 180px; }
+.note-in { font-size: 12.5px; color: var(--wf-muted); max-width: 170px; line-height: 1.3; }
+
+.me { flex: none; display: grid; justify-items: center; gap: 8px; padding: 4px 12px 10px; position: relative; }
+.me .who { gap: 6px; }
+.hints { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; min-height: 23px; }
+.hand { display: flex; gap: 8px; justify-content: center; align-items: flex-end; height: 132px; }
+.card { width: 76px; height: 114px; border-radius: 9px; background: var(--wf-card); border: 1.5px solid var(--wf-card-edge); display: grid; grid-template-rows: auto 1fr; padding: 6px 7px; font-weight: 800; font-size: 23px; line-height: 1; position: relative; }
+.card small { align-self: center; justify-self: center; font-size: 11.5px; font-weight: 500; color: var(--wf-muted); }
+.card.sel { transform: translateY(-18px); border-color: var(--wf-focus); box-shadow: 0 0 0 2px var(--wf-focus); }
+.tip { font-size: 13px; color: var(--wf-muted); }
+
+.actions { flex: none; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; padding: 0 12px; }
+.actions.two-rows { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.btn { display: grid; place-items: center; min-height: 52px; border-radius: 12px; border: 1.5px solid var(--wf-ink); background: var(--wf-card); font-weight: 800; font-size: 16px; padding: 0 8px; text-align: center; line-height: 1.1; }
+.btn small { display: block; font-weight: 500; font-size: 11.5px; color: inherit; opacity: 0.75; }
+.btn.primary { background: var(--wf-primary); border-color: var(--wf-primary); color: var(--wf-primary-ink); }
+.btn.sm { min-height: 38px; font-size: 14px; padding: 0 12px; border-radius: 10px; }
+.btn.ghost { border-color: var(--wf-box-2); }
+.btn.hold { border-width: 2.5px; border-style: double; }
+.amounts { flex: none; display: flex; gap: 6px; justify-content: center; padding: 8px 12px 0; }
+.amounts span { min-width: 48px; height: 38px; border-radius: 9px; border: 1.5px solid var(--wf-box-2); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+.amounts span.on { border-color: var(--wf-focus); box-shadow: inset 0 0 0 1.5px var(--wf-focus); }
+.gap { height: 12px; flex: none; }
+
+.pg { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 10px 20px 0; min-height: 0; }
+.pg .title { font-size: 30px; font-weight: 800; line-height: 1.05; margin: 6px 0 0; }
+.pg .sub { color: var(--wf-muted); font-size: 14px; margin: -8px 0 0; }
+.box { border: 1.5px solid var(--wf-box-2); border-radius: 14px; padding: 14px; display: grid; gap: 10px; background: var(--wf-card); }
+.label { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--wf-muted); }
+.rows { display: grid; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; border-bottom: 1px solid var(--wf-box); font-size: 15px; font-weight: 500; }
+.row:last-child { border-bottom: 0; }
+.row b { font-weight: 800; }
+.seg { display: inline-grid; grid-auto-flow: column; border: 1.5px solid var(--wf-box-2); border-radius: 10px; overflow: hidden; }
+.seg span { padding: 7px 12px; font-weight: 800; font-size: 13px; }
+.seg span.on { background: var(--wf-ink); color: var(--wf-screen); }
+.toggle { width: 48px; height: 28px; border-radius: 14px; background: var(--wf-box-2); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--wf-card); }
+.toggle.on { background: var(--wf-ink); }
+.toggle.on::after { left: 23px; background: var(--wf-screen); }
+.pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pick div { border: 1.5px solid var(--wf-box-2); border-radius: 12px; padding: 10px; display: grid; gap: 4px; font-weight: 800; font-size: 14px; }
+.pick div small { font-weight: 500; font-size: 12px; color: var(--wf-muted); line-height: 1.25; }
+.pick div.on { border-color: var(--wf-focus); box-shadow: inset 0 0 0 1.5px var(--wf-focus); }
+.push { margin-top: auto; display: grid; gap: 8px; padding-bottom: 12px; }
+.link { font-weight: 800; font-size: 15px; text-align: center; padding: 10px; text-decoration: underline; text-underline-offset: 3px; }
+
+.dim { position: absolute; inset: 0; background: var(--wf-dim); z-index: 3; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: var(--wf-screen); border-radius: 22px 22px 0 0; padding: 10px 16px 44px; display: grid; gap: 10px; }
+.sheet::before { content: ""; justify-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--wf-box-2); }
+.sheet .title { font-size: 22px; font-weight: 800; }
+.grid-senas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.grid-senas span { border: 1.5px solid var(--wf-box-2); border-radius: 10px; padding: 8px 4px; text-align: center; font-weight: 800; font-size: 12.5px; line-height: 1.15; }
+.grid-senas span small { display: block; font-weight: 500; font-size: 10.5px; color: var(--wf-muted); }
+
+.hands4 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.hands4 > div { border: 1.5px solid var(--wf-box-2); border-radius: 12px; padding: 8px; display: grid; gap: 6px; }
+.hands4 .who-line { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 13px; }
+.hands4 .who-line small { font-weight: 500; color: var(--wf-muted); font-size: 11px; }
+.mini { display: flex; gap: 4px; }
+.mini i { font-style: normal; width: 30px; height: 44px; border-radius: 5px; border: 1.5px solid var(--wf-card-edge); background: var(--wf-card); display: grid; place-items: center; font-weight: 800; font-size: 15px; }
+.lances { display: grid; border: 1.5px solid var(--wf-box-2); border-radius: 12px; overflow: hidden; }
+.lances div { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--wf-box); font-size: 13px; }
+.lances div:last-child { border-bottom: 0; }
+.lances b { font-size: 13.5px; }
+.lances small { display: block; color: var(--wf-muted); font-size: 11.5px; }
+.lances .pts { font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lances .us { color: var(--wf-ink); }
+.lances .them { color: var(--wf-muted); }
+.total { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+.total small { color: var(--wf-muted); font-weight: 500; font-size: 12px; }
+.big-score { font-size: 64px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; text-align: center; }
+.center-text { text-align: center; }
+
+/* Numbered notes sit on the top-left corner of what they annotate. */
+[data-mk] { position: relative; }
+[data-mk]::after {
+  content: attr(data-mk);
+  position: absolute; top: -11px; left: -11px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 13px/26px "IBM Plex Mono", ui-monospace, monospace;
+  text-align: center; z-index: 6;
+  box-shadow: 0 0 0 3px var(--wf-screen);
+  transform: none;
+}
+
+/* Export mode: #solo-<id> shows one wireframe with its notes, for docs/design. */
+.solo-view { display: none; }
+html.solo body { background: var(--surface); }
+html.solo .wrap { display: none; }
+html.solo .solo-view { display: block; padding: 20px 24px; width: 900px; }
+html.solo .solo-view .shot { grid-template-columns: 360px minmax(0, 1fr); }
+html.solo .solo-view .phone { width: 360px; box-shadow: 0 0 0 6px var(--bezel); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .avatar.thinking { animation: think 1.4s ease-in-out infinite; }
+  @keyframes think { 50% { box-shadow: 0 0 0 3px var(--wf-screen), 0 0 0 5.5px transparent; } }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Más Mus · v1 · issue #18</p>
+    <h1>Wireframes de la v1</h1>
+    <p class="lede">Cómo se juega una partida en la v1, pantalla a pantalla. Son <strong>de baja fidelidad a propósito</strong>: deciden qué hay en cada pantalla y dónde, no cómo se ve (eso es la dirección visual, #19). Todo en vertical, a tamaño de iPhone, con textos reales.</p>
+
+    <div class="review">
+      <section>
+        <h3>Qué necesito que revises</h3>
+        <ol>
+          <li>¿La mesa responde de un vistazo a: de quién es el turno, quién es mano, qué lance se juega, qué dijo cada uno y qué hay en la mesa?</li>
+          <li>¿Falta o sobra algún paso entre abrir la app, jugar, el recuento y el final?</li>
+          <li>Señas en la v1 (pantalla marcada): ¿sí o después?</li>
+          <li>La ayuda con tu jugada ("duples R-7 · juego 34"): ¿activada por defecto?</li>
+          <li>Rivales: ¿al azar con opción de elegirlos, o siempre al azar?</li>
+        </ol>
+      </section>
+      <section>
+        <h3>Lo que ya recogen de la investigación</h3>
+        <ul>
+          <li>Lo apostado siempre visible: la tira de lances arriba y el bote en el centro.</li>
+          <li>Los controles nunca tapan tus cartas: van debajo, en la zona del pulgar.</li>
+          <li>Se puede salir en cualquier momento y la partida se retoma donde estaba.</li>
+          <li>El recuento enseña las cuatro manos y explica cada lance; "Ver el reparto" enseña todo lo repartido.</li>
+          <li>Nada falso: sin pestañas vacías, ni ranking, ni login.</li>
+        </ul>
+      </section>
+    </div>
+  </header>
+
+  <h2 id="flujo">El flujo</h2>
+  <div class="flow" role="group" aria-label="Flujo de una partida">
+    <div class="flow-row">
+      <span class="node">Inicio</span>
+      <span class="arrow" aria-hidden="true">→</span>
+      <span class="node">Nueva partida</span>
+      <span class="arrow" aria-hidden="true">→</span>
+      <span class="node loop">Cada mano<small>mus ⇄ descartes · grande · chica · pares · juego o punto · recuento</small></span>
+      <span class="arrow" aria-hidden="true">→</span>
+      <span class="node">Fin de partida</span>
+      <span class="arrow" aria-hidden="true">→</span>
+      <span class="node">Revancha o inicio</span>
+    </div>
+    <p class="flow-note">Las manos se repiten hasta que una pareja llega a 40 (o a 30). Desde la mesa se puede salir en cualquier momento: la partida queda guardada y el inicio ofrece continuarla.</p>
+  </div>
+
+  <h2 id="antes">Antes de la partida</h2>
+  <p class="intro">La app abre directamente en el inicio: nada de splash de marca, pestañas o registro. Quien vuelve encuentra su partida; quien llega, un botón.</p>
+  <div class="shots">
+
+    <figure class="shot" id="inicio">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="pg">
+          <div class="title">Más Mus</div>
+          <div class="sub">Tú y tu compañero contra dos rivales</div>
+          <div class="box" data-mk="1">
+            <div class="label">Partida en curso</div>
+            <div class="total">Nosotros 23 · Ellos 31 <small>a 40</small></div>
+            <div class="tip">8 reyes · mano 12 · con El Calculador</div>
+            <span class="btn primary">Continuar</span>
+          </div>
+          <span class="btn" data-mk="2">Nueva partida</span>
+          <div class="push" data-mk="3">
+            <span class="link">Cómo se juega</span>
+            <span class="link">Ajustes</span>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Inicio</h3>
+        <p class="when">Al abrir la app. Si hay una partida guardada, lo primero es seguirla.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>La partida guardada, con marcador, reglas y compañero, y "Continuar" como acción principal. Sin partida guardada, esta caja no aparece y "Nueva partida" pasa a ser la principal.</span></li>
+          <li><span class="num">2</span><span>Empezar otra partida abandona la guardada (pide confirmación).</span></li>
+          <li><span class="num">3</span><span>Ayuda y ajustes a mano, pero sin competir con jugar.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="nueva-partida">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Volver</span><span></span></div>
+        <div class="pg">
+          <div class="title">Nueva partida</div>
+          <div class="label">Tu compañero</div>
+          <div class="pick" data-mk="1">
+            <div>El Prudente<small>Envida con buena mano; casi no farolea</small></div>
+            <div>La Temeraria<small>Quiere casi todo; le gusta el órdago</small></div>
+            <div class="on">El Calculador<small>Juega las probabilidades</small></div>
+            <div>El Farolero<small>Envida sin nada cuando puede</small></div>
+          </div>
+          <div class="rows">
+            <div class="row" data-mk="2"><b>Rivales</b><span>Al azar ›</span></div>
+            <div class="row" data-mk="3"><b>Reyes</b><span class="seg"><span class="on">8</span><span>4</span></span></div>
+            <div class="row"><b>Tantos</b><span class="seg"><span class="on">40</span><span>30</span></span></div>
+            <div class="row"><b>Señas</b><span class="toggle on"></span></div>
+          </div>
+          <div class="push"><span class="btn primary">Empezar partida</span></div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Nueva partida</h3>
+        <p class="when">Desde el inicio. Todo tiene un valor por defecto: se puede empezar con un toque.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>El compañero, por su forma de jugar (las personalidades de #37), con una línea que la explica.</span></li>
+          <li><span class="num">2</span><span>Rivales al azar por defecto, con opción de elegirlos.</span></li>
+          <li><span class="num">3</span><span>Reglas: 8 o 4 reyes, a 40 o a 30, y señas. Los valores salen de Ajustes. Se juega un juego; las vacas son Post-v1.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+  </div>
+
+  <h2 id="mesa">La mesa</h2>
+  <p class="intro">Una sola disposición para toda la mano. Arriba, el estado de la partida (marcador y lances); en medio, la mesa (compañero enfrente, rivales a los lados, el bote en el centro); abajo, tus cartas y, debajo de ellas, lo que puedes hacer. Solo aparecen las acciones legales que da el motor.</p>
+  <div class="shots">
+
+    <figure class="shot" id="mesa-mus">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost" data-mk="1">Salir</span><div class="score">Nosotros 0 <span>·</span> Ellos 0<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker" data-mk="2"><li class="now">Mus<small>primera mano</small></li><li>Grande</li><li>Chica</li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble" data-mk="3">Mus</span></div>
+          <div class="center"><div class="banner">Mus corrido<small>Primera mano: mientras todos pidan mus, la mano pasa al siguiente. Sin señas.</small></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival · mano</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">Mus</span></div>
+        </div>
+        <div class="me">
+          <div class="hints" data-mk="4"><span class="chip">Pares: par de reyes</span><span class="chip">Punto: 27</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>copas</small></span><span class="card">5<small>bastos</small></span><span class="card">2<small>espadas</small></span></div>
+          <div class="who"><span class="name">Tú</span></div>
+        </div>
+        <div class="actions" data-mk="5"><span class="btn">Mus</span><span class="btn primary">No hay mus</span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Mus o no hay mus</h3>
+        <p class="when">Al empezar cada mano, cuando te toca hablar.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Salir en cualquier momento (guarda la partida) y ayuda. En el centro, el marcador con el objetivo.</span></li>
+          <li><span class="num">2</span><span>La tira de la mano: mus, y después los cuatro lances con su estado. Es el "¿por dónde vamos?" y el "¿qué hay apostado?" de un vistazo.</span></li>
+          <li><span class="num">3</span><span>Lo que dijo cada uno se queda junto a su asiento. En la primera mano se explica el mus corrido.</span></li>
+          <li><span class="num">4</span><span>Tus cartas, grandes, y encima la ayuda con tu jugada (se puede apagar).</span></li>
+          <li><span class="num">5</span><span>Las acciones, debajo de tus cartas y a mano del pulgar.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-descarte">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 20<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="now">Mus<small>descarte</small></li><li>Grande</li><li>Chica</li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble" data-mk="1">Pide 3</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">Pide 1</span></div>
+          <div class="center"><div class="note-in">Cada uno aparta de 1 a 4 cartas; luego se reparten las nuevas empezando por la mano.</div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble soft">Eligiendo…</span></div>
+        </div>
+        <div class="me">
+          <div class="tip">Toca las cartas que quieres cambiar</div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card sel" data-mk="2">5<small>bastos</small></span><span class="card sel">4<small>copas</small></span><span class="card">7<small>espadas</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span></div>
+        </div>
+        <div class="actions" data-mk="3"><span class="btn primary">Descartar 2</span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Descarte</h3>
+        <p class="when">Cuando los cuatro han pedido mus.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Cuántas cartas pide cada uno, como en la mesa real.</span></li>
+          <li><span class="num">2</span><span>Las cartas marcadas suben; tocar otra vez las baja.</span></li>
+          <li><span class="num">3</span><span>El botón dice cuántas vas a cambiar; sin ninguna marcada no se puede pulsar. Las nuevas entran con una animación corta (estática si el sistema pide menos movimiento).</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-envidar">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 20<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="now" data-mk="1">Grande<small>te toca</small></li><li>Chica</li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival · postre</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="center"><div class="pot" data-mk="2">En la mesa<b>—</b></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">No hay mus</span></div>
+        </div>
+        <div class="me">
+          <div class="hints"><span class="chip">Pares: duples R-7</span><span class="chip">Juego: 34</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>bastos</small></span><span class="card">7<small>copas</small></span><span class="card">7<small>oros</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span></div>
+        </div>
+        <div class="actions"><span class="btn" data-mk="3">Paso</span><span class="btn primary">Envido<small>2</small></span><span class="btn hold" data-mk="4">Órdago<small>mantén</small></span></div>
+        <div class="amounts" data-mk="5"><span class="on">2</span><span>5</span><span>10</span><span>Otra</span></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Te toca hablar en un lance</h3>
+        <p class="when">Grande, chica, pares, juego o punto, cuando nadie ha envidado aún.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>El lance en curso se marca en la tira.</span></li>
+          <li><span class="num">2</span><span>El bote del lance: vacío hasta que alguien envida.</span></li>
+          <li><span class="num">3</span><span>Paso y envido, con la cantidad elegida debajo.</span></li>
+          <li><span class="num">4</span><span>El órdago se mantiene pulsado: no se echa sin querer.</span></li>
+          <li><span class="num">5</span><span>Cantidad del envite sin salir de la mesa: 2, 5, 10 u otra.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-responder">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 21<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="done" data-mk="1">Grande<small>no quiero · Ellos +1</small></li><li class="now">Chica<small>envite 2</small></li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble" data-mk="2">Tú decides</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">Envido 2</span></div>
+          <div class="center"><div class="banner" data-mk="3">La Temeraria envida 2 a la chica<small>Si no queréis, ellos se llevan 1 ahora.</small></div><div class="pot">En la mesa<b>2</b></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="me">
+          <div class="hints"><span class="chip">Chica: R-R-7-7</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>bastos</small></span><span class="card">7<small>copas</small></span><span class="card">7<small>oros</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span></div>
+        </div>
+        <div class="actions two-rows" data-mk="4"><span class="btn">No quiero</span><span class="btn primary">Quiero</span><span class="btn">Subir<small>+2 · +5 · otra</small></span><span class="btn hold">Órdago<small>mantén</small></span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Responder a un envite</h3>
+        <p class="when">Cuando la otra pareja envida y te toca contestar.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Los lances cerrados guardan su resultado en la tira (aquí, la grande: no quiero, +1 para Ellos).</span></li>
+          <li><span class="num">2</span><span>Tu compañero ha podido responder antes: deja la decisión en tus manos, o quiere, o sube, y se ve.</span></li>
+          <li><span class="num">3</span><span>Qué te piden y qué pasa si no quieres, en palabras.</span></li>
+          <li><span class="num">4</span><span>No quiero, quiero, subir y órdago. Nunca aparece una acción que el reglamento no permita en ese momento.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-declaracion">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 21<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="done">Grande<small>no quiero · Ellos +1</small></li><li class="done">Chica<small>querido 2</small></li><li class="now">Pares<small>se declaran</small></li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="chip yes" data-mk="1">Pares: sí</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="chip no">Pares: no</span></div>
+          <div class="center"><div class="banner" data-mk="2">Juegan los pares: tú, El Calculador y El Farolero<small>Si solo una pareja tuviera pares, no se apostaría: se cuentan al final.</small></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="chip yes">Pares: sí</span></div>
+        </div>
+        <div class="me">
+          <div class="hints"><span class="chip yes">Pares: sí · duples R-7</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>bastos</small></span><span class="card">7<small>copas</small></span><span class="card">7<small>oros</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span></div>
+        </div>
+        <div class="actions" data-mk="3"><span class="btn ghost">Siguen los pares…</span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Declaración de pares o juego</h3>
+        <p class="when">Antes del lance de pares y del de juego. La hace el motor por cada jugador, en orden, con una pausa para leerla.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>"Pares: sí / no" junto a cada asiento; se quedan durante el lance.</span></li>
+          <li><span class="num">2</span><span>Quién juega el lance, o por qué no se apuesta (sin disputa) o no hay lance.</span></li>
+          <li><span class="num">3</span><span>Sin acciones hasta que te toque; la barra dice qué está pasando.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-esperando">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 21<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="done">Grande<small>no quiero · Ellos +1</small></li><li class="done">Chica<small>querido 2</small></li><li class="now">Pares<small>envite 2</small></li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">Envido 2</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival · sin pares</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="center"><div class="pot">En la mesa<b>2</b></div><div class="note-in" data-mk="2">El Farolero está pensando…</div></div>
+          <div class="seat right"><div class="who"><span class="avatar thinking" data-mk="1">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="me">
+          <div class="hints"><span class="chip">Pares: duples R-7</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>bastos</small></span><span class="card">7<small>copas</small></span><span class="card">7<small>oros</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span><span class="bubble">Paso</span></div>
+        </div>
+        <div class="actions" data-mk="3"><span class="btn ghost">Turno de El Farolero</span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Esperando a un bot</h3>
+        <p class="when">Entre tus turnos, que es la mayor parte del tiempo.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Quién está pensando, marcado en su asiento (estático con movimiento reducido).</span></li>
+          <li><span class="num">2</span><span>Cada decisión de un bot se queda en pantalla el tiempo justo para leerla; el ritmo (lento, normal, rápido) se elige en Ajustes.</span></li>
+          <li><span class="num">3</span><span>La barra de acciones no desaparece: dice de quién es el turno, así la pantalla no salta.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-ordago">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 36 <span>·</span> Ellos 33<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="done">Grande<small>en paso</small></li><li class="done">Chica<small>en paso</small></li><li class="now">Pares<small>órdago</small></li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">Tú decides</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="center"><div class="banner big" data-mk="1">¡Órdago a los pares!<small>El Farolero se juega la partida. Si queréis, se enseñan las cartas y quien gane los pares gana la partida. Si no, Ellos +1.</small></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="bubble">¡Órdago!</span></div>
+        </div>
+        <div class="me">
+          <div class="hints"><span class="chip">Pares: duples R-7</span></div>
+          <div class="hand"><span class="card">R<small>oros</small></span><span class="card">R<small>bastos</small></span><span class="card">7<small>copas</small></span><span class="card">7<small>oros</small></span></div>
+          <div class="who"><span class="name">Tú</span><span class="chip mano">Mano</span></div>
+        </div>
+        <div class="actions"><span class="btn">No quiero</span><span class="btn primary hold" data-mk="2">Quiero<small>mantén</small></span></div>
+        <div class="gap"></div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Órdago</h3>
+        <p class="when">Cuando alguien se juega la partida entera en un lance.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Un aviso más grande que el de un envite: qué se juega, cómo se decide y cuánto cuesta no querer.</span></li>
+          <li><span class="num">2</span><span>Querer un órdago decide la partida: se mantiene pulsado. Si se quiere, se enseñan las cartas en el acto y se pasa al final.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="mesa-senas">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 20<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="now">Grande<small>te toca</small></li><li>Chica</li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div><span class="chip sena" data-mk="1">Se muerde el labio · dos reyes</span></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="center"><div class="pot">En la mesa<b>—</b></div></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero<small>rival</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="title">Hacer una seña</div>
+          <div class="grid-senas" data-mk="2">
+            <span>Dos reyes<small>labio</small></span><span>Dos ases<small>lengua</small></span><span>Medias<small>boca de lado</small></span>
+            <span>Duples<small>cejas</small></span><span>31<small>guiño</small></span><span>Juego<small>morros</small></span>
+            <span>30<small>hombros</small></span><span>29<small>un hombro</small></span><span>Ciego<small>ojos</small></span>
+          </div>
+          <div class="tip">Solo las señas de lo que llevas. En la v1 los rivales no las ven.</div>
+          <span class="btn primary" data-mk="3">Hacer seña: dos reyes</span>
+        </div>
+      </div></div>
+      <figcaption>
+        <p class="flag">Solo si las señas entran en la v1</p>
+        <h3>Señas</h3>
+        <p class="when">Desde que se corta el mus (nunca durante el mus corrido), cuando tu compañero te hace una seña o tú se la haces a él.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>La seña de tu compañero se ve en su asiento con su gesto y su significado; siempre corresponde a su mano.</span></li>
+          <li><span class="num">2</span><span>Las señas reglamentarias con su gesto, como chuleta. Nada de señas falsas.</span></li>
+          <li><span class="num">3</span><span>Tu seña la tiene en cuenta tu compañero al decidir. "Consultar al compañero" (#36) se abre desde el mismo sitio.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+  </div>
+
+  <h2 id="final">Al acabar la mano y la partida</h2>
+  <p class="intro">Cada mano termina con todas las cartas boca arriba y los tantos explicados lance a lance: lo que más confianza da en un juego de cartas es poder comprobarlo.</p>
+  <div class="shots">
+
+    <figure class="shot" id="recuento">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="pg">
+          <div class="title">Recuento</div>
+          <div class="hands4" data-mk="1">
+            <div><div class="who-line">Tú <small>mano</small></div><div class="mini"><i>R</i><i>R</i><i>7</i><i>7</i></div></div>
+            <div><div class="who-line">La Temeraria <small>rival</small></div><div class="mini"><i>C</i><i>C</i><i>6</i><i>4</i></div></div>
+            <div><div class="who-line">El Calculador <small>compañero</small></div><div class="mini"><i>1</i><i>1</i><i>5</i><i>S</i></div></div>
+            <div><div class="who-line">El Farolero <small>rival</small></div><div class="mini"><i>R</i><i>C</i><i>7</i><i>4</i></div></div>
+          </div>
+          <div class="lances" data-mk="2">
+            <div><b>Grande</b><span>Tú, con R-R-7-7<small>en paso</small></span><span class="pts us">Nos +1</span></div>
+            <div><b>Chica</b><span>El Calculador, con 1-1-5-S<small>querido 2</small></span><span class="pts us">Nos +2</span></div>
+            <div><b>Pares</b><span>Tú, con duples R-7<small>en paso · duples 3 + par de ases 1</small></span><span class="pts us">Nos +4</span></div>
+            <div><b>Juego</b><span>El Farolero, con 31<small>en paso · la 31 vale 3</small></span><span class="pts them">Ellos +3</span></div>
+          </div>
+          <div class="total" data-mk="3">Nosotros 12 → 19 <small>·</small> Ellos 20 → 23</div>
+          <div class="push"><span class="link" data-mk="4">Ver el reparto</span><span class="btn primary">Siguiente mano</span></div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Recuento</h3>
+        <p class="when">Al terminar cada mano (si nadie ha ganado ya en mitad de ella).</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Las cuatro manos boca arriba, cada una con su dueño.</span></li>
+          <li><span class="num">2</span><span>Un renglón por lance, en el orden en que se cuentan: quién gana, con qué, por qué (en paso, querido, no querido, sin disputa) y cuántos tantos, separando envite y jugadas.</span></li>
+          <li><span class="num">3</span><span>El marcador sube lance a lance; si una pareja llega al objetivo, los lances siguientes aparecen como "no se cuentan".</span></li>
+          <li><span class="num">4</span><span>"Ver el reparto": todas las cartas repartidas y descartadas en la mano, para quien quiera comprobar que no hay trampa.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="fin">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="pg">
+          <div class="gap"></div>
+          <div class="title center-text">¡Ganáis!</div>
+          <div class="big-score" data-mk="1">40 · 33</div>
+          <div class="sub center-text">Nosotros · Ellos</div>
+          <div class="box" data-mk="2">
+            <div class="row"><span>Manos jugadas</span><b>14</b></div>
+            <div class="row"><span>Órdagos</span><b>1, querido y ganado</b></div>
+            <div class="row"><span>Lance decisivo</span><b>Chica, mano 14</b></div>
+          </div>
+          <div class="push" data-mk="3"><span class="btn primary">Revancha</span><span class="btn">Volver al inicio</span></div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Fin de partida</h3>
+        <p class="when">Cuando una pareja llega al objetivo, en el recuento, con un "no quiero" o con un órdago querido.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Quién gana y el marcador final, grandes.</span></li>
+          <li><span class="num">2</span><span>Un resumen corto de la partida; las estadísticas de verdad son Post-v1.</span></li>
+          <li><span class="num">3</span><span>Revancha con las mismas reglas y bots, o volver al inicio.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+  </div>
+
+  <h2 id="fuera">Fuera de la mesa</h2>
+  <p class="intro">Salir, ajustar y aprender, sin perder la partida.</p>
+  <div class="shots">
+
+    <figure class="shot" id="pausa">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Salir</span><div class="score">Nosotros 12 <span>·</span> Ellos 20<small>a 40</small></div><span class="btn sm ghost">?</span></div>
+        <ol class="tracker"><li class="done">Mus<small>cortado</small></li><li class="now">Grande<small>te toca</small></li><li>Chica</li><li>Pares</li><li>Juego</li></ol>
+        <div class="table">
+          <div class="seat top"><div class="who"><span class="avatar">C</span><span class="name">El Calculador<small>compañero</small></span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="seat left"><div class="who"><span class="avatar">T</span><span class="name">La Temeraria</span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+          <div class="center"></div>
+          <div class="seat right"><div class="who"><span class="avatar">F</span><span class="name">El Farolero</span></div><div class="backs"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="title">Partida en pausa</div>
+          <div class="tip" data-mk="1">Se guarda sola: puedes cerrar la app y seguir luego.</div>
+          <span class="btn primary" data-mk="2">Seguir jugando</span>
+          <div class="rows">
+            <div class="row"><b>Volver al inicio</b><span>›</span></div>
+            <div class="row"><b>Cómo se juega</b><span>›</span></div>
+            <div class="row"><b>Ajustes</b><span>›</span></div>
+            <div class="row" data-mk="3"><b>Abandonar la partida</b><span>pide confirmación</span></div>
+          </div>
+        </div>
+      </div></div>
+      <figcaption>
+        <h3>Salir y pausa</h3>
+        <p class="when">Al tocar "Salir" en la mesa, o al volver a la app.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Lo primero, tranquilizar: la partida está guardada.</span></li>
+          <li><span class="num">2</span><span>Seguir es la acción principal; volver al inicio no pierde nada.</span></li>
+          <li><span class="num">3</span><span>Abandonar es lo único que borra la partida, y lo confirma.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="ajustes">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Volver</span><span></span></div>
+        <div class="pg">
+          <div class="title">Ajustes</div>
+          <div class="label">Reglas por defecto</div>
+          <div class="rows" data-mk="1">
+            <div class="row"><b>Reyes</b><span class="seg"><span class="on">8</span><span>4</span></span></div>
+            <div class="row"><b>Tantos</b><span class="seg"><span class="on">40</span><span>30</span></span></div>
+            <div class="row"><b>Jugar con señas</b><span class="toggle on"></span></div>
+          </div>
+          <div class="label">Mesa</div>
+          <div class="rows" data-mk="2">
+            <div class="row"><b>Ritmo de los bots</b><span class="seg"><span>Lento</span><span class="on">Normal</span><span>Rápido</span></span></div>
+            <div class="row"><b>Ayuda con tu jugada</b><span class="toggle on"></span></div>
+            <div class="row"><b>Sonido</b><span class="toggle on"></span></div>
+            <div class="row"><b>Vibración</b><span class="toggle on"></span></div>
+          </div>
+          <div class="rows" data-mk="3">
+            <div class="row"><b>Reparto limpio</b><span>›</span></div>
+            <div class="row"><b>Acerca de</b><span>›</span></div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Ajustes</h3>
+        <p class="when">Desde el inicio o desde la pausa.</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Las reglas que propone "Nueva partida"; cambiarlas no afecta a la partida en curso.</span></li>
+          <li><span class="num">2</span><span>Cómo se siente la mesa: ritmo, ayuda con tu jugada, sonido y vibración (estos dos llegan con #39).</span></li>
+          <li><span class="num">3</span><span>"Reparto limpio" explica que se baraja al azar y que los bots no ven tus cartas.</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+
+    <figure class="shot" id="como-se-juega">
+      <div class="phone"><div class="screen">
+        <div class="sb">9:41</div>
+        <div class="topbar"><span class="btn sm ghost">Volver</span><span></span></div>
+        <div class="pg">
+          <div class="title">Cómo se juega</div>
+          <div class="rows" data-mk="1">
+            <div class="row"><b>En dos minutos</b><span>›</span></div>
+            <div class="row"><b>Las cartas y sus valores</b><span>›</span></div>
+            <div class="row"><b>El mus y los descartes</b><span>›</span></div>
+          </div>
+          <div class="box" data-mk="2">
+            <div class="label">Los lances</div>
+            <div><b>Grande</b> · gana la carta más alta; si empatan, la siguiente.</div>
+            <div><b>Chica</b> · gana la más baja, empezando por abajo.</div>
+            <div><b>Pares</b> · par, medias o duples; gana la jugada más alta.</div>
+            <div><b>Juego</b> · 31 o más; la 31 es la mejor. Si nadie tiene, punto.</div>
+          </div>
+          <div class="rows" data-mk="3">
+            <div class="row"><b>Envites y órdago</b><span>›</span></div>
+            <div class="row"><b>Cómo se cuenta</b><span>›</span></div>
+            <div class="row"><b>Señas</b><span>›</span></div>
+            <div class="row"><b>Glosario</b><span>›</span></div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div></div>
+      <figcaption>
+        <h3>Cómo se juega</h3>
+        <p class="when">Desde el inicio, la pausa o el "?" de la mesa (que abre directamente el lance en curso).</p>
+        <ol class="notes">
+          <li><span class="num">1</span><span>Un resumen de dos minutos para empezar a jugar, y el detalle por partes.</span></li>
+          <li><span class="num">2</span><span>El texto sale de <code>docs/RULES.md</code>, explicado para jugar y con ejemplos de manos.</span></li>
+          <li><span class="num">3</span><span>El glosario con el vocabulario de siempre: mano, postre, envido, órdago, medias, duples…</span></li>
+        </ol>
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<div class="solo-view" id="solo"></div>
+
+<script>
+(function () {
+  var m = location.hash.match(/^#solo-([\w-]+)$/);
+  if (m) {
+    var shot = document.getElementById(m[1]);
+    if (shot) {
+      document.documentElement.classList.add('solo');
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('solo').appendChild(shot.cloneNode(true));
+    }
+  }
+  function fit() {
+    document.querySelectorAll('.phone').forEach(function (p) {
+      p.style.setProperty('--k', p.clientWidth / 390);
+    });
+  }
+  fit();
+  addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>

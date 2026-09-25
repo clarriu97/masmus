@@ -1,11 +1,9 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import '../core/game/models/card.dart';
 import '../core/game/models/player.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
-import '../core/utils/audio_generator.dart';
 import 'playing_card_widget.dart';
 
 class MusTable extends StatefulWidget {
@@ -39,26 +37,6 @@ class MusTable extends StatefulWidget {
 }
 
 class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
-  late AudioPlayer _audioPlayer;
-
-  @override
-  void initState() {
-    super.initState();
-    _audioPlayer = AudioPlayer();
-    _playDealSound();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  Future<void> _playDealSound() async {
-    final String soundPath = await AudioGenerator.generateDealSound();
-    await _audioPlayer.play(DeviceFileSource(soundPath));
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(

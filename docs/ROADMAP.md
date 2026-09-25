@@ -37,11 +37,19 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | Fase 2 · Publicación | planned | Store accounts, TestFlight/Play, real devices, screenshots, ASO, monetization |
 | Post-v1 | backlog | Ideas deferred until after launch |
 
-**Next step:** finish M0 in order (#1 → #4). Work one issue per branch and
+**Next step:** finish M0 with the v1 plan (#4). Work one issue per branch and
 PR, following AGENTS.md → Workflow.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · Cleanup (#3).** Removed what nobody could reach or use: the
+  mock setup and table screens, the simulated login, the generated deal sound
+  (and `audioplayers`/`path_provider`), and the Linux, macOS, Windows and web
+  targets: the app ships on iPhone and Android phones. App id
+  `dev.larri.masmus`, following `dev.larri.onerm`. The README's screenshots
+  were concept mockups, not the app; they now live in `docs/design/concept/`
+  as the original vision, without Git LFS. What the player sees (fake tabs,
+  made-up ELO, login button) goes with the redesign in M3.
 - **2026-09-25 · CI (#2).** Pull requests run `analyze` (format + analyzer)
   and `test` (unit and widget tests in random order, line coverage in the job
   summary); both are required on `master`, which is protected (up to date,
@@ -77,5 +85,6 @@ PR, following AGENTS.md → Workflow.
 | CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
 | Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
-| App ids | bundle id / applicationId `com.example.masmus` until #3 |
+| App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until the identity work in M2 |
+| Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

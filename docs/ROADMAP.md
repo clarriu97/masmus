@@ -114,4 +114,5 @@ or right after; business model; languages at launch; license.
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
+| Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

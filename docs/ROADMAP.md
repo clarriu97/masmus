@@ -152,4 +152,5 @@ or right after; business model; languages at launch; license.
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
+| Visual directions | `docs/design/directions/`: Tapete, Noche and Tanteo on the same table (#19), source `index.html` and one JPG each |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

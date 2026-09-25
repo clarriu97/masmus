@@ -52,6 +52,14 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · The match and its count (#14).** `MatchState` holds only
+  the score at the deal, the hand and, at the end, the winner and how
+  (count, "no quiero" or órdago); the count is computed from the finished
+  hand, never stored, so a saved match can't disagree with it. The count
+  gives, per lance, who takes it, whose hand wins, why, and the points of
+  the envite apart from those of pares, juego or punto: what the count
+  screen (#27) shows. An accepted órdago decides the match before any
+  pending lance is counted.
 - **2026-09-25 · The hand as a state machine (#13).** `play(state, seat,
   move)` returns a new `HandState`; `legalMoves` is all the UI and the bots
   may offer, and an illegal move throws. Declarations of pares and juego are

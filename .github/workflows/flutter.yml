@@ -55,6 +55,9 @@ jobs:
       - name: Coverage summary
         run: grep '^Line coverage' unit.log >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Bot arena
+        run: dart run tool/arena.dart >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/upload-artifact@v7
         with:
           name: coverage

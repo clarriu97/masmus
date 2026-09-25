@@ -116,6 +116,7 @@ flutter test                       # full suite — a partial pass is a failure
 tool/ci.sh                         # exactly what the PR checks run (~1 min)
 tool/ci.sh all                     # + release builds for Android and iOS
 SIMULATION_MATCHES=20000 flutter test test/game/simulation_test.dart   # before merging engine changes (~2 min)
+dart run tool/arena.dart heuristic random 500   # bots against each other: win rate, style (Markdown)
 flutter devices
 flutter run -d <device-id>         # simulator, emulator or device; keep it running for hot reload
 ```

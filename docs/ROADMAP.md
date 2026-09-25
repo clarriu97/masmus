@@ -54,6 +54,15 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · The bot arena (#32).** Bots are measured, not judged by
+  eye: `playArena` plays every deal twice with the teams swapped (duplicate
+  format, so the cards' luck cancels out) and reports the win rate with its
+  95 % Wilson interval, plus style per hand (envites, órdagos, mus cut, bets
+  without the best hand). Baseline on 500 matches: `HeuristicBot` (El
+  Calculador) beats `RandomBot` 74.6 % (70.6–78.2); identical bots 49.8 %.
+  A test fails if the heuristic bot's lower bound against random falls
+  below 60 %; every CI run adds the report to the `test` job summary. The
+  bots of M4 have to beat `HeuristicBot` in the arena to replace it.
 - **2026-09-25 · The legacy table on the new engine (#17).** Until the
   redesign, the prototype table draws `MatchController`: it offers only the
   engine's legal moves, shows what each player said from the log, and ends

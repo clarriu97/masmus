@@ -129,5 +129,6 @@ When the app is running (via `flutter run` or the Dart MCP server), hot reload a
 - One branch per issue: `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `chore/<issue>-<slug>`.
 - Conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`, `build:`, `ci:`, `refactor:`).
 - PR body contains `Closes #<issue>`, a summary, and how it was verified (tests + simulator screenshot for UI changes). No co-author trailers and no mention of AI tools in commits or PRs.
+- When an issue's done criteria include the owner's review (rules defaults, wireframes, visual direction…), label its PR `owner-review` and never merge it without the owner's OK in chat or on the PR.
 - Merge with squash once the required checks (`analyze`, `test`) are green; `master` accepts nothing else. After merging, check the **Builds** run on `master`; if it fails, fix it in the next PR.
 - Never commit secrets: `.env`, keystores, `key.properties` and provisioning profiles stay out of git. Stage files by path; never `git add -A` or `git add .` on a tree you haven't checked.

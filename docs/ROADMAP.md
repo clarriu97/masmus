@@ -52,6 +52,13 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · The hand as a state machine (#13).** `play(state, seat,
+  move)` returns a new `HandState`; `legalMoves` is all the UI and the bots
+  may offer, and an illegal move throws. Declarations of pares and juego are
+  events the engine emits (always true), not moves. The state keeps a public
+  log of everything the table sees: the UI draws the current lance from it
+  and bots remember from it; hidden cards never go in it. Every state
+  survives JSON, which is what saving a match will use.
 - **2026-09-25 · Randomness is a value (#12).** The engine carries its random
   source in the match state: a 32-bit mulberry32 generator stored as one
   number, so applying an action stays a pure function, a match replays

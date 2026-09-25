@@ -42,6 +42,17 @@ PR, following AGENTS.md → Workflow.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · CI (#2).** Pull requests run `analyze` (format + analyzer)
+  and `test` (unit and widget tests in random order, line coverage in the job
+  summary); both are required on `master`, which is protected (up to date,
+  linear history, admins included). Release builds (Android app bundle, iOS
+  without signing) run after every merge in **Builds** and locally with
+  `tool/ci.sh all`, not on pull requests, as in 1RM. Flutter is pinned to
+  3.47.5 in the workflows. iOS uses Swift Package Manager only (CocoaPods
+  removed) and the UIScene lifecycle. The analyzer is 1RM's strict setup plus
+  `unawaited_futures`, `cancel_subscriptions`, `close_sinks` and
+  `directives_ordering`. Dependabot opens one grouped PR a week for pub and
+  for Actions.
 - **2026-09-25 · Legacy is replaced, not extended.** The prototype (engine in
   `lib/core/game`, screens in `lib/screens`) has rule bugs, string-typed
   actions, unseeded randomness and turn logic inside widgets. New code goes
@@ -63,7 +74,8 @@ PR, following AGENTS.md → Workflow.
 |---|---|
 | App code | this repo; architecture and rules in AGENTS.md |
 | Rules of the game | `docs/RULES.md` (M1) |
-| CI | `.github/workflows/` |
+| CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
+| Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `com.example.masmus` until #3 |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

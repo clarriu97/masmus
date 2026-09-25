@@ -24,7 +24,7 @@ class MusTable extends StatefulWidget {
   });
 
   final List<Player> players;
-  final Function(int playerIndex, MusCard card) onCardTap;
+  final void Function(int playerIndex, MusCard card) onCardTap;
   final Set<MusCard> selectedCards;
   final Duration animationDuration;
   final int manoIndex;

@@ -112,9 +112,13 @@ flutter pub get
 dart format .                      # CI runs: dart format --set-exit-if-changed .
 flutter analyze
 flutter test                       # full suite — a partial pass is a failure
+tool/ci.sh                         # exactly what the PR checks run (~1 min)
+tool/ci.sh all                     # + release builds for Android and iOS
 flutter devices
 flutter run -d <device-id>         # simulator, emulator or device; keep it running for hot reload
 ```
+
+**Every change must pass `tool/ci.sh` (format, analyze, full `flutter test`) before it is considered done.** Iterate autonomously until green. Changes to dependencies or native config (`android/`, `ios/`) also pass `tool/ci.sh all` before merging. `git config core.hooksPath tool/git-hooks` runs `tool/ci.sh` before every push.
 
 When the app is running (via `flutter run` or the Dart MCP server), hot reload after editing UI in `lib/`, and hot restart after changing `main()`, `initState`, or global/static state.
 
@@ -124,5 +128,5 @@ When the app is running (via `flutter run` or the Dart MCP server), hot reload a
 - One branch per issue: `feat/<issue>-<slug>`, `fix/<issue>-<slug>`, `chore/<issue>-<slug>`.
 - Conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`, `build:`, `ci:`, `refactor:`).
 - PR body contains `Closes #<issue>`, a summary, and how it was verified (tests + simulator screenshot for UI changes). No co-author trailers and no mention of AI tools in commits or PRs.
-- Merge with squash once the required checks are green.
+- Merge with squash once the required checks (`analyze`, `test`) are green; `master` accepts nothing else. After merging, check the **Builds** run on `master`; if it fails, fix it in the next PR.
 - Never commit secrets: `.env`, keystores, `key.properties` and provisioning profiles stay out of git. Stage files by path; never `git add -A` or `git add .` on a tree you haven't checked.

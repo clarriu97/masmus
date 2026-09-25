@@ -1,0 +1,61 @@
+name: Flutter CI
+
+# Every step runs through tool/ci.sh, so `tool/ci.sh` locally runs exactly
+# the same commands.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so every run (and every developer) uses the same SDK. Bump it
+  # together with the local SDK.
+  FLUTTER_VERSION: "3.47.5"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - run: tool/ci.sh lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      # `shell: bash` adds pipefail: a failing test must fail the step.
+      - run: tool/ci.sh unit | tee unit.log
+        shell: bash
+        env:
+          COVERAGE: "1"
+
+      - name: Coverage summary
+        run: grep '^Line coverage' unit.log >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info

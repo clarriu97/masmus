@@ -33,7 +33,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late MusGame _game;
   bool _isLoading = true;
-  StreamSubscription? _gameSub;
+  StreamSubscription<void>? _gameSub;
   final Set<MusCard> _selectedCards = {};
 
   @override
@@ -116,7 +116,7 @@ class _GameScreenState extends State<GameScreen> {
       final random = math.Random();
       final int thinkTime = 1000 + random.nextInt(3000);
 
-      await Future.delayed(Duration(milliseconds: thinkTime));
+      await Future<void>.delayed(Duration(milliseconds: thinkTime));
       if (mounted) {
         _playAiTurn(turnPlayer);
       }
@@ -125,7 +125,7 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _handleDeclarationRound() async {
     // 1 second delay between declarations as requested
-    await Future.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(seconds: 1));
     if (!mounted) {
       return;
     }

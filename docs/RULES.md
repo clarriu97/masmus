@@ -51,9 +51,9 @@ caballo, `R` rey; el palo solo se escribe cuando importa (`Ro` rey de oros,
   los cuatro han elegido, se sirve a cada uno, desde la mano, tantas cartas
   del mazo como ha apartado. Después se vuelve a hablar de mus (R-MUS-2).
 - **R-MUS-4.** Si al servir a un jugador el mazo no tiene cartas suficientes,
-  se barajan todos los descartes (incluidos los de esa ronda) y forman un
-  mazo nuevo. Las cartas que están en la mano de un jugador nunca vuelven al
-  mazo.
+  recibe las que quedan y el resto sale de un mazo nuevo: se barajan todos los
+  descartes (incluidos los de esa ronda). Las cartas que están en la mano de
+  un jugador nunca vuelven al mazo.
 - **R-MUS-5.** **Mus corrido.** En la primera mano de cada juego, cada vez
   que los cuatro dicen "mus", tras el descarte la mano pasa al jugador
   siguiente, que empieza a hablar de mus. Quien corta el mus pasa a ser la

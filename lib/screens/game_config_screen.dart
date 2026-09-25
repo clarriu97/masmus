@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../core/game/models/ai_profile.dart';
-import '../../core/game/models/game_config.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
-import '../../widgets/buttons/primary_button.dart';
+import '../bots/heuristic_bot.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_text_styles.dart';
+import '../game/rules.dart';
+import '../widgets/buttons/primary_button.dart';
 import 'game_screen.dart';
 
 class GameConfigScreen extends StatefulWidget {
   const GameConfigScreen({required this.partnerProfile, super.key});
 
-  final AiProfile partnerProfile;
+  final Personality partnerProfile;
 
   @override
   State<GameConfigScreen> createState() => _GameConfigScreenState();
@@ -18,8 +18,7 @@ class GameConfigScreen extends StatefulWidget {
 
 class _GameConfigScreenState extends State<GameConfigScreen> {
   // Config state
-  bool _eightKings = false; // 4 Reyes default
-  bool _laReal = false;
+  bool _eightKings = true;
   int _maxPoints = 40;
 
   // Visual selection (not functional yet for logic, just visual)
@@ -49,16 +48,6 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
                 'REGLAS DE LA VARIANTE',
                 style: AppTextStyles.caption.copyWith(letterSpacing: 1.2),
               ),
-              const SizedBox(height: 16),
-
-              // La Real
-              _buildSwitchTile(
-                title: 'La Real',
-                subtitle: 'Combinación de Tres Sietes y Sota.',
-                value: _laReal,
-                onChanged: (v) => setState(() => _laReal = v),
-              ),
-
               const SizedBox(height: 16),
 
               // Max Points
@@ -164,42 +153,6 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: AppTextStyles.bodyBold),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textTertiary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeTrackColor: AppColors.primaryGreen.withAlpha(100),
-            activeThumbColor: AppColors.primaryGreen,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPointsSelector() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -292,16 +245,15 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
   }
 
   void _startGame() {
-    final config = GameConfig(
-      eightKings: _eightKings,
-      real31: _laReal,
-      maxPoints: _maxPoints,
+    final rules = Rules(
+      kings: _eightKings ? Kings.eight : Kings.four,
+      target: _maxPoints,
     );
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) =>
-            GameScreen(partnerProfile: widget.partnerProfile, config: config),
+            GameScreen(partner: widget.partnerProfile, rules: rules),
       ),
     );
   }

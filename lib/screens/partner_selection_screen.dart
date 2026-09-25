@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/game/data/partner_presets.dart';
-import '../core/game/models/ai_profile.dart';
+import '../bots/heuristic_bot.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
 import 'game_config_screen.dart';
@@ -20,9 +19,9 @@ class PartnerSelectionScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(20),
-        itemCount: PartnerPresets.partners.length,
+        itemCount: Personality.all.length,
         itemBuilder: (context, index) {
-          final partner = PartnerPresets.partners[index];
+          final partner = Personality.all[index];
           return _PartnerCard(
             partner: partner,
             onTap: () {
@@ -43,7 +42,7 @@ class PartnerSelectionScreen extends StatelessWidget {
 class _PartnerCard extends StatelessWidget {
   const _PartnerCard({required this.partner, required this.onTap});
 
-  final AiProfile partner;
+  final Personality partner;
   final VoidCallback onTap;
 
   @override

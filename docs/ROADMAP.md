@@ -30,8 +30,8 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | Milestone | Status | Issues, in order | What it delivers |
 |---|---|---|---|
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
-| **M1 · Reglas y motor** | **🔜 next** | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
-| M2 · Producto y diseño | planned | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
+| M1 · Reglas y motor | ✅ done (#11 waits for the owner's review in #49) | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
+| **M2 · Producto y diseño** | **🔜 next** | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | planned | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
@@ -44,14 +44,24 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** #11, the rules spec. Work one issue per branch and PR,
-following AGENTS.md → Workflow.
+**Next step:** the owner's review of the rules defaults (#49) and the
+wireframes (#51). Meanwhile, #19: two or three visual directions for the
+owner to pick from, and M4 (#32 → #37), which only needs the engine. Work
+one issue per branch and PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · The legacy table on the new engine (#17).** Until the
+  redesign, the prototype table draws `MatchController`: it offers only the
+  engine's legal moves, shows what each player said from the log, and ends
+  every hand with the engine's count. `HeuristicBot` ports the sensible rules
+  of the old bot (cut with a good hand, keep kings, aces and pairs, bet by
+  strength) with personalities as numbers, never names; the old engine, bot
+  and their tests are gone. "La Real" left the match setup: it was never
+  implemented. The setup defaults to 8 kings, as the spec says.
 - **2026-09-25 · Time lives in the match controller (#16).**
   `MatchController` owns a match: it takes the human's moves (ignoring late
   taps out of turn), lets one bot at a time move after its thinking pause
@@ -134,7 +144,7 @@ or right after; business model; languages at launch; license.
 
 | What | Where |
 |---|---|
-| App code | this repo; architecture and rules in AGENTS.md |
+| App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`; the rest of `lib/` is the legacy UI |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md` (#11) |
 | CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |

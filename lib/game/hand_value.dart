@@ -13,7 +13,7 @@ const juegoOrder = [31, 32, 40, 37, 36, 35, 34, 33];
 final class HandValue {
   factory HandValue(List<PlayingCard> cards, Rules rules) {
     assert(cards.length == 4);
-    final ranks = [for (final card in cards) _rank(card, rules.kings)]
+    final ranks = [for (final card in cards) effectiveRank(card, rules.kings)]
       ..sort((a, b) => b - a);
     final (pares, paresRanks) = _pares(ranks);
     final points = ranks.fold(0, (sum, rank) => sum + (rank >= 10 ? 10 : rank));
@@ -78,7 +78,9 @@ int compareHands(Lance lance, HandValue a, HandValue b) => switch (lance) {
   Lance.punto => a.points - b.points,
 };
 
-int _rank(PlayingCard card, Kings kings) => switch (card.number) {
+/// The rank a card counts as in the variant (R-BAR-2): with eight kings a 3
+/// is a rey and a 2 an as.
+int effectiveRank(PlayingCard card, Kings kings) => switch (card.number) {
   3 when kings == Kings.eight => 12,
   2 when kings == Kings.eight => 1,
   final number => number,

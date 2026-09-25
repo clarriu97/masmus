@@ -118,6 +118,12 @@ or right after; business model; languages at launch; license.
   exactly from its seed and a saved match resumes the same shuffles. A test
   pins the sequence against an independent implementation: changing it
   breaks saved matches and regression seeds.
+- **2026-09-25 · Rules (#11).** `docs/RULES.md` is the spec the engine
+  implements: every rule has an id its test names, and the examples and whole
+  hands in it are test cases. Defaults as the rulebooks say (8 reyes, 40
+  points, mus corrido on the first hand, no 31 real, no deje); 4 reyes and 30
+  points as options. All four hands are shown at the count, not only the ones
+  that decide it (transparency, #27). Señas get their own section with #35.
 - **2026-09-25 · v1 scope (#4).** One human and three bots, offline, no
   account, Spanish, no ads mid-hand, no coins or bets with value (most Mus
   apps are PEGI 18 for "simulated gambling"). Default rules as the rulebooks
@@ -174,7 +180,7 @@ or right after; business model; languages at launch; license.
 |---|---|
 | App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`; the rest of `lib/` is the legacy UI |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
-| Rules of the game | `docs/RULES.md` (#11) |
+| Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
 | CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
 | Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |

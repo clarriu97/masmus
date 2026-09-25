@@ -181,7 +181,7 @@ class AiLogic {
         return const BettingDecision(type: BettingType.envido, amount: 2);
       }
       if (score > 0.9 && profile.boldness > 0.7) {
-        return const BettingDecision(type: BettingType.ordago);
+        return BettingDecision.ordago;
       }
 
       return BettingDecision.pass;
@@ -196,7 +196,7 @@ class AiLogic {
         threshold = 0.4; // Umbral muy bajo
         // 30% de probabilidad de responder con Órdago
         if (_random.nextDouble() < 0.3) {
-          return const BettingDecision(type: BettingType.ordago);
+          return BettingDecision.ordago;
         }
       }
 

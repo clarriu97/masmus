@@ -27,7 +27,7 @@ class PartnerSelectionScreen extends StatelessWidget {
             partner: partner,
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (context) =>
                       GameConfigScreen(partnerProfile: partner),
                 ),

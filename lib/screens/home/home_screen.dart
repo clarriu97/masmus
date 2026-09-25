@@ -165,7 +165,7 @@ class HomeScreen extends StatelessWidget {
             text: 'JUGAR',
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (context) => const PartnerSelectionScreen(),
                 ),
               );

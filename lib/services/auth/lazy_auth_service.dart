@@ -34,8 +34,7 @@ class LazyAuthService {
 
   /// Simula inicio de sesión
   Future<bool> login(String email, String password) async {
-    // TODO: Implementar lógica de autenticación real
-    await Future.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(seconds: 1));
     _isAuthenticated = true;
     _isGuest = false;
     return true;

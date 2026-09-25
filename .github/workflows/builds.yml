@@ -1,0 +1,56 @@
+name: Builds
+
+# Release builds as the stores would get them: an Android app bundle and an
+# iOS build without code signing (signing arrives with the store accounts).
+# Not run on pull requests, which only wait for the fast checks: changes to
+# dependencies or native config run `tool/ci.sh all` locally before merging.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: builds-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.47.5"
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          # Its own key, so the SDK cache keeps the Android engine artifacts.
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-android"
+
+      - run: flutter pub get
+
+      - run: tool/ci.sh build-android
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - run: tool/ci.sh build-ios

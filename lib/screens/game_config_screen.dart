@@ -299,7 +299,7 @@ class _GameConfigScreenState extends State<GameConfigScreen> {
     );
 
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (context) =>
             GameScreen(partnerProfile: widget.partnerProfile, config: config),
       ),

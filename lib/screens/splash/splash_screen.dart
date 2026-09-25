@@ -61,9 +61,7 @@ class SplashScreen extends StatelessWidget {
 
                 SecondaryButton(
                   text: 'Iniciar sesión',
-                  onPressed: () {
-                    // TODO: Implementar login
-                  },
+                  onPressed: () {},
                   width: double.infinity,
                   icon: Icons.login,
                 ),

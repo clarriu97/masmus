@@ -6,8 +6,8 @@
     <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
     <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
     <img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=apple&logoColor=white" alt="iOS" />
-    <a href="https://github.com/clarriu97/masmus/actions/workflows/ci.yml">
-    <img src="https://github.com/clarriu97/masmus/actions/workflows/ci.yml/badge.svg" alt="CI Status">
+    <a href="https://github.com/clarriu97/masmus/actions/workflows/flutter.yml">
+    <img src="https://github.com/clarriu97/masmus/actions/workflows/flutter.yml/badge.svg" alt="CI Status">
   </p>
   
   <p>

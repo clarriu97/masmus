@@ -15,7 +15,7 @@ class GameControls extends StatelessWidget {
     this.canNoQuiero = false,
   });
 
-  final Function(String action, {int? amount}) onAction;
+  final void Function(String action, {int? amount}) onAction;
   final bool canMus;
   final bool canCut;
   final bool canPass;
@@ -118,7 +118,7 @@ class GameControls extends StatelessWidget {
   }
 
   void _showBetOptions(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.backgroundDark,
       shape: const RoundedRectangleBorder(

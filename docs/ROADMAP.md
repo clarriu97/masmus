@@ -52,6 +52,13 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-25 · Time lives in the match controller (#16).**
+  `MatchController` owns a match: it takes the human's moves (ignoring late
+  taps out of turn), lets one bot at a time move after its thinking pause
+  (slow 1.8 s, normal 1.1 s, fast 0.45 s) and saves after every move. Time
+  comes from an injected `Scheduler`; tests move a `ManualScheduler` by hand
+  and never wait. The match store is in memory until #29 puts it on disk,
+  but it already goes through JSON.
 - **2026-09-25 · The match and its count (#14).** `MatchState` holds only
   the score at the deal, the hand and, at the end, the winner and how
   (count, "no quiero" or órdago); the count is computed from the finished

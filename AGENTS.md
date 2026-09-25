@@ -98,7 +98,7 @@ Project skills live in `.claude/skills/` (`.agents` is a symlink for other agent
 4. Bugs: first a test that reproduces it, then the fix.
 5. **Rules are tested against the spec.** Every rule in `docs/RULES.md` has a test that names it. Hands are built from explicit cards or a stacked deck, never from a random deal.
 6. **Scenario tests** drive the engine the way a match does: a stacked deck and a scripted list of actions, then the expected state, events and score breakdown. Build them with the helpers in `test/game/`; don't reach into engine internals.
-7. **Simulation tests** play thousands of seeded bot-vs-bot matches and check invariants after every action: the 40 cards are all distinct and accounted for, a seat to act always has at least one legal action, scores never go down, every match ends. A failing seed becomes a regression test.
+7. **Simulation tests** (`test/game/simulation_test.dart`) play seeded bot-vs-bot matches and check invariants after every move: the 40 cards are all distinct and accounted for, only the seat to act has legal moves, scores never go down, counts add up, every match ends, and a match restored from JSON plays on identically. 500 matches run with every `tool/ci.sh`; run 20,000 before merging engine changes. A failing seed goes into `_regressions` in that file.
 8. Bots get unit tests for canonical decisions (e.g. never "no quiero" with an unbeatable hand) and a seeded benchmark against baseline bots whose win rate must not regress.
 9. Widget tests for screens, controls, navigation and semantics. Controllers take a fake clock, so no test waits on real time.
 10. No `Future.delayed` to hide async timing. Use fakes, explicit pumps, `pumpAndSettle` only when animations settle. Flaky tests get fixed immediately.
@@ -115,6 +115,7 @@ flutter analyze
 flutter test                       # full suite — a partial pass is a failure
 tool/ci.sh                         # exactly what the PR checks run (~1 min)
 tool/ci.sh all                     # + release builds for Android and iOS
+SIMULATION_MATCHES=20000 flutter test test/game/simulation_test.dart   # before merging engine changes (~2 min)
 flutter devices
 flutter run -d <device-id>         # simulator, emulator or device; keep it running for hot reload
 ```

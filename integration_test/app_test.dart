@@ -5,10 +5,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'flows/start_flow.dart';
+import 'flows/table_flow.dart';
 import 'helpers.dart';
 
 void main() {
   setUpE2E();
 
   group('start', startFlows);
+  group('table', tableFlows);
 }

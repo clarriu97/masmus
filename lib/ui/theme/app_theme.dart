@@ -175,6 +175,19 @@ class AppTheme {
         textStyle: WidgetStatePropertyAll(textTheme.titleSmall),
       ),
     ),
+    tooltipTheme: TooltipThemeData(
+      decoration: BoxDecoration(
+        color: AppColors.bubble,
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        boxShadow: AppShadows.raised,
+      ),
+      textStyle: textTheme.titleSmall?.copyWith(color: AppColors.onBubble),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      showDuration: const Duration(seconds: 2),
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.feltDark,
       modalBackgroundColor: AppColors.feltDark,

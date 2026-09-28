@@ -347,5 +347,113 @@
         "type": "String"
       }
     }
+  },
+  "actionMus": "Mus",
+  "@actionMus": {
+    "description": "Button: ask for mus."
+  },
+  "actionNoHayMus": "No hay mus",
+  "@actionNoHayMus": {
+    "description": "Button: cut the mus."
+  },
+  "actionPaso": "Paso",
+  "@actionPaso": {
+    "description": "Button: pass."
+  },
+  "actionEnvido": "Envido",
+  "@actionEnvido": {
+    "description": "Button: bet the amount shown under it."
+  },
+  "actionOrdago": "Órdago",
+  "@actionOrdago": {
+    "description": "Button: bet the whole match."
+  },
+  "actionHold": "mantén",
+  "@actionHold": {
+    "description": "Under the órdago button: it has to be held down."
+  },
+  "actionHoldHint": "Mantén pulsado para echar el órdago",
+  "@actionHoldHint": {
+    "description": "Shown when the órdago button is tapped instead of held."
+  },
+  "actionQuiero": "Quiero",
+  "@actionQuiero": {
+    "description": "Button: accept the bet."
+  },
+  "actionNoQuiero": "No quiero",
+  "@actionNoQuiero": {
+    "description": "Button: refuse the bet."
+  },
+  "actionRaise": "Subir",
+  "@actionRaise": {
+    "description": "Button: raise the bet by the amount shown under it."
+  },
+  "actionOtherAmount": "Otra",
+  "@actionOtherAmount": {
+    "description": "Opens a choice of any amount to bet."
+  },
+  "amountTitle": "¿Cuánto?",
+  "@amountTitle": {
+    "description": "Title of the choice of an amount to bet."
+  },
+  "amountLess": "Menos",
+  "@amountLess": {
+    "description": "Lowers the amount to bet, for screen readers."
+  },
+  "amountMore": "Más",
+  "@amountMore": {
+    "description": "Raises the amount to bet, for screen readers."
+  },
+  "amountConfirm": "Envidar {amount}",
+  "@amountConfirm": {
+    "description": "Confirms the amount to bet.",
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "enviteBy": "{name} {ordago, select, yes{echa órdago} other{envida {stake}}} {lance, select, grande{a la grande} chica{a la chica} pares{a pares} juego{a juego} other{al punto}}",
+  "@enviteBy": {
+    "description": "What the rival bet, above your answers: «El Prudente envida 2 a la grande».",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "ordago": {
+        "type": "String"
+      },
+      "stake": {
+        "type": "int"
+      },
+      "lance": {
+        "type": "String"
+      }
+    }
+  },
+  "enviteIfNot": "{team, select, us{Nosotros} other{Ellos}} +{points}",
+  "@enviteIfNot": {
+    "description": "Under the «no quiero» button: what refusing gives, «Ellos +1».",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "saidPartnerDecides": "{partner, select, you{Tú decides} other{Decide su compañero}}",
+  "@saidPartnerDecides": {
+    "description": "A player's «no quiero» that leaves the answer to their partner.",
+    "placeholders": {
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "actionRaiseAny": "cuánto",
+  "@actionRaiseAny": {
+    "description": "Under the raise button: it asks how much."
   }
 }

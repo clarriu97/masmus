@@ -104,9 +104,11 @@ void main() {
       (const EnvidoSaid(1, amount: 5, stake: 7), '5 más'),
       (const QuieroSaid(1), 'Quiero'),
       (const NoQuieroSaid(1, partnerDecides: false), 'No quiero'),
+      (const NoQuieroSaid(2, partnerDecides: true), 'Tú decides'),
+      (const NoQuieroSaid(1, partnerDecides: true), 'Decide su compañero'),
       (const OrdagoSaid(1), '¡Órdago!'),
     ]) {
-      expect(l10n.said(event), text);
+      expect(l10n.said(event, _view()), text);
     }
   });
 

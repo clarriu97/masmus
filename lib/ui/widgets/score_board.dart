@@ -10,6 +10,7 @@ class ScoreBoard extends StatelessWidget {
     required this.us,
     required this.themLabel,
     required this.them,
+    this.dense = false,
     super.key,
   });
 
@@ -18,12 +19,15 @@ class ScoreBoard extends StatelessWidget {
   final String themLabel;
   final int them;
 
+  /// Each team's name beside its tantos, to fit a bar.
+  final bool dense;
+
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     spacing: AppSpacing.xl,
     children: [
-      _Team(label: usLabel, points: us),
+      _Team(label: usLabel, points: us, dense: dense),
       const SizedBox.square(
         dimension: 4,
         child: DecoratedBox(
@@ -33,27 +37,40 @@ class ScoreBoard extends StatelessWidget {
           ),
         ),
       ),
-      _Team(label: themLabel, points: them),
+      _Team(label: themLabel, points: them, dense: dense),
     ],
   );
 }
 
 class _Team extends StatelessWidget {
-  const _Team({required this.label, required this.points});
+  const _Team({required this.label, required this.points, required this.dense});
 
   final String label;
   final int points;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final name = Text(label.toUpperCase(), style: text.labelMedium);
+    final number = Text('$points', style: text.displaySmall);
     return MergeSemantics(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         spacing: AppSpacing.xs,
         children: [
-          Text(label.toUpperCase(), style: text.labelMedium),
-          Text('$points', style: text.displaySmall),
+          if (dense)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              spacing: AppSpacing.sm,
+              children: [name, number],
+            )
+          else ...[
+            name,
+            number,
+          ],
           ExcludeSemantics(child: Amarracos(points)),
         ],
       ),

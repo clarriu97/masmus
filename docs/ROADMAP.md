@@ -31,7 +31,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 |---|---|---|---|
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
-| **M2 · Producto y diseño** | **🔜 next** | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
+| **M2 · Producto y diseño** | **in progress** (#18 done, Tapete chosen for #19) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
@@ -44,17 +44,33 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** the owner's review of the rules defaults (#49), the
-wireframes (#51) and the visual directions (#58, to finish #19). Meanwhile,
-M4: the partner who consults (#36) and the personalities measured in the
-arena (#37); señas (#35) wait for the owner's call on señas in v1. Work one
-issue per branch and PR, following AGENTS.md → Workflow.
+**Next step:** #19, the Tapete design system in Flutter (tokens, bundled
+fonts, components), then the deck (#20), the identity (#21) and the table of
+M3 (#22 → #31), where the owner's points on the prototype table (comments in
+#24, #25 and #20) are done criteria. The rest of M4 (#35 → #37) comes once
+the new table is playable. Work one issue per branch and PR, following
+AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · Visual direction: Tapete (#19).** The owner picked it out of
+  three directions drawn on the same table (`docs/design/directions/`):
+  green felt with grain, cream cards of the classic Spanish deck with its
+  real numbers (12 the king, 11 the caballo, 10 the sota) and suits in their
+  usual colors, the score in amarracos (a big stone is 5 tantos), cream
+  buttons like chips and the órdago in maroon. Young Serif for the score,
+  Alegreya Sans for everything else, bundled. From Tanteo it keeps the
+  legibility rules: big cards, big numbers, AA contrast. The tokens, fonts
+  and components come in #19; the deck (#20) and the icon (#21) follow it.
+- **2026-09-28 · The redesign goes first.** Playing the prototype table on
+  his iPhone, the owner couldn't follow the game: who speaks, whose turn it
+  is, when the mus is cut, who bets, what happened before his turn; buttons
+  that look alike, animations that fail, cards he dislikes. So M2 and M3 go
+  before the rest of M4, and his points are done criteria of #24, #25 and
+  #20. He tests the app for real once the new table is ready (#31).
 - **2026-09-25 · A bot that estimates (#33, #34).** `StrategicBot` decides
   from estimates instead of rules of thumb. `Knowledge`
   (`lib/bots/estimate.dart`) deals the hands its seat can't see at random
@@ -187,4 +203,5 @@ or right after; business model; languages at launch; license.
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
+| Visual directions | `docs/design/directions/`: Tapete (chosen), Noche and Tanteo on the same table (#19), source `index.html` and one JPG each |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

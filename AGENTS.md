@@ -118,6 +118,7 @@ tool/ci.sh                         # exactly what the PR checks run (~1 min): li
 tool/ci.sh all                     # + release builds for Android and iOS, e2e on the simulator and emulator
 flutter test --update-goldens --tags golden   # after an intentional visual change (macOS); review the PNG diff
 tool/ci.sh e2e-ios small           # e2e flows (integration_test/) on the small iPhone simulator; also large, e2e-android
+flutter test --update-goldens --tags golden test/goldens/branding_test.dart && dart run flutter_launcher_icons && dart run flutter_native_splash:create   # icon and splash (see ROADMAP → Identity for the two files to restore)
 SIMULATION_MATCHES=20000 flutter test test/game/simulation_test.dart   # before merging engine changes (~2 min)
 dart run tool/arena.dart strategic heuristic 250   # bots against each other: win rate, style (Markdown)
 flutter devices

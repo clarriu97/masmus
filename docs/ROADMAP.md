@@ -31,8 +31,8 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 |---|---|---|---|
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
-| **M2 · Producto y diseño** | **in progress** (#18 #19 #20 done) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| M3 · Mesa jugable | in progress (#22 → #30 done; #31 is the owner's playtest) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M2 · Producto y diseño | ✅ done | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
+| **M3 · Mesa jugable** | **in progress** (#22 → #30 done; #31 is the owner's playtest) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,17 +44,28 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** the identity (#21: name, icon and splash), then #31: the
-owner plays the new table on his iPhone, with Mus players if he can. His
-points on the prototype table (comments in #24, #25 and #20) are what to
-check first. Then the rest of M4 (#35 → #37) and M5. Work one issue per
-branch and PR, following AGENTS.md → Workflow.
+**Next step:** #31: the owner plays the new table on his iPhone, with Mus
+players if he can; his points on the prototype table (comments in #24, #25
+and #20) are what to check first. Meanwhile the rest of M4 (#35 → #37)
+and M5. Work one issue per branch and PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · Identity (#21).** The app is called «Más Mus» on the home
+  screen of both platforms and in the task switcher. Its icon is two cream
+  cards on the felt, an oros in front and a copas behind, drawn with the
+  deck's own art by `test/goldens/branding_test.dart`. The PNGs it writes
+  in `assets/branding/` are goldens too, so the icon can't change unseen:
+  the full icon, the adaptive foreground, the monochrome for Android 13 and
+  the two native splashes. `flutter_launcher_icons` and
+  `flutter_native_splash` turn them into platform assets. After running
+  them, keep `ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS =
+  YES` in the Xcode project, which the icon tool breaks, and leave
+  `Info.plist` as it was, which the splash tool rewrites. The app opens
+  straight on the start screen.
 - **2026-09-28 · How to play (#30).** «Cómo se juega», from the start screen
   and from the table's «?», tells the rules of this file for playing, in
   the table's vocabulary: the basics, the cards, mano and postre, mus and
@@ -351,7 +362,8 @@ or right after; business model; languages at launch; license.
 | CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
 | Branch protection | `master`: required `analyze`, `test` and `goldens`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
-| App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
+| App ids | bundle id / applicationId `dev.larri.masmus`; display name «Más Mus» |
+| Icon and splash | `test/goldens/branding_test.dart` → `assets/branding/` → `dart run flutter_launcher_icons` and `dart run flutter_native_splash:create` |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
 | Deck | `lib/ui/cards/`: suit and figure art (`card_art.dart`), pip layouts, `PlayingCardView`; goldens `deck.png`, `deck_compact.png`, `card_states.png` |

@@ -101,5 +101,251 @@
   },
   "@personalityFaroleroStyle": {
     "description": "How El Farolero plays, in one line."
+  },
+  "tableExit": "Salir",
+  "@tableExit": {
+    "description": "Leaves the table."
+  },
+  "teamUs": "Nosotros",
+  "@teamUs": {
+    "description": "Your pair, in the score."
+  },
+  "teamThem": "Ellos",
+  "@teamThem": {
+    "description": "The rival pair, in the score."
+  },
+  "tableTarget": "a {target}",
+  "@tableTarget": {
+    "description": "How many tantos win the match, next to the score: «a 40».",
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "roleSeat": "{role, select, partner{compañero} other{rival}}{position, select, mano{ · mano} postre{ · postre} other{}}",
+  "@roleSeat": {
+    "description": "Who a bot is to you, and whether it is mano or postre: «rival · postre».",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      },
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "stepName": "{step, select, mus{Mus} grande{Grande} chica{Chica} pares{Pares} juego{Juego} punto{Punto} other{}}",
+  "@stepName": {
+    "description": "A step of the hand in the row at the top of the table.",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      }
+    }
+  },
+  "stepYourTurn": "te toca",
+  "@stepYourTurn": {
+    "description": "Under the step being played, when it is your turn."
+  },
+  "stepCorrido": "corrido",
+  "@stepCorrido": {
+    "description": "Under the mus of the first hand: it goes round until someone cuts it."
+  },
+  "stepCut": "cortado",
+  "@stepCut": {
+    "description": "Under the mus once someone said «no hay mus»."
+  },
+  "stepDiscards": "descartes",
+  "@stepDiscards": {
+    "description": "Under the mus while the players change cards."
+  },
+  "stepEnPaso": "en paso",
+  "@stepEnPaso": {
+    "description": "Under a lance nobody bet on."
+  },
+  "stepQuerido": "querido {stake}",
+  "@stepQuerido": {
+    "description": "Under a lance whose bet was accepted.",
+    "placeholders": {
+      "stake": {
+        "type": "int"
+      }
+    }
+  },
+  "stepNoQuerido": "{team, select, us{Nosotros} other{Ellos}} +{points}",
+  "@stepNoQuerido": {
+    "description": "Under a lance whose bet was refused: who took the points, «Nosotros +1».",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSinDisputa": "de {team, select, us{Nosotros} other{Ellos}}",
+  "@stepSinDisputa": {
+    "description": "Under a lance only one pair could play: it takes it at the count.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "stepNotPlayed": "no se juega",
+  "@stepNotPlayed": {
+    "description": "Under pares when nobody had them."
+  },
+  "stepEnvite": "envite {stake}",
+  "@stepEnvite": {
+    "description": "Under the lance being played while a bet waits for an answer.",
+    "placeholders": {
+      "stake": {
+        "type": "int"
+      }
+    }
+  },
+  "stepOrdago": "órdago",
+  "@stepOrdago": {
+    "description": "Under the lance being played while an órdago waits for an answer."
+  },
+  "stepOrdagoQuerido": "órdago querido",
+  "@stepOrdagoQuerido": {
+    "description": "Under the lance where an órdago was accepted."
+  },
+  "saidMus": "Mus",
+  "@saidMus": {
+    "description": "What a player says to ask for mus."
+  },
+  "saidNoHayMus": "No hay mus",
+  "@saidNoHayMus": {
+    "description": "What a player says to cut the mus."
+  },
+  "saidDiscarded": "{count, plural, =1{Pide una} other{Pide {count}}}",
+  "@saidDiscarded": {
+    "description": "What a player asks for in the discards: how many cards.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "saidDeclared": "{lance, select, pares{Pares} other{Juego}}: {has, select, yes{sí} other{no}}",
+  "@saidDeclared": {
+    "description": "Whether a player has pares or juego, said at the start of those lances.",
+    "placeholders": {
+      "lance": {
+        "type": "String"
+      },
+      "has": {
+        "type": "String"
+      }
+    }
+  },
+  "saidPaso": "Paso",
+  "@saidPaso": {
+    "description": "What a player says to pass."
+  },
+  "saidEnvido": "{raise, select, yes{{amount} más} other{Envido {amount}}}",
+  "@saidEnvido": {
+    "description": "A bet, or a raise over the one on the table.",
+    "placeholders": {
+      "raise": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "saidQuiero": "Quiero",
+  "@saidQuiero": {
+    "description": "What a player says to accept a bet."
+  },
+  "saidNoQuiero": "No quiero",
+  "@saidNoQuiero": {
+    "description": "What a player says to refuse a bet."
+  },
+  "saidOrdago": "¡Órdago!",
+  "@saidOrdago": {
+    "description": "What a player says to bet the whole match."
+  },
+  "tableStake": "En la mesa",
+  "@tableStake": {
+    "description": "What is bet in the lance being played."
+  },
+  "tableStakeNone": "Nada",
+  "@tableStakeNone": {
+    "description": "Nothing is bet in the lance being played, for screen readers."
+  },
+  "tableYourTurn": "Te toca",
+  "@tableYourTurn": {
+    "description": "Your turn."
+  },
+  "tableTurnOf": "Turno de {name}",
+  "@tableTurnOf": {
+    "description": "Whose turn it is.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "helpPares": "{kind, select, par{Par de {high}} medias{Medias de {high}} duples{Duples de {high} y {low}} other{Duples de {high}}}",
+  "@helpPares": {
+    "description": "What your pares are.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "low": {
+        "type": "String"
+      }
+    }
+  },
+  "helpJuego": "Juego {points}",
+  "@helpJuego": {
+    "description": "What your juego is worth.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "helpPunto": "Punto {points}",
+  "@helpPunto": {
+    "description": "Your punto, when you have no juego.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "rankPlural": "{rank, select, 12{reyes} 11{caballos} 10{sotas} 7{sietes} 6{seises} 5{cincos} 4{cuatros} 3{treses} 2{doses} other{ases}}",
+  "@rankPlural": {
+    "description": "Cards of a rank, in plural: «reyes».",
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      }
+    }
+  },
+  "tableMano": "Mano",
+  "@tableMano": {
+    "description": "Marks that you are mano, next to your seat."
+  },
+  "tableStakeIs": "En la mesa: {stake}",
+  "@tableStakeIs": {
+    "description": "What is bet in the lance being played, for screen readers: «En la mesa: 2».",
+    "placeholders": {
+      "stake": {
+        "type": "String"
+      }
+    }
   }
 }

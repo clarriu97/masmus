@@ -219,6 +219,228 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Envida sin nada cuando puede'**
   String get personalityFaroleroStyle;
+
+  /// Leaves the table.
+  ///
+  /// In es, this message translates to:
+  /// **'Salir'**
+  String get tableExit;
+
+  /// Your pair, in the score.
+  ///
+  /// In es, this message translates to:
+  /// **'Nosotros'**
+  String get teamUs;
+
+  /// The rival pair, in the score.
+  ///
+  /// In es, this message translates to:
+  /// **'Ellos'**
+  String get teamThem;
+
+  /// How many tantos win the match, next to the score: «a 40».
+  ///
+  /// In es, this message translates to:
+  /// **'a {target}'**
+  String tableTarget(int target);
+
+  /// Who a bot is to you, and whether it is mano or postre: «rival · postre».
+  ///
+  /// In es, this message translates to:
+  /// **'{role, select, partner{compañero} other{rival}}{position, select, mano{ · mano} postre{ · postre} other{}}'**
+  String roleSeat(String role, String position);
+
+  /// A step of the hand in the row at the top of the table.
+  ///
+  /// In es, this message translates to:
+  /// **'{step, select, mus{Mus} grande{Grande} chica{Chica} pares{Pares} juego{Juego} punto{Punto} other{}}'**
+  String stepName(String step);
+
+  /// Under the step being played, when it is your turn.
+  ///
+  /// In es, this message translates to:
+  /// **'te toca'**
+  String get stepYourTurn;
+
+  /// Under the mus of the first hand: it goes round until someone cuts it.
+  ///
+  /// In es, this message translates to:
+  /// **'corrido'**
+  String get stepCorrido;
+
+  /// Under the mus once someone said «no hay mus».
+  ///
+  /// In es, this message translates to:
+  /// **'cortado'**
+  String get stepCut;
+
+  /// Under the mus while the players change cards.
+  ///
+  /// In es, this message translates to:
+  /// **'descartes'**
+  String get stepDiscards;
+
+  /// Under a lance nobody bet on.
+  ///
+  /// In es, this message translates to:
+  /// **'en paso'**
+  String get stepEnPaso;
+
+  /// Under a lance whose bet was accepted.
+  ///
+  /// In es, this message translates to:
+  /// **'querido {stake}'**
+  String stepQuerido(int stake);
+
+  /// Under a lance whose bet was refused: who took the points, «Nosotros +1».
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Nosotros} other{Ellos}} +{points}'**
+  String stepNoQuerido(String team, int points);
+
+  /// Under a lance only one pair could play: it takes it at the count.
+  ///
+  /// In es, this message translates to:
+  /// **'de {team, select, us{Nosotros} other{Ellos}}'**
+  String stepSinDisputa(String team);
+
+  /// Under pares when nobody had them.
+  ///
+  /// In es, this message translates to:
+  /// **'no se juega'**
+  String get stepNotPlayed;
+
+  /// Under the lance being played while a bet waits for an answer.
+  ///
+  /// In es, this message translates to:
+  /// **'envite {stake}'**
+  String stepEnvite(int stake);
+
+  /// Under the lance being played while an órdago waits for an answer.
+  ///
+  /// In es, this message translates to:
+  /// **'órdago'**
+  String get stepOrdago;
+
+  /// Under the lance where an órdago was accepted.
+  ///
+  /// In es, this message translates to:
+  /// **'órdago querido'**
+  String get stepOrdagoQuerido;
+
+  /// What a player says to ask for mus.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus'**
+  String get saidMus;
+
+  /// What a player says to cut the mus.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay mus'**
+  String get saidNoHayMus;
+
+  /// What a player asks for in the discards: how many cards.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{Pide una} other{Pide {count}}}'**
+  String saidDiscarded(int count);
+
+  /// Whether a player has pares or juego, said at the start of those lances.
+  ///
+  /// In es, this message translates to:
+  /// **'{lance, select, pares{Pares} other{Juego}}: {has, select, yes{sí} other{no}}'**
+  String saidDeclared(String lance, String has);
+
+  /// What a player says to pass.
+  ///
+  /// In es, this message translates to:
+  /// **'Paso'**
+  String get saidPaso;
+
+  /// A bet, or a raise over the one on the table.
+  ///
+  /// In es, this message translates to:
+  /// **'{raise, select, yes{{amount} más} other{Envido {amount}}}'**
+  String saidEnvido(String raise, int amount);
+
+  /// What a player says to accept a bet.
+  ///
+  /// In es, this message translates to:
+  /// **'Quiero'**
+  String get saidQuiero;
+
+  /// What a player says to refuse a bet.
+  ///
+  /// In es, this message translates to:
+  /// **'No quiero'**
+  String get saidNoQuiero;
+
+  /// What a player says to bet the whole match.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Órdago!'**
+  String get saidOrdago;
+
+  /// What is bet in the lance being played.
+  ///
+  /// In es, this message translates to:
+  /// **'En la mesa'**
+  String get tableStake;
+
+  /// Nothing is bet in the lance being played, for screen readers.
+  ///
+  /// In es, this message translates to:
+  /// **'Nada'**
+  String get tableStakeNone;
+
+  /// Your turn.
+  ///
+  /// In es, this message translates to:
+  /// **'Te toca'**
+  String get tableYourTurn;
+
+  /// Whose turn it is.
+  ///
+  /// In es, this message translates to:
+  /// **'Turno de {name}'**
+  String tableTurnOf(String name);
+
+  /// What your pares are.
+  ///
+  /// In es, this message translates to:
+  /// **'{kind, select, par{Par de {high}} medias{Medias de {high}} duples{Duples de {high} y {low}} other{Duples de {high}}}'**
+  String helpPares(String kind, String high, String low);
+
+  /// What your juego is worth.
+  ///
+  /// In es, this message translates to:
+  /// **'Juego {points}'**
+  String helpJuego(int points);
+
+  /// Your punto, when you have no juego.
+  ///
+  /// In es, this message translates to:
+  /// **'Punto {points}'**
+  String helpPunto(int points);
+
+  /// Cards of a rank, in plural: «reyes».
+  ///
+  /// In es, this message translates to:
+  /// **'{rank, select, 12{reyes} 11{caballos} 10{sotas} 7{sietes} 6{seises} 5{cincos} 4{cuatros} 3{treses} 2{doses} other{ases}}'**
+  String rankPlural(String rank);
+
+  /// Marks that you are mano, next to your seat.
+  ///
+  /// In es, this message translates to:
+  /// **'Mano'**
+  String get tableMano;
+
+  /// What is bet in the lance being played, for screen readers: «En la mesa: 2».
+  ///
+  /// In es, this message translates to:
+  /// **'En la mesa: {stake}'**
+  String tableStakeIs(String stake);
 }
 
 class _AppLocalizationsDelegate

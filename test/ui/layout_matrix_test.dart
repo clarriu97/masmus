@@ -8,11 +8,14 @@ import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
 
 import '../helpers/devices.dart';
+import '../helpers/table.dart';
 import '../helpers/test_app.dart';
 
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(table: (partner, rules) => const SizedBox()),
   'new match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
+    'table at $moment': () => tableScreen(controller()),
 };
 
 void main() {

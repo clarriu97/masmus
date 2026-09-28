@@ -44,26 +44,21 @@ class LanceChip extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
+              horizontal: AppSpacing.xs,
               vertical: AppSpacing.xs,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                _Line(
                   lance,
-                  textAlign: TextAlign.center,
-                  style: text.titleSmall?.copyWith(
+                  text.titleSmall?.copyWith(
                     color: ink,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 if (status != null)
-                  Text(
-                    status,
-                    textAlign: TextAlign.center,
-                    style: text.labelSmall?.copyWith(color: ink),
-                  ),
+                  _Line(status, text.labelSmall?.copyWith(color: ink)),
               ],
             ),
           ),
@@ -71,4 +66,19 @@ class LanceChip extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One line that shrinks a little rather than break a word when the row is
+/// narrow.
+class _Line extends StatelessWidget {
+  const _Line(this.text, this.style);
+
+  final String text;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, style: style, maxLines: 1),
+  );
 }

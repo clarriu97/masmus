@@ -98,4 +98,206 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get personalityFaroleroStyle => 'Envida sin nada cuando puede';
+
+  @override
+  String get tableExit => 'Salir';
+
+  @override
+  String get teamUs => 'Nosotros';
+
+  @override
+  String get teamThem => 'Ellos';
+
+  @override
+  String tableTarget(int target) {
+    return 'a $target';
+  }
+
+  @override
+  String roleSeat(String role, String position) {
+    String _temp0 = intl.Intl.selectLogic(role, {
+      'partner': 'compañero',
+      'other': 'rival',
+    });
+    String _temp1 = intl.Intl.selectLogic(position, {
+      'mano': ' · mano',
+      'postre': ' · postre',
+      'other': '',
+    });
+    return '$_temp0$_temp1';
+  }
+
+  @override
+  String stepName(String step) {
+    String _temp0 = intl.Intl.selectLogic(step, {
+      'mus': 'Mus',
+      'grande': 'Grande',
+      'chica': 'Chica',
+      'pares': 'Pares',
+      'juego': 'Juego',
+      'punto': 'Punto',
+      'other': '',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get stepYourTurn => 'te toca';
+
+  @override
+  String get stepCorrido => 'corrido';
+
+  @override
+  String get stepCut => 'cortado';
+
+  @override
+  String get stepDiscards => 'descartes';
+
+  @override
+  String get stepEnPaso => 'en paso';
+
+  @override
+  String stepQuerido(int stake) {
+    return 'querido $stake';
+  }
+
+  @override
+  String stepNoQuerido(String team, int points) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return '$_temp0 +$points';
+  }
+
+  @override
+  String stepSinDisputa(String team) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return 'de $_temp0';
+  }
+
+  @override
+  String get stepNotPlayed => 'no se juega';
+
+  @override
+  String stepEnvite(int stake) {
+    return 'envite $stake';
+  }
+
+  @override
+  String get stepOrdago => 'órdago';
+
+  @override
+  String get stepOrdagoQuerido => 'órdago querido';
+
+  @override
+  String get saidMus => 'Mus';
+
+  @override
+  String get saidNoHayMus => 'No hay mus';
+
+  @override
+  String saidDiscarded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Pide $count',
+      one: 'Pide una',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String saidDeclared(String lance, String has) {
+    String _temp0 = intl.Intl.selectLogic(lance, {
+      'pares': 'Pares',
+      'other': 'Juego',
+    });
+    String _temp1 = intl.Intl.selectLogic(has, {'yes': 'sí', 'other': 'no'});
+    return '$_temp0: $_temp1';
+  }
+
+  @override
+  String get saidPaso => 'Paso';
+
+  @override
+  String saidEnvido(String raise, int amount) {
+    String _temp0 = intl.Intl.selectLogic(raise, {
+      'yes': '$amount más',
+      'other': 'Envido $amount',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get saidQuiero => 'Quiero';
+
+  @override
+  String get saidNoQuiero => 'No quiero';
+
+  @override
+  String get saidOrdago => '¡Órdago!';
+
+  @override
+  String get tableStake => 'En la mesa';
+
+  @override
+  String get tableStakeNone => 'Nada';
+
+  @override
+  String get tableYourTurn => 'Te toca';
+
+  @override
+  String tableTurnOf(String name) {
+    return 'Turno de $name';
+  }
+
+  @override
+  String helpPares(String kind, String high, String low) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'par': 'Par de $high',
+      'medias': 'Medias de $high',
+      'duples': 'Duples de $high y $low',
+      'other': 'Duples de $high',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String helpJuego(int points) {
+    return 'Juego $points';
+  }
+
+  @override
+  String helpPunto(int points) {
+    return 'Punto $points';
+  }
+
+  @override
+  String rankPlural(String rank) {
+    String _temp0 = intl.Intl.selectLogic(rank, {
+      '12': 'reyes',
+      '11': 'caballos',
+      '10': 'sotas',
+      '7': 'sietes',
+      '6': 'seises',
+      '5': 'cincos',
+      '4': 'cuatros',
+      '3': 'treses',
+      '2': 'doses',
+      'other': 'ases',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get tableMano => 'Mano';
+
+  @override
+  String tableStakeIs(String stake) {
+    return 'En la mesa: $stake';
+  }
 }

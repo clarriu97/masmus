@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
 import '../../services/match_store.dart';
 import '../cards/playing_card_view.dart';
+import '../help/how_to_play_screen.dart';
 import '../settings/settings_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/action_button.dart';
@@ -151,16 +152,28 @@ class _StartScreenState extends State<StartScreen> {
                               : ActionKind.secondary,
                           onPressed: _newMatch,
                         ),
-                        Center(
-                          child: TextButton(
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) =>
-                                    SettingsScreen(settings: widget.settings),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: AppSpacing.lg,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const HowToPlayScreen(),
+                                ),
                               ),
+                              child: Text(l10n.howTitle),
                             ),
-                            child: Text(l10n.settingsTitle),
-                          ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) =>
+                                      SettingsScreen(settings: widget.settings),
+                                ),
+                              ),
+                              child: Text(l10n.settingsTitle),
+                            ),
+                          ],
                         ),
                       ],
                     ),

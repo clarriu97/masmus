@@ -10,6 +10,7 @@ import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
 import '../cards/playing_card_view.dart';
+import '../help/how_to_play_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 import '../widgets/lance_chip.dart';
@@ -168,12 +169,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.xs,
-        AppSpacing.xs,
-        AppSpacing.lg,
-        AppSpacing.xs,
-      ),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       child: Row(
         children: [
           TextButton.icon(
@@ -196,6 +192,13 @@ class _TopBar extends StatelessWidget {
           Text(
             l10n.tableTarget(view.target),
             style: Theme.of(context).textTheme.labelSmall,
+          ),
+          IconButton(
+            tooltip: l10n.howTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const HowToPlayScreen()),
+            ),
+            icon: const Icon(Icons.help_outline),
           ),
         ],
       ),

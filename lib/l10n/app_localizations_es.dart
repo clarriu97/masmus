@@ -633,4 +633,165 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsHelpDetail =>
       'La mesa te dice qué llevas: pares, juego o punto.';
+
+  @override
+  String get howTitle => 'Cómo se juega';
+
+  @override
+  String get howBasicsTitle => 'Lo básico';
+
+  @override
+  String get howBasics =>
+      'Juegas con tu compañero, sentado enfrente, contra dos rivales. Cada uno recibe cuatro cartas de una baraja española de 40. Gana la primera pareja que llega a 40 tantos, o a 30 si lo eliges.';
+
+  @override
+  String get howCardsTitle => 'Las cartas';
+
+  @override
+  String get howCards =>
+      'Con 8 reyes, lo normal, los treses cuentan como reyes y los doses como ases. Para la grande, la chica y los pares, de mayor a menor: rey, caballo, sota, 7, 6, 5, 4 y as. Para el juego y el punto, rey, caballo y sota valen 10 y las demás, su número.';
+
+  @override
+  String get howTurnsTitle => 'Mano y postre';
+
+  @override
+  String get howTurns =>
+      'Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.';
+
+  @override
+  String get howMusTitle => 'Mus o no hay mus';
+
+  @override
+  String get howMus =>
+      'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.';
+
+  @override
+  String get howLancesTitle => 'Los cuatro lances';
+
+  @override
+  String get howGrande =>
+      'Grande: gana la carta más alta y, si empatan, la siguiente. R-R-7-4 gana a R-C-C-C.';
+
+  @override
+  String get howChica =>
+      'Chica: gana la carta más baja y, si empatan, la siguiente. 1-1-4-5 gana a 1-4-5-6.';
+
+  @override
+  String get howPares =>
+      'Pares: par (dos iguales), medias (tres) o duples (dos parejas, o cuatro iguales). Gana el tipo más alto y, si es el mismo, las cartas más altas de la jugada. Solo juegan quienes tienen pares.';
+
+  @override
+  String get howJuego =>
+      'Juego: tienes juego si sumas 31 o más. La mejor es la 31; luego 32, 40, 37, 36, 35, 34 y 33. Si nadie tiene juego se juega al punto: gana quien más se acerca a 30.';
+
+  @override
+  String get howBetsTitle => 'Envidar';
+
+  @override
+  String get howBets =>
+      'En cada lance puedes pasar, envidar (2 tantos o más) o echar un órdago, que se juega la partida entera. Ante un envite, la otra pareja quiere, no quiere o sube; basta con que uno de los dos quiera. Si no quieren, quien envidó cobra en el acto 1 tanto, o lo último que se había aceptado. Lo querido se decide en el recuento. Un órdago querido se resuelve al momento, con las cartas boca arriba.';
+
+  @override
+  String get howCountTitle => 'El recuento';
+
+  @override
+  String get howCount =>
+      'Al acabar la mano se enseñan todas las cartas y se cuenta lance a lance. La mejor grande y la mejor chica se llevan 1 tanto si nadie envidó, o lo querido. En pares, cada jugador de la pareja ganadora suma par 1, medias 2 o duples 3; en juego, 3 por la 31 y 2 por cualquier otro. La primera pareja que llega a los tantos gana, aunque queden lances por contar.';
+
+  @override
+  String get howFairTitle => 'Reparto limpio';
+
+  @override
+  String get howFair =>
+      'Las cartas se barajan al azar en cada mano. Los bots juegan con lo mismo que tú: sus cartas y lo que se dice en la mesa, nunca las tuyas ni el mazo. Al final de cada mano puedes ver todas las cartas y todos los descartes.';
+
+  @override
+  String get glossaryTitle => 'Glosario';
+
+  @override
+  String get glossaryTerm0 => 'Mano';
+
+  @override
+  String get glossaryMeaning0 =>
+      'Quien habla primero en una mano; gana los empates.';
+
+  @override
+  String get glossaryTerm1 => 'Postre';
+
+  @override
+  String get glossaryMeaning1 => 'Quien habla el último.';
+
+  @override
+  String get glossaryTerm2 => 'Lance';
+
+  @override
+  String get glossaryMeaning2 =>
+      'Cada una de las partes de la mano: grande, chica, pares y juego o punto.';
+
+  @override
+  String get glossaryTerm3 => 'Envido';
+
+  @override
+  String get glossaryMeaning3 =>
+      'Apostar tantos en un lance: «envido» son 2; «cinco más» sube la apuesta.';
+
+  @override
+  String get glossaryTerm4 => 'Órdago';
+
+  @override
+  String get glossaryMeaning4 => 'Apostar la partida entera en un lance.';
+
+  @override
+  String get glossaryTerm5 => 'Quiero / No quiero';
+
+  @override
+  String get glossaryMeaning5 => 'Aceptar o rechazar un envite.';
+
+  @override
+  String get glossaryTerm6 => 'En paso';
+
+  @override
+  String get glossaryMeaning6 =>
+      'Un lance en el que nadie envida; se cuenta al final.';
+
+  @override
+  String get glossaryTerm7 => 'Sin disputa';
+
+  @override
+  String get glossaryMeaning7 =>
+      'Un lance que solo puede jugar una pareja; se lo lleva en el recuento.';
+
+  @override
+  String get glossaryTerm8 => 'Par, medias, duples';
+
+  @override
+  String get glossaryMeaning8 =>
+      'Dos cartas iguales; tres; dos parejas o cuatro iguales.';
+
+  @override
+  String get glossaryTerm9 => 'La 31';
+
+  @override
+  String get glossaryMeaning9 => 'El mejor juego: sumar exactamente 31.';
+
+  @override
+  String get glossaryTerm10 => 'Punto';
+
+  @override
+  String get glossaryMeaning10 =>
+      'Lo que suman las cartas cuando nadie tiene juego.';
+
+  @override
+  String get glossaryTerm11 => 'Mus corrido';
+
+  @override
+  String get glossaryMeaning11 =>
+      'En la primera mano, la mano pasa al siguiente mientras todos pidan mus.';
+
+  @override
+  String get glossaryTerm12 => 'Amarracos';
+
+  @override
+  String get glossaryMeaning12 =>
+      'Las piedras con las que se llevan los tantos: cada amarraco son cinco.';
 }

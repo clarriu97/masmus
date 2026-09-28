@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
@@ -29,6 +30,7 @@ final Map<String, Widget Function()> _screens = {
     resume: (_) => const SizedBox(),
   ),
   'new match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  'how to play': () => const HowToPlayScreen(),
   'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table at $moment': () => tableScreen(controller()),

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:masmus/widgets/mus_table.dart';
+import 'package:masmus/ui/table/table_screen.dart';
 
 import '../helpers.dart';
 
@@ -12,6 +12,6 @@ void startFlows() {
     await tester.tap(find.text('Nueva partida'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Empezar partida'));
-    await waitFor(tester, find.byType(MusTable));
+    await waitFor(tester, find.byType(TableScreen));
   });
 }

@@ -44,17 +44,25 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** switch the app to the new table and delete the
-prototype's, then #28 → #31; the owner's points on the prototype table
-(comments in #24, #25 and #20) are done criteria. The identity (#21)
-whenever it fits; the rest of M4 (#35 → #37) once the new table is playable.
-Work one issue per branch and PR, following AGENTS.md → Workflow.
+**Next step:** #28 (end of match and rematch), then #29 → #31: saving and
+resuming, settings and help, and the playtest with Mus players, where the
+owner tries the table for real on his iPhone. The owner's points on the
+prototype table (comments in #24, #25 and #20) are done criteria. The
+identity (#21) whenever it fits; the rest of M4 (#35 → #37) after the
+playtest. Work one issue per branch and PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · The app plays at the new table.** «Empezar partida» opens
+  `TablePage`: your partner across the table and two rivals picked at
+  random among the other personalities (the same seed, the same ones), all
+  `StrategicBot`s. The prototype's table and everything only it used are
+  gone: `GameScreen`, `MusTable`, its controls and round summary, the old
+  theme and the `vibration` plugin (haptics come back with
+  `HapticFeedback` in #39).
 - **2026-09-28 · The count (#27).** At the end of a hand the table gives way
   to `CountView`:
   - the four hands face up, from the mano on, each with its owner;
@@ -300,7 +308,7 @@ or right after; business model; languages at launch; license.
 
 | What | Where |
 |---|---|
-| App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`, new UI `lib/ui/`, texts `lib/l10n/`; `lib/screens/`, `lib/widgets/` and `lib/core/theme/` are the legacy table |
+| App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`, UI `lib/ui/`, texts `lib/l10n/` |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
 | CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |

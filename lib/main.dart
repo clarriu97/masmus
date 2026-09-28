@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'l10n/app_localizations.dart';
-import 'screens/game_screen.dart';
 import 'ui/start/start_screen.dart';
+import 'ui/table/table_page.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/font_licenses.dart';
 
@@ -36,7 +36,7 @@ class MasmusApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
     theme: AppTheme.tapete,
     home: StartScreen(
-      table: (partner, rules) => GameScreen(partner: partner, rules: rules),
+      table: (partner, rules) => TablePage(partner: partner, rules: rules),
     ),
   );
 }

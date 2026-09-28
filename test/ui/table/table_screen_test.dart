@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/seat.dart';
+import 'package:masmus/ui/widgets/lance_chip.dart';
 
 import '../../helpers/table.dart';
 import '../../helpers/test_app.dart';
@@ -30,13 +31,16 @@ void main() {
       'are mano', (tester) async {
     await tester.pumpWidget(buildTestApp(tableScreen(tableMoments['mus']!())));
     for (final step in ['Mus', 'Grande', 'Chica', 'Pares', 'Juego']) {
-      expect(find.text(step), findsOneWidget);
+      expect(find.widgetWithText(LanceChip, step), findsOneWidget);
     }
     expect(find.text('corrido'), findsOneWidget);
     expect(find.text('Mano'), findsOneWidget);
     expect(find.text('Par de reyes'), findsOneWidget);
     expect(find.text('Punto 26'), findsOneWidget);
-    expect(find.text('Te toca'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Mus. Te toca. En la mesa: Nada'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a bet shows by its bettor and on the table, and the bot '

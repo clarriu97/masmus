@@ -44,7 +44,7 @@ extension TableTexts on AppLocalizations {
         : 'none',
   );
 
-  String said(GameEvent event) => switch (event) {
+  String said(GameEvent event, TableView view) => switch (event) {
     MusSaid() => saidMus,
     NoHayMusSaid() => saidNoHayMus,
     Discarded(:final count) => saidDiscarded(count),
@@ -58,6 +58,9 @@ extension TableTexts on AppLocalizations {
       amount,
     ),
     QuieroSaid() => saidQuiero,
+    NoQuieroSaid(:final seat, partnerDecides: true) => saidPartnerDecides(
+      view.partnerOf(seat) ? 'you' : 'other',
+    ),
     NoQuieroSaid() => saidNoQuiero,
     OrdagoSaid() => saidOrdago,
     _ => throw ArgumentError.value(event, 'event', 'Nobody says it'),

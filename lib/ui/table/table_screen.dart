@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../bots/heuristic_bot.dart';
@@ -11,6 +13,7 @@ import '../widgets/lance_chip.dart';
 import '../widgets/score_board.dart';
 import '../widgets/table_chip.dart';
 import 'seat.dart';
+import 'table_actions.dart';
 import 'table_texts.dart';
 import 'table_view.dart';
 
@@ -40,6 +43,7 @@ class TableScreen extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: controller,
     builder: (context, _) {
+      final l10n = AppLocalizations.of(context);
       final view = TableView.of(controller.match, you: controller.humanSeat!);
       return MediaQuery.withClampedTextScaling(
         maxScaleFactor: maxTextScale,
@@ -54,7 +58,28 @@ class TableScreen extends StatelessWidget {
                     child: _Seats(view: view, bots: bots),
                   ),
                   _YourHand(view: view),
-                  _TurnBar(view: view, bots: bots),
+                  _Status(view: view, bots: bots),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                    ),
+                    child: view.yourTurn && controller.humanMoves.isNotEmpty
+                        ? TableActions(
+                            key: ValueKey(controller.match.hand.phase),
+                            moves: controller.humanMoves,
+                            view: view,
+                            bettor: switch (view.stake?.bettor) {
+                              final bettor? when bots.containsKey(bettor) =>
+                                l10n.personalityName(bots[bettor]!),
+                              _ => null,
+                            },
+                            onMove: controller.play,
+                          )
+                        : _TurnBar(view: view, bots: bots),
+                  ),
                 ],
               ),
             ),
@@ -96,6 +121,7 @@ class _TopBar extends StatelessWidget {
                 us: view.us,
                 themLabel: l10n.teamThem,
                 them: view.them,
+                dense: true,
               ),
             ),
           ),
@@ -145,9 +171,12 @@ class _Steps extends StatelessWidget {
 }
 
 /// Your partner across the table, the rivals at the sides and what is bet
-/// in the middle; scaled down to fit when the screen is short.
+/// in the middle. On a short screen the three sit in a row, and the bet is
+/// read in the row of the hand; scaled down if it still doesn't fit.
 class _Seats extends StatelessWidget {
   const _Seats({required this.view, required this.bots});
+
+  static const compactBelow = 260.0;
 
   final TableView view;
   final Map<int, Personality> bots;
@@ -155,12 +184,12 @@ class _Seats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    Widget seat(int seat) => Seat(
+    Widget seatOf(int seat) => Seat(
       name: l10n.personalityName(bots[seat]!),
       role: l10n.seatRole(view, seat),
       thinking: view.turn == seat,
       said: switch (view.said[seat]) {
-        final event? => l10n.said(event),
+        final event? => l10n.said(event, view),
         null => null,
       },
     );
@@ -175,20 +204,28 @@ class _Seats extends StatelessWidget {
               horizontal: AppSpacing.sm,
               vertical: AppSpacing.md,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: AppSpacing.md,
-              children: [
-                seat((you + 2) % 4),
-                Row(
-                  children: [
-                    Expanded(child: seat((you + 3) % 4)),
-                    _Stake(view: view),
-                    Expanded(child: seat((you + 1) % 4)),
-                  ],
-                ),
-              ],
-            ),
+            child: constraints.maxHeight < compactBelow
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (final seat in [you + 3, you + 2, you + 1])
+                        Expanded(child: seatOf(seat % 4)),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: AppSpacing.md,
+                    children: [
+                      seatOf((you + 2) % 4),
+                      Row(
+                        children: [
+                          Expanded(child: seatOf((you + 3) % 4)),
+                          _Stake(view: view),
+                          Expanded(child: seatOf((you + 1) % 4)),
+                        ],
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),
@@ -251,20 +288,28 @@ class _YourHand extends StatelessWidget {
       child: Column(
         spacing: AppSpacing.sm,
         children: [
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.xs,
-            children: [
-              if (view.mano == view.you)
-                TableChip(l10n.tableMano, highlighted: true),
-              for (final help in l10n.handHelp(view.value)) TableChip(help),
-            ],
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              spacing: AppSpacing.sm,
+              children: [
+                if (view.mano == view.you)
+                  TableChip(l10n.tableMano, highlighted: true),
+                for (final help in l10n.handHelp(view.value)) TableChip(help),
+              ],
+            ),
           ),
           LayoutBuilder(
             builder: (context, constraints) {
-              final width = ((constraints.maxWidth - 3 * AppSpacing.sm) / 4)
-                  .clamp(0.0, 88.0);
+              final byHeight =
+                  MediaQuery.sizeOf(context).height *
+                  0.155 *
+                  PlayingCardView.aspectRatio;
+              final width = [
+                (constraints.maxWidth - 3 * AppSpacing.sm) / 4,
+                byHeight,
+                88.0,
+              ].reduce(min);
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: AppSpacing.sm,
@@ -281,9 +326,10 @@ class _YourHand extends StatelessWidget {
   }
 }
 
-/// Whose turn it is, and what the table is at, for screen readers too.
-class _TurnBar extends StatelessWidget {
-  const _TurnBar({required this.view, required this.bots});
+/// What the table is at, for screen readers: the lance, whose turn it is
+/// and what is bet. Announced whenever it changes.
+class _Status extends StatelessWidget {
+  const _Status({required this.view, required this.bots});
 
   final TableView view;
   final Map<int, Personality> bots;
@@ -291,54 +337,58 @@ class _TurnBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final turn = view.turn;
-    final label = switch (turn) {
-      null => null,
-      _ when view.yourTurn => l10n.tableYourTurn,
-      _ => l10n.tableTurnOf(l10n.personalityName(bots[turn]!)),
-    };
     final current = view.steps.firstWhere(
       (step) => step.state == StepProgress.current,
       orElse: () => view.steps.last,
     );
     final stake = view.stake;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.sm,
-        AppSpacing.lg,
-        AppSpacing.sm,
-      ),
-      child: Semantics(
-        liveRegion: true,
-        label: [
-          l10n.stepLabel(current),
-          ?label,
-          l10n.tableStakeIs(switch (stake) {
-            null => l10n.tableStakeNone,
-            _ when stake.ordago => l10n.stepOrdago,
-            _ => '${stake.stake}',
-          }),
-        ].join('. '),
-        child: ExcludeSemantics(
-          child: Container(
-            constraints: const BoxConstraints(minHeight: kActionHeight),
-            alignment: Alignment.center,
-            decoration: ShapeDecoration(
-              shape: const StadiumBorder(
-                side: BorderSide(color: AppColors.line, width: 1.5),
-              ),
-              color: view.yourTurn ? AppColors.turn : AppColors.none,
-            ),
-            child: Text(
-              label ?? '',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: view.yourTurn ? AppColors.onTurn : AppColors.ink,
-              ),
-            ),
-          ),
-        ),
-      ),
+    return Semantics(
+      liveRegion: true,
+      label: [
+        l10n.stepLabel(current),
+        ?_turnText(l10n, view, bots),
+        l10n.tableStakeIs(switch (stake) {
+          null => l10n.tableStakeNone,
+          _ when stake.ordago => l10n.stepOrdago,
+          _ => '${stake.stake}',
+        }),
+      ].join('. '),
+      child: const SizedBox.shrink(),
     );
   }
+}
+
+String? _turnText(
+  AppLocalizations l10n,
+  TableView view,
+  Map<int, Personality> bots,
+) => switch (view.turn) {
+  null => null,
+  _ when view.yourTurn => l10n.tableYourTurn,
+  final turn => l10n.tableTurnOf(l10n.personalityName(bots[turn]!)),
+};
+
+/// Whose turn it is, while it isn't yours.
+class _TurnBar extends StatelessWidget {
+  const _TurnBar({required this.view, required this.bots});
+
+  final TableView view;
+  final Map<int, Personality> bots;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: Container(
+      constraints: const BoxConstraints(minHeight: kActionHeight),
+      alignment: Alignment.center,
+      decoration: const ShapeDecoration(
+        shape: StadiumBorder(
+          side: BorderSide(color: AppColors.line, width: 1.5),
+        ),
+      ),
+      child: Text(
+        _turnText(AppLocalizations.of(context), view, bots) ?? '',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    ),
+  );
 }

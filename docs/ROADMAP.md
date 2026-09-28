@@ -32,7 +32,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **in progress** (#18 #19 #20 done) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| M3 · Mesa jugable | in progress (#22 #23 #24 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M3 · Mesa jugable | in progress (#22 → #25 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,18 +44,32 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** #25, your moves at the new table, then the discards (#26)
-and the count (#27): with them the app switches to the new table and the
-prototype's is deleted. Then #28 → #31; the owner's points on the prototype
-table (comments in #24, #25 and #20) are done criteria. The identity (#21)
-whenever it fits; the rest of M4 (#35 → #37) once the new table is
-playable. Work one issue per branch and PR, following AGENTS.md → Workflow.
+**Next step:** the discards (#26) and the count (#27) at the new table:
+with them the app switches to it and the prototype's is deleted. Then #28 →
+#31; the owner's points on the prototype table (comments in #24, #25 and
+#20) are done criteria. The identity (#21) whenever it fits; the rest of M4
+(#35 → #37) once the new table is playable. Work one issue per branch and
+PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · Your moves at the table (#25).** The table offers exactly
+  the engine's legal moves, in the thumb zone:
+  - at the mus, mus or no hay mus;
+  - opening a lance, paso, envido and órdago, with the amount chosen on the
+    table (2, 5, 10 or any other in a sheet);
+  - answering, no quiero (with what refusing gives), quiero, raise by any
+    amount and órdago; against an órdago, only quiero or no quiero.
+  Above the answers, who bet what («La Temeraria envida 5 a la chica»); a
+  partner's no quiero that leaves the answer to you reads «Tú decides». The
+  órdago only goes off when held for about 0.8 s, its fill showing it; a tap
+  shows how, above the button, and screen readers throw it with a long
+  press. On short screens the three bots sit in a row, the bet is read in
+  the row of the hand and your cards size to the screen's height. An e2e
+  plays a whole hand from a stacked deck with the real bots and clock.
 - **2026-09-28 · The new table (#24).** `TableScreen` (`lib/ui/table/`)
   draws a match from `MatchController` through `TableView`, a pure reading
   of the engine's state and log from your seat. It shows:

@@ -441,6 +441,120 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'En la mesa: {stake}'**
   String tableStakeIs(String stake);
+
+  /// Button: ask for mus.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus'**
+  String get actionMus;
+
+  /// Button: cut the mus.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay mus'**
+  String get actionNoHayMus;
+
+  /// Button: pass.
+  ///
+  /// In es, this message translates to:
+  /// **'Paso'**
+  String get actionPaso;
+
+  /// Button: bet the amount shown under it.
+  ///
+  /// In es, this message translates to:
+  /// **'Envido'**
+  String get actionEnvido;
+
+  /// Button: bet the whole match.
+  ///
+  /// In es, this message translates to:
+  /// **'Órdago'**
+  String get actionOrdago;
+
+  /// Under the órdago button: it has to be held down.
+  ///
+  /// In es, this message translates to:
+  /// **'mantén'**
+  String get actionHold;
+
+  /// Shown when the órdago button is tapped instead of held.
+  ///
+  /// In es, this message translates to:
+  /// **'Mantén pulsado para echar el órdago'**
+  String get actionHoldHint;
+
+  /// Button: accept the bet.
+  ///
+  /// In es, this message translates to:
+  /// **'Quiero'**
+  String get actionQuiero;
+
+  /// Button: refuse the bet.
+  ///
+  /// In es, this message translates to:
+  /// **'No quiero'**
+  String get actionNoQuiero;
+
+  /// Button: raise the bet by the amount shown under it.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir'**
+  String get actionRaise;
+
+  /// Opens a choice of any amount to bet.
+  ///
+  /// In es, this message translates to:
+  /// **'Otra'**
+  String get actionOtherAmount;
+
+  /// Title of the choice of an amount to bet.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cuánto?'**
+  String get amountTitle;
+
+  /// Lowers the amount to bet, for screen readers.
+  ///
+  /// In es, this message translates to:
+  /// **'Menos'**
+  String get amountLess;
+
+  /// Raises the amount to bet, for screen readers.
+  ///
+  /// In es, this message translates to:
+  /// **'Más'**
+  String get amountMore;
+
+  /// Confirms the amount to bet.
+  ///
+  /// In es, this message translates to:
+  /// **'Envidar {amount}'**
+  String amountConfirm(int amount);
+
+  /// What the rival bet, above your answers: «El Prudente envida 2 a la grande».
+  ///
+  /// In es, this message translates to:
+  /// **'{name} {ordago, select, yes{echa órdago} other{envida {stake}}} {lance, select, grande{a la grande} chica{a la chica} pares{a pares} juego{a juego} other{al punto}}'**
+  String enviteBy(String name, String ordago, int stake, String lance);
+
+  /// Under the «no quiero» button: what refusing gives, «Ellos +1».
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Nosotros} other{Ellos}} +{points}'**
+  String enviteIfNot(String team, int points);
+
+  /// A player's «no quiero» that leaves the answer to their partner.
+  ///
+  /// In es, this message translates to:
+  /// **'{partner, select, you{Tú decides} other{Decide su compañero}}'**
+  String saidPartnerDecides(String partner);
+
+  /// Under the raise button: it asks how much.
+  ///
+  /// In es, this message translates to:
+  /// **'cuánto'**
+  String get actionRaiseAny;
 }
 
 class _AppLocalizationsDelegate

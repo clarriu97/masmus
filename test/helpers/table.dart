@@ -60,12 +60,24 @@ final Map<String, MatchController Function()> tableMoments = {
     hands: const {0: 'R R 5 2', 1: 'S C 7 6', 2: '4 5 6 7', 3: '4 5 1 7'},
     musCorrido: true,
   ),
+  // The grande after you cut the mus: your turn to open it.
+  'grande_open': () => tableController(
+    hands: const {0: 'R R 7 7', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'},
+    moves: [(0, const NoHayMus())],
+  ),
   // The grande after the mus was cut, with a bet waiting for your partner.
   'grande_envite': () => tableController(
     hands: const {0: 'R R 7 7', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'},
     mano: 1,
     score: const [12, 20],
     moves: [(1, const NoHayMus()), (1, const Envido(2))],
+  ),
+  // A rival's órdago your partner left to you.
+  'partner_decides': () => tableController(
+    hands: const {0: 'R R 7 7', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'},
+    mano: 1,
+    score: const [30, 34],
+    moves: [(1, const NoHayMus()), (1, const Ordago()), (2, const NoQuiero())],
   ),
   // The chica after a grande refused, your turn to answer an envite.
   'chica_answer': () => tableController(

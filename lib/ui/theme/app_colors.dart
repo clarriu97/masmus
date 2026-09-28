@@ -26,6 +26,7 @@ class AppColors {
   static const Color onPrimary = Color(0xFF173E2F);
   static const Color ordago = Color(0xFF8F1D17);
   static const Color onOrdago = Color(0xFFFBEEE2);
+  static const Color ordagoFill = Color(0x40FBEEE2);
 
   static const Color bubble = Color(0xFFF4EDD9);
   static const Color onBubble = Color(0xFF1D2B22);

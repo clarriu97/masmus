@@ -300,4 +300,88 @@ class AppLocalizationsEs extends AppLocalizations {
   String tableStakeIs(String stake) {
     return 'En la mesa: $stake';
   }
+
+  @override
+  String get actionMus => 'Mus';
+
+  @override
+  String get actionNoHayMus => 'No hay mus';
+
+  @override
+  String get actionPaso => 'Paso';
+
+  @override
+  String get actionEnvido => 'Envido';
+
+  @override
+  String get actionOrdago => 'Órdago';
+
+  @override
+  String get actionHold => 'mantén';
+
+  @override
+  String get actionHoldHint => 'Mantén pulsado para echar el órdago';
+
+  @override
+  String get actionQuiero => 'Quiero';
+
+  @override
+  String get actionNoQuiero => 'No quiero';
+
+  @override
+  String get actionRaise => 'Subir';
+
+  @override
+  String get actionOtherAmount => 'Otra';
+
+  @override
+  String get amountTitle => '¿Cuánto?';
+
+  @override
+  String get amountLess => 'Menos';
+
+  @override
+  String get amountMore => 'Más';
+
+  @override
+  String amountConfirm(int amount) {
+    return 'Envidar $amount';
+  }
+
+  @override
+  String enviteBy(String name, String ordago, int stake, String lance) {
+    String _temp0 = intl.Intl.selectLogic(ordago, {
+      'yes': 'echa órdago',
+      'other': 'envida $stake',
+    });
+    String _temp1 = intl.Intl.selectLogic(lance, {
+      'grande': 'a la grande',
+      'chica': 'a la chica',
+      'pares': 'a pares',
+      'juego': 'a juego',
+      'other': 'al punto',
+    });
+    return '$name $_temp0 $_temp1';
+  }
+
+  @override
+  String enviteIfNot(String team, int points) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return '$_temp0 +$points';
+  }
+
+  @override
+  String saidPartnerDecides(String partner) {
+    String _temp0 = intl.Intl.selectLogic(partner, {
+      'you': 'Tú decides',
+      'other': 'Decide su compañero',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get actionRaiseAny => 'cuánto';
 }

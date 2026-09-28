@@ -28,3 +28,18 @@ Future<void> waitFor(
     await tester.pump(const Duration(milliseconds: 100));
   }
 }
+
+/// Pumps frames in real time until [done] holds.
+Future<void> waitUntil(
+  WidgetTester tester,
+  bool Function() done, {
+  Duration timeout = const Duration(seconds: 30),
+}) async {
+  final end = DateTime.now().add(timeout);
+  while (!done()) {
+    if (DateTime.now().isAfter(end)) {
+      throw TestFailure('Timed out waiting');
+    }
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}

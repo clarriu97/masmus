@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
+import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/rules.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
 
@@ -14,17 +16,22 @@ Finder _button(String label) =>
 
 void main() {
   late MatchStore store;
+  late SettingsController settings;
   late (Personality, Rules)? started;
   late SavedMatch? resumed;
 
   Future<void> pump(WidgetTester tester, {SavedMatch? saved}) async {
     store = MatchStore.inMemory(saved);
+    settings = SettingsController.inMemory(
+      const Settings(rules: Rules(kings: Kings.four)),
+    );
     started = null;
     resumed = null;
     await tester.pumpWidget(
       buildTestApp(
         StartScreen(
           store: store,
+          settings: settings,
           table: (partner, rules) {
             started = (partner, rules);
             return const Text('mesa');
@@ -59,7 +66,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('mesa'), findsOneWidget);
     expect(started?.$1, Personality.calculador);
-    expect(started?.$2.kings, Kings.eight);
+    expect(started?.$2.kings, Kings.four, reason: 'the default of Ajustes');
 
     tester.state<NavigatorState>(find.byType(Navigator)).pop();
     await tester.pumpAndSettle();
@@ -124,5 +131,12 @@ void main() {
     tester.state<NavigatorState>(find.byType(Navigator)).pop();
     await tester.pumpAndSettle();
     expect(find.text('PARTIDA EN CURSO'), findsOneWidget);
+  });
+
+  testWidgets('«Ajustes» opens the settings', (tester) async {
+    await pump(tester);
+    await tester.tap(find.text('Ajustes'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
   });
 }

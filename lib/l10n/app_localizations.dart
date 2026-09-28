@@ -807,6 +807,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.'**
   String get savedSetAside;
+
+  /// Title of the settings screen, and the link to it.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsTitle;
+
+  /// Heading: the rules new matches start with.
+  ///
+  /// In es, this message translates to:
+  /// **'Reglas por defecto'**
+  String get settingsRules;
+
+  /// Heading: how long the bots take to move.
+  ///
+  /// In es, this message translates to:
+  /// **'Ritmo de los bots'**
+  String get settingsPace;
+
+  /// A pace for the bots.
+  ///
+  /// In es, this message translates to:
+  /// **'{pace, select, slow{Lento} normal{Normal} other{Rápido}}'**
+  String paceName(String pace);
+
+  /// Setting: the table says what your hand is worth.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayuda con tu jugada'**
+  String get settingsHelp;
+
+  /// What the hand help does.
+  ///
+  /// In es, this message translates to:
+  /// **'La mesa te dice qué llevas: pares, juego o punto.'**
+  String get settingsHelpDetail;
 }
 
 class _AppLocalizationsDelegate

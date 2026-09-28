@@ -18,6 +18,8 @@ class TablePage extends StatefulWidget {
   const TablePage({
     required Personality this.partner,
     required Rules this.rules,
+    this.pace = Pace.normal,
+    this.handHelp = true,
     this.seed,
     this.scheduler,
     this.store,
@@ -26,12 +28,20 @@ class TablePage extends StatefulWidget {
 
   const TablePage.resume(
     SavedMatch this.saved, {
+    this.pace = Pace.normal,
+    this.handHelp = true,
     this.scheduler,
     this.store,
     super.key,
   }) : partner = null,
        rules = null,
        seed = null;
+
+  /// How long the bots take to move.
+  final Pace pace;
+
+  /// Whether the table says what your hand is worth.
+  final bool handHelp;
 
   final Personality? partner;
   final Rules? rules;
@@ -80,6 +90,7 @@ class _TablePageState extends State<TablePage> {
     seats: _bots,
     scheduler: widget.scheduler ?? Scheduler(),
     store: widget.store ?? MatchStore.inMemory(),
+    pace: widget.pace,
   );
 
   /// Another match: the same bots in the same seats and the same rules,
@@ -104,5 +115,6 @@ class _TablePageState extends State<TablePage> {
     bots: _bots,
     onExit: () => Navigator.of(context).maybePop(),
     onRematch: _rematch,
+    handHelp: widget.handHelp,
   );
 }

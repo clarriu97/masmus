@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
+import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/rules.dart';
 import 'package:masmus/l10n/app_localizations.dart';
 import 'package:masmus/l10n/localized_names.dart';
@@ -8,6 +9,7 @@ import 'package:masmus/services/scheduler.dart';
 import 'package:masmus/ui/table/seat.dart';
 import 'package:masmus/ui/table/table_page.dart';
 import 'package:masmus/ui/table/table_screen.dart';
+import 'package:masmus/ui/widgets/table_chip.dart';
 
 import '../../helpers/test_app.dart';
 
@@ -81,5 +83,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TableScreen), findsNothing);
     expect(find.text('jugar'), findsOneWidget);
+  });
+
+  testWidgets('the bots play at the pace of Ajustes, and the hand help can '
+      'be off', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(
+        TablePage(
+          partner: Personality.calculador,
+          rules: const Rules(),
+          pace: Pace.slow,
+          handHelp: false,
+          seed: 2,
+          scheduler: ManualScheduler(),
+        ),
+      ),
+    );
+    final table = tester.widget<TableScreen>(find.byType(TableScreen));
+    expect(table.controller.pace, Pace.slow);
+    expect(find.byType(TableChip), findsNothing);
   });
 }

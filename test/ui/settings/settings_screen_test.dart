@@ -1,0 +1,49 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/controllers/match_controller.dart';
+import 'package:masmus/controllers/settings_controller.dart';
+import 'package:masmus/game/rules.dart';
+import 'package:masmus/ui/settings/settings_screen.dart';
+
+import '../../helpers/test_app.dart';
+
+void main() {
+  testWidgets('changing the defaults, the pace and the help keeps each at '
+      'once', (tester) async {
+    final settings = SettingsController.inMemory();
+    await tester.pumpWidget(buildTestApp(SettingsScreen(settings: settings)));
+    expect(find.text('Ajustes'), findsOneWidget);
+    expect(find.text('REGLAS POR DEFECTO'), findsOneWidget);
+    expect(find.text('RITMO DE LOS BOTS'), findsOneWidget);
+
+    await tester.tap(find.text('4 reyes'));
+    await tester.tap(find.text('A 30'));
+    await tester.tap(find.text('Rápido'));
+    await tester.pump();
+    await tester.tap(find.byType(Switch));
+    await tester.pump();
+
+    final chosen = settings.settings;
+    expect(chosen.rules.kings, Kings.four);
+    expect(chosen.rules.target, 30);
+    expect(chosen.pace, Pace.fast);
+    expect(chosen.handHelp, isFalse);
+  });
+
+  testWidgets('it shows what is chosen now', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(
+        SettingsScreen(
+          settings: SettingsController.inMemory(
+            const Settings(pace: Pace.slow, handHelp: false),
+          ),
+        ),
+      ),
+    );
+    final pace = tester.widget<SegmentedButton<Pace>>(
+      find.byType(SegmentedButton<Pace>),
+    );
+    expect(pace.selected, {Pace.slow});
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+  });
+}

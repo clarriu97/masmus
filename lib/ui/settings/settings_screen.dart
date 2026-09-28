@@ -1,0 +1,149 @@
+import 'package:flutter/material.dart';
+
+import '../../controllers/match_controller.dart';
+import '../../controllers/settings_controller.dart';
+import '../../game/rules.dart';
+import '../../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
+import '../widgets/felt.dart';
+import '../widgets/setting_row.dart';
+
+/// The rules new matches start with, how fast the bots play and whether
+/// the table helps with your hand. Every change is kept at once.
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({required this.settings, super.key});
+
+  final SettingsController settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    return Scaffold(
+      body: Felt(
+        child: SafeArea(
+          child: ListenableBuilder(
+            listenable: settings,
+            builder: (context, _) {
+              final current = settings.settings;
+              final rules = current.rules;
+              void change(Settings Function(Settings) edit) =>
+                  settings.settings = edit(settings.settings);
+              Widget heading(String title) => Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.xl),
+                child: Text(title.toUpperCase(), style: text.labelMedium),
+              );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      child: TextButton.icon(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: const Icon(Icons.arrow_back),
+                        label: Text(l10n.back),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.xl,
+                        0,
+                        AppSpacing.xl,
+                        AppSpacing.xl,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: AppSpacing.md,
+                        children: [
+                          Text(l10n.settingsTitle, style: text.displayMedium),
+                          heading(l10n.settingsRules),
+                          SettingRow(
+                            label: l10n.newMatchKings,
+                            control: SegmentedButton<Kings>(
+                              showSelectedIcon: false,
+                              segments: [
+                                for (final (kings, count) in const [
+                                  (Kings.eight, 8),
+                                  (Kings.four, 4),
+                                ])
+                                  ButtonSegment(
+                                    value: kings,
+                                    label: Text(l10n.kingsCount(count)),
+                                  ),
+                              ],
+                              selected: {rules.kings},
+                              onSelectionChanged: (kings) => change(
+                                (now) => now.copyWith(
+                                  rules: Rules(
+                                    kings: kings.single,
+                                    target: now.rules.target,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SettingRow(
+                            label: l10n.newMatchTarget,
+                            control: SegmentedButton<int>(
+                              showSelectedIcon: false,
+                              segments: [
+                                for (final target in const [40, 30])
+                                  ButtonSegment(
+                                    value: target,
+                                    label: Text(l10n.targetPoints(target)),
+                                  ),
+                              ],
+                              selected: {rules.target},
+                              onSelectionChanged: (target) => change(
+                                (now) => now.copyWith(
+                                  rules: Rules(
+                                    kings: now.rules.kings,
+                                    target: target.single,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          heading(l10n.settingsPace),
+                          SegmentedButton<Pace>(
+                            showSelectedIcon: false,
+                            segments: [
+                              for (final pace in Pace.values)
+                                ButtonSegment(
+                                  value: pace,
+                                  label: Text(l10n.paceName(pace.name)),
+                                ),
+                            ],
+                            selected: {current.pace},
+                            onSelectionChanged: (pace) => change(
+                              (now) => now.copyWith(pace: pace.single),
+                            ),
+                          ),
+                          heading(l10n.settingsHelp),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              l10n.settingsHelpDetail,
+                              style: text.bodyLarge,
+                            ),
+                            value: current.handHelp,
+                            onChanged: (on) =>
+                                change((now) => now.copyWith(handHelp: on)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}

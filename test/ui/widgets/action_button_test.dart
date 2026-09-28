@@ -8,7 +8,7 @@ import '../../helpers/test_app.dart';
 void main() {
   testWidgets('shows the label and the detail under it', (tester) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         ActionButton(
           label: 'Envido',
           detail: '2',
@@ -36,7 +36,7 @@ void main() {
   testWidgets('a tap plays it', (tester) async {
     var taps = 0;
     await tester.pumpWidget(
-      buildTestApp(ActionButton(label: 'Paso', onPressed: () => taps++)),
+      buildTestComponent(ActionButton(label: 'Paso', onPressed: () => taps++)),
     );
     await tester.tap(find.text('Paso'));
     expect(taps, 1);
@@ -44,7 +44,9 @@ void main() {
 
   testWidgets('without a callback it is disabled', (tester) async {
     await tester.pumpWidget(
-      buildTestApp(const ActionButton(label: 'Descartar', onPressed: null)),
+      buildTestComponent(
+        const ActionButton(label: 'Descartar', onPressed: null),
+      ),
     );
     expect(
       tester.widget<FilledButton>(find.byType(FilledButton)).enabled,
@@ -60,7 +62,9 @@ void main() {
     };
     for (final kind in styles.keys) {
       await tester.pumpWidget(
-        buildTestApp(ActionButton(label: 'x', kind: kind, onPressed: () {})),
+        buildTestComponent(
+          ActionButton(label: 'x', kind: kind, onPressed: () {}),
+        ),
       );
       final style = tester
           .widget<FilledButton>(find.byType(FilledButton))

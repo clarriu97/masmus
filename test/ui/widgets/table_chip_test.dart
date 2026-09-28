@@ -6,7 +6,7 @@ import 'package:masmus/ui/widgets/table_chip.dart';
 import '../../helpers/test_app.dart';
 
 Future<(Color?, Color?)> _colors(WidgetTester tester, TableChip chip) async {
-  await tester.pumpWidget(buildTestApp(chip));
+  await tester.pumpWidget(buildTestComponent(chip));
   final decoration =
       tester.widget<DecoratedBox>(find.byType(DecoratedBox).last).decoration
           as ShapeDecoration;

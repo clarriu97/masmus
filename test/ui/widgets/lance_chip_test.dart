@@ -24,7 +24,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const LanceChip(
           lance: 'Grande',
           status: 'te toca',
@@ -47,7 +47,7 @@ void main() {
 
   testWidgets('a lance already played says how it went', (tester) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const LanceChip(
           lance: 'Chica',
           status: 'no quiero · Ellos +1',
@@ -61,7 +61,7 @@ void main() {
 
   testWidgets('a lance still to come is only outlined', (tester) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const LanceChip(lance: 'Juego', state: LanceChipState.pending),
       ),
     );

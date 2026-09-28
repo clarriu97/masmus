@@ -1,0 +1,7 @@
+{
+  "@@locale": "es",
+  "appTitle": "Masmus",
+  "@appTitle": {
+    "description": "The app's name, until the identity (#21) settles it."
+  }
+}

@@ -62,3 +62,26 @@ jobs:
         with:
           name: coverage
           path: coverage/lcov.info
+
+  goldens:
+    # Goldens are generated on macOS; comparing on the same OS keeps text
+    # antialiasing identical.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - run: flutter pub get
+
+      - run: tool/ci.sh goldens
+
+      - name: Upload golden diffs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures
+          path: test/goldens/failures/

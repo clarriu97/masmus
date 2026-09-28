@@ -63,3 +63,6 @@ app.*.map.json
 **/android/key.properties
 **/android/app/google-services.json
 **/ios/Runner/GoogleService-Info.plist
+
+# Golden test output when a comparison fails
+test/goldens/failures/

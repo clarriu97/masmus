@@ -1,20 +1,40 @@
 #!/usr/bin/env bash
 # The checks CI runs, runnable locally with the same commands.
 #
-#   tool/ci.sh                 lint + unit/widget tests: what every PR runs   ~1 min
-#   tool/ci.sh all             the above + release builds (Android, iOS)      ~5 min
+#   tool/ci.sh                 lint + unit/widget tests + goldens (macOS)    ~1 min
+#   tool/ci.sh all             the above + release builds (Android, iOS) and
+#                              e2e on every target available               ~8 min
 #                              run it before merging changes to dependencies
 #                              or native config (android/, ios/)
 #
+#   tool/ci.sh checks          lint + unit
 #   tool/ci.sh lint            format and analyze
 #   tool/ci.sh unit            unit and widget tests (COVERAGE=1 adds coverage)
+#   tool/ci.sh goldens         pixel comparisons (macOS)
+#   tool/ci.sh boot-ios SIZE   boot the simulator for SIZE (small|large), print its id
+#   tool/ci.sh e2e-ios SIZE    e2e flows on that simulator (boots it if needed)
+#   tool/ci.sh e2e-android     e2e flows on an Android emulator (starts one if needed)
 #   tool/ci.sh build-android   release app bundle
 #   tool/ci.sh build-ios       release iOS build without code signing
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+E2E=integration_test/app_test.dart
+
+# Android SDK tools, installed by Android Studio.
 ANDROID_HOME=${ANDROID_HOME:-$HOME/Library/Android/sdk}
+for dir in "$ANDROID_HOME/platform-tools" "$ANDROID_HOME/emulator"; do
+  if [[ -d "$dir" ]]; then PATH="$dir:$PATH"; fi
+done
+
+# Safety net for a run stuck before the build finishes; hangs after the build
+# are caught much sooner by STALL_TIMEOUT.
+E2E_TIMEOUT=${E2E_TIMEOUT:-1500}
+
+# Once the app is built, flutter prints something at least every ~60 s.
+# Silence this long means the tool is stuck attaching to the app.
+STALL_TIMEOUT=${STALL_TIMEOUT:-120}
 
 step() { printf '\n\033[1;33m▶ %s\033[0m\n' "$*"; }
 
@@ -29,16 +49,27 @@ lint() {
 # prints the seed to reproduce it with --test-randomize-ordering-seed=<seed>.
 unit() {
   step "unit and widget tests"
-  flutter test --test-randomize-ordering-seed=random ${COVERAGE:+--coverage}
+  flutter test --exclude-tags golden --test-randomize-ordering-seed=random ${COVERAGE:+--coverage}
   if [[ -n "${COVERAGE:-}" ]]; then coverage_summary; fi
 }
 
+# Line coverage of lib/ from coverage/lcov.info, generated code excluded.
 coverage_summary() {
   awk -F: '
-    /^LF:/ { found += $2 }
-    /^LH:/ { hit += $2 }
+    /^SF:/ { skip = ($2 ~ /lib\/l10n\/app_localizations/) }
+    /^LF:/ && !skip { found += $2 }
+    /^LH:/ && !skip { hit += $2 }
     END { printf "Line coverage: %.1f %% (%d of %d lines)\n", 100 * hit / found, hit, found }
   ' coverage/lcov.info
+}
+
+goldens() {
+  if [[ "$(uname)" != Darwin ]]; then
+    echo "Goldens are generated on macOS; skipping on $(uname)."
+    return
+  fi
+  step "goldens"
+  flutter test --tags golden
 }
 
 build_android() {
@@ -56,8 +87,192 @@ checks() {
   unit
 }
 
+# Runs the e2e flows on a device. Simulators and emulators occasionally fail
+# to install or attach to the app before any test starts: they hang ("Error
+# waiting for a debug connection") or the load fails ("Failed to start Dart
+# Development Service"). A hung run is killed as soon as it is detected
+# (silent after the build, or past E2E_TIMEOUT); either case is retried once.
+# Once a test has run, a failure is real and is never retried.
+run_e2e() {
+  local device=$1 attempt status log pid tailer hung built size last_size last_change start
+  for attempt in 1 2; do
+    log=$(mktemp)
+    flutter test "$E2E" -d "$device" >"$log" 2>&1 &
+    pid=$!
+    tail -n +1 -f "$log" &
+    tailer=$!
+    hung="" built="" last_size=0 last_change=$SECONDS start=$SECONDS
+    while kill -0 "$pid" 2>/dev/null; do
+      sleep 5
+      size=$(wc -c <"$log")
+      if ((size != last_size)); then
+        last_size=$size last_change=$SECONDS
+      fi
+      if [[ -z "$built" ]] && grep -qE "Xcode build done|Built build/" "$log"; then
+        built=1 last_change=$SECONDS
+      fi
+      if [[ -n "$built" ]] && ((SECONDS - last_change > STALL_TIMEOUT)); then
+        hung="no output for ${STALL_TIMEOUT}s after the build"
+      elif ((SECONDS - start > E2E_TIMEOUT)); then
+        hung="still running after ${E2E_TIMEOUT}s"
+      fi
+      if [[ -n "$hung" ]]; then
+        pkill -TERM -P "$pid" 2>/dev/null || true
+        kill -TERM "$pid" 2>/dev/null || true
+        break
+      fi
+    done
+    status=0
+    wait "$pid" || status=$?
+    sleep 1
+    kill "$tailer" 2>/dev/null || true
+    wait "$tailer" 2>/dev/null || true
+    # "Failed to load" also covers a failed build, which is real: only a
+    # load failure after a successful build is the device's fault.
+    if grep -qE "Xcode build done|Built build/" "$log"; then
+      built=1
+    fi
+    if [[ -z "$hung" && "$status" -ne 0 && -n "$built" ]] && grep -qE "Failed to load .*app_test\.dart" "$log"; then
+      hung="the app failed to load before any test ran"
+    fi
+    rm -f "$log"
+    if [[ -z "$hung" ]]; then
+      return "$status"
+    fi
+    echo "⚠︎ e2e infrastructure failure ($hung) on attempt $attempt." >&2
+  done
+  return 1
+}
+
+# Newest available simulator whose name matches the size's pattern:
+# small = iPhone SE / "e" models (narrowest), large = Pro Max.
+ios_udid() {
+  local pattern
+  case "$1" in
+    small) pattern='iPhone (SE|[0-9]+e)' ;;
+    large) pattern='Pro Max' ;;
+    *) echo "unknown size '$1' (small|large)" >&2; return 1 ;;
+  esac
+  xcrun simctl list devices available -j | jq -r --arg p "$pattern" '
+    [.devices | to_entries[]
+      | select(.key | test("iOS"))
+      | .key as $rt | .value[]
+      | select(.name | test($p)) | {rt: $rt, udid}]
+    | sort_by(.rt) | last | .udid // empty'
+}
+
+boot_ios() {
+  local udid state
+  udid=$(ios_udid "$1")
+  if [[ -z "$udid" ]]; then
+    echo "No $1 iPhone simulator available (Xcode → Settings → Components)." >&2
+    return 1
+  fi
+  # Booting one that is already booting blocks for minutes; only boot it
+  # when it is shut down.
+  state=$(xcrun simctl list devices -j | jq -r --arg u "$udid" '.devices[][] | select(.udid == $u) | .state')
+  if [[ "$state" == Shutdown ]]; then
+    xcrun simctl boot "$udid"
+  fi
+  echo "$udid"
+}
+
+# Flutter attaches to the app through the simulator's `log stream`, which on
+# a freshly booted simulator can die right away ("The log reader failed
+# unexpectedly"). Wait until a log stream stays up.
+wait_for_log_stream() {
+  local udid=$1 pid _
+  for _ in $(seq 12); do
+    xcrun simctl spawn "$udid" log stream --style compact >/dev/null 2>&1 &
+    pid=$!
+    sleep 5
+    if kill -0 "$pid" 2>/dev/null; then
+      kill "$pid" 2>/dev/null || true
+      wait "$pid" 2>/dev/null || true
+      return 0
+    fi
+    wait "$pid" 2>/dev/null || true
+  done
+  echo "⚠︎ the simulator's log stream never stayed up; trying anyway." >&2
+}
+
+e2e_ios() {
+  local udid was_booted="" status=0
+  udid=$(ios_udid "$1")
+  if xcrun simctl list devices | grep "$udid" | grep -q Booted; then
+    was_booted=1
+  fi
+  udid=$(boot_ios "$1")
+  step "e2e on the $1 iPhone simulator ($udid)"
+  xcrun simctl bootstatus "$udid" -b >/dev/null
+  wait_for_log_stream "$udid"
+  run_e2e "$udid" || status=$?
+  # Shut down what this run booted; leave a simulator you had open.
+  if [[ -z "$was_booted" ]]; then
+    xcrun simctl shutdown "$udid" 2>/dev/null || true
+  fi
+  return "$status"
+}
+
+android_device() {
+  command -v adb >/dev/null || return 0
+  adb devices | awk 'NR > 1 && $2 == "device" { print $1; exit }'
+}
+
+# Prints a running Android device, starting an emulator (the first AVD whose
+# name contains "masmus" or "1rm", else the first one) when none is running.
+# Prints nothing when there is no emulator to start.
+boot_android() {
+  local device avd _
+  device=$(android_device)
+  if [[ -z "$device" ]] && command -v emulator >/dev/null; then
+    avd=$(emulator -list-avds 2>/dev/null | grep -iE 'masmus|1rm' | head -1 || true)
+    [[ -z "$avd" ]] && avd=$(emulator -list-avds 2>/dev/null | head -1 || true)
+    if [[ -n "$avd" ]]; then
+      echo "Starting Android emulator $avd..." >&2
+      emulator -avd "$avd" -no-window -no-audio -no-boot-anim -no-snapshot-save >/dev/null 2>&1 &
+      adb wait-for-device
+      for _ in $(seq 90); do
+        [[ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" == 1 ]] && break
+        sleep 2
+      done
+      device=$(android_device)
+    fi
+  fi
+  echo "$device"
+}
+
+# True when there is an Android device running or an emulator to start.
+android_available() {
+  [[ -n "$(android_device)" ]] ||
+    { command -v emulator >/dev/null && [[ -n "$(emulator -list-avds 2>/dev/null)" ]]; }
+}
+
+e2e_android() {
+  local device was_running status=0 _
+  was_running=$(android_device)
+  device=$(boot_android)
+  if [[ -z "$device" ]]; then
+    echo "No Android emulator available: create one in Android Studio → Device Manager." >&2
+    return 1
+  fi
+  # boot_completed can be set before the package manager accepts installs.
+  for _ in $(seq 60); do
+    adb -s "$device" shell pm path android >/dev/null 2>&1 && break
+    sleep 2
+  done
+  step "e2e on Android $device (API $(adb -s "$device" shell getprop ro.build.version.sdk | tr -d '\r'))"
+  run_e2e "$device" || status=$?
+  # Stop the emulator this run started; leave one you had open.
+  if [[ -z "$was_running" ]]; then
+    adb -s "$device" emu kill >/dev/null 2>&1 || true
+  fi
+  return "$status"
+}
+
 all() {
   checks
+  goldens
   if [[ -d "$ANDROID_HOME" ]]; then
     build_android
   else
@@ -65,17 +280,28 @@ all() {
   fi
   if [[ "$(uname)" == Darwin ]]; then
     build_ios
+    e2e_ios small
   else
-    echo "⚠︎ iOS release build skipped: not on macOS. CI builds it on master."
+    echo "⚠︎ iOS release build and e2e skipped: not on macOS. CI builds it on master."
+  fi
+  if android_available; then
+    e2e_android
+  else
+    echo "⚠︎ Android e2e skipped: no emulator (Android Studio → Device Manager)."
   fi
 }
 
 case "${1:-}" in
-  "") checks ;;
+  "") checks; goldens ;;
   all) all ;;
+  checks) checks ;;
   lint) lint ;;
   unit) unit ;;
+  goldens) goldens ;;
+  boot-ios) boot_ios "${2:?small|large}" ;;
+  e2e-ios) e2e_ios "${2:?small|large}" ;;
+  e2e-android) e2e_android ;;
   build-android) build_android ;;
   build-ios) build_ios ;;
-  *) sed -n '2,12p' "$0"; exit 1 ;;
+  *) sed -n '2,18p' "$0"; exit 1 ;;
 esac

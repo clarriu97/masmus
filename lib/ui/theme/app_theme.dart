@@ -80,7 +80,7 @@ class AppTheme {
           Size(kMinTapTarget, kActionHeight),
         ),
         padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         ),
         shape: const WidgetStatePropertyAll(StadiumBorder()),
         side: WidgetStatePropertyAll(BorderSide(color: edge, width: 1.5)),

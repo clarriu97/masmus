@@ -52,12 +52,16 @@ MatchController tableController({
   );
 }
 
-Widget tableScreen(MatchController controller, {VoidCallback? onExit}) =>
-    TableScreen(
-      controller: controller,
-      bots: tableBots,
-      onExit: onExit ?? () {},
-    );
+Widget tableScreen(
+  MatchController controller, {
+  VoidCallback? onExit,
+  VoidCallback? onRematch,
+}) => TableScreen(
+  controller: controller,
+  bots: tableBots,
+  onExit: onExit ?? () {},
+  onRematch: onRematch ?? () {},
+);
 
 const _discardHands = {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'};
 
@@ -106,6 +110,17 @@ final Map<String, MatchController Function()> countMoments = {
       (1, const Quiero()),
     ],
     finish: true,
+  ),
+};
+
+/// Matches that are over: won in the count, lost to an órdago.
+final Map<String, MatchController Function()> endMoments = {
+  'end_won': countMoments['count_won']!,
+  'end_lost': () => tableController(
+    hands: const {0: '4 5 6 7', 1: 'R R R R', 2: 'S C 6 5', 3: '4 5 1 7'},
+    mano: 1,
+    score: const [21, 17],
+    moves: [(1, const NoHayMus()), (1, const Ordago()), (2, const Quiero())],
   ),
 };
 

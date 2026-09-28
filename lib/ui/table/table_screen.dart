@@ -16,6 +16,7 @@ import '../widgets/lance_chip.dart';
 import '../widgets/score_board.dart';
 import '../widgets/table_chip.dart';
 import 'count_view.dart';
+import 'end_view.dart';
 import 'seat.dart';
 import 'table_actions.dart';
 import 'table_texts.dart';
@@ -29,6 +30,7 @@ class TableScreen extends StatefulWidget {
     required this.controller,
     required this.bots,
     required this.onExit,
+    required this.onRematch,
     super.key,
   });
 
@@ -38,6 +40,9 @@ class TableScreen extends StatefulWidget {
   final Map<int, Personality> bots;
 
   final VoidCallback onExit;
+
+  /// Another match with the same bots and rules, once this one is over.
+  final VoidCallback onRematch;
 
   /// The table is a board, dense by nature: its text grows with the
   /// system's up to this much, and the cards are already large.
@@ -50,6 +55,9 @@ class TableScreen extends StatefulWidget {
 class _TableScreenState extends State<TableScreen> {
   /// The cards you have marked to throw away.
   final _marked = <PlayingCard>{};
+
+  /// The last count has been seen: the end of the match comes next.
+  var _counted = false;
 
   void _toggle(PlayingCard card) => setState(
     () => _marked.contains(card) ? _marked.remove(card) : _marked.add(card),
@@ -68,17 +76,27 @@ class _TableScreenState extends State<TableScreen> {
       final controller = widget.controller;
       final bots = widget.bots;
       final you = controller.humanSeat!;
-      if (controller.match.hand.phase is HandOver) {
+      final match = controller.match;
+      if (match.isOver && (_counted || match.count == null)) {
+        return EndView(
+          match: match,
+          you: you,
+          onRematch: widget.onRematch,
+          onHome: widget.onExit,
+        );
+      }
+      if (match.hand.phase is HandOver) {
         return CountView(
-          match: controller.match,
+          match: match,
           you: you,
           names: {
             you: l10n.countYou,
             for (final MapEntry(key: seat, value: bot) in bots.entries)
               seat: l10n.personalityName(bot),
           },
-          onNext: controller.nextHand,
-          onExit: widget.onExit,
+          onNext: match.isOver
+              ? () => setState(() => _counted = true)
+              : controller.nextHand,
         );
       }
       final view = TableView.of(controller.match, you: you);

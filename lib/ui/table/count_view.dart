@@ -25,7 +25,6 @@ class CountView extends StatelessWidget {
     required this.you,
     required this.names,
     required this.onNext,
-    required this.onExit,
     super.key,
   });
 
@@ -35,8 +34,8 @@ class CountView extends StatelessWidget {
   /// Who sits in each seat, yours included.
   final Map<int, String> names;
 
+  /// The next hand, or the end of the match once it is over.
   final VoidCallback onNext;
-  final VoidCallback onExit;
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +113,9 @@ class CountView extends StatelessWidget {
                   AppSpacing.sm,
                 ),
                 child: ActionButton(
-                  label: match.isOver ? l10n.tableExit : l10n.countNextHand,
+                  label: match.isOver ? l10n.countToEnd : l10n.countNextHand,
                   kind: ActionKind.primary,
-                  onPressed: match.isOver ? onExit : onNext,
+                  onPressed: onNext,
                 ),
               ),
             ],

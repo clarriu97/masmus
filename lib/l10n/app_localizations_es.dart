@@ -540,4 +540,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String dealTotal(int hands, int discards, int stock) {
     return '$hands en las manos + $discards descartadas + $stock en el mazo = 40';
   }
+
+  @override
+  String get countToEnd => 'Ver el final';
+
+  @override
+  String get endWon => '¡Ganáis la partida!';
+
+  @override
+  String get endLost => 'Ganan ellos';
+
+  @override
+  String endSummary(int hands, String how) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hands,
+      locale: localeName,
+      other: '$hands manos',
+      one: 'Una mano',
+    );
+    String _temp1 = intl.Intl.selectLogic(how, {
+      'count': 'a los tantos',
+      'noQuiero': 'con un no quiero',
+      'other': 'con un órdago',
+    });
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get endRematch => 'Revancha';
+
+  @override
+  String get endHome => 'Volver al inicio';
 }

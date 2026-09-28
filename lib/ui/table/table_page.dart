@@ -11,8 +11,9 @@ import '../../services/match_store.dart';
 import '../../services/scheduler.dart';
 import 'table_screen.dart';
 
-/// A new match against the bots: your [partner] across the table and two
-/// rivals picked at random among the other personalities.
+/// A match against the bots: your [partner] across the table and two rivals
+/// picked at random among the other personalities, and a rematch with the
+/// same ones when it is over.
 class TablePage extends StatefulWidget {
   const TablePage({
     required this.partner,
@@ -37,29 +38,39 @@ class TablePage extends StatefulWidget {
 }
 
 class _TablePageState extends State<TablePage> {
+  late int _seed;
   late final Map<int, Personality> _bots;
-  late final MatchController _controller;
+  late MatchController _controller;
 
   @override
   void initState() {
     super.initState();
-    final seed = widget.seed ?? Random().nextInt(1 << 32);
-    final random = Random(seed);
+    _seed = widget.seed ?? Random().nextInt(1 << 32);
     final rivals = [
       for (final personality in Personality.values)
         if (personality != widget.partner) personality,
-    ]..shuffle(random);
+    ]..shuffle(Random(_seed));
     _bots = {1: rivals[0], 2: widget.partner, 3: rivals[1]};
-    _controller = MatchController(
-      match: MatchState.start(seed: seed, rules: widget.rules),
-      bots: {
-        for (final MapEntry(key: seat, value: personality) in _bots.entries)
-          seat: StrategicBot(personality, Random(seed + seat)),
-      },
-      scheduler: widget.scheduler ?? Scheduler(),
-      store: widget.store ?? MatchStore.inMemory(),
-    );
+    _controller = _start();
   }
+
+  MatchController _start() => MatchController(
+    match: MatchState.start(seed: _seed, rules: widget.rules),
+    bots: {
+      for (final MapEntry(key: seat, value: personality) in _bots.entries)
+        seat: StrategicBot(personality, Random(_seed + seat)),
+    },
+    scheduler: widget.scheduler ?? Scheduler(),
+    store: widget.store ?? MatchStore.inMemory(),
+  );
+
+  /// Another match: the same bots in the same seats and the same rules,
+  /// a new deal.
+  void _rematch() => setState(() {
+    _controller.dispose();
+    _seed++;
+    _controller = _start();
+  });
 
   @override
   void dispose() {
@@ -69,8 +80,10 @@ class _TablePageState extends State<TablePage> {
 
   @override
   Widget build(BuildContext context) => TableScreen(
+    key: ObjectKey(_controller),
     controller: _controller,
     bots: _bots,
     onExit: () => Navigator.of(context).maybePop(),
+    onRematch: _rematch,
   );
 }

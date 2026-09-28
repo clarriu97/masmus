@@ -717,6 +717,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{hands} en las manos + {discards} descartadas + {stock} en el mazo = 40'**
   String dealTotal(int hands, int discards, int stock);
+
+  /// After the last count: goes to the end of the match.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver el final'**
+  String get countToEnd;
+
+  /// Title of the end of a match you won.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ganáis la partida!'**
+  String get endWon;
+
+  /// Title of the end of a match the rivals won.
+  ///
+  /// In es, this message translates to:
+  /// **'Ganan ellos'**
+  String get endLost;
+
+  /// How the match went: «14 manos · con un órdago».
+  ///
+  /// In es, this message translates to:
+  /// **'{hands, plural, =1{Una mano} other{{hands} manos}} · {how, select, count{a los tantos} noQuiero{con un no quiero} other{con un órdago}}'**
+  String endSummary(int hands, String how);
+
+  /// Plays another match with the same partner, rivals and rules.
+  ///
+  /// In es, this message translates to:
+  /// **'Revancha'**
+  String get endRematch;
+
+  /// Goes back to the start screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver al inicio'**
+  String get endHome;
 }
 
 class _AppLocalizationsDelegate

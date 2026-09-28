@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
+import 'package:masmus/ui/table/end_view.dart';
 
 import '../helpers/devices.dart';
 import '../helpers/table.dart';
@@ -18,6 +19,13 @@ final Map<String, Widget Function()> _screens = {
     'table at $moment': () => tableScreen(controller()),
   for (final MapEntry(key: moment, value: controller) in countMoments.entries)
     'the $moment': () => tableScreen(controller()),
+  for (final MapEntry(key: moment, value: controller) in endMoments.entries)
+    'the $moment': () => EndView(
+      match: controller().match,
+      you: 0,
+      onRematch: () {},
+      onHome: () {},
+    ),
 };
 
 void main() {

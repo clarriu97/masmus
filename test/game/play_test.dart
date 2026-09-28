@@ -459,7 +459,7 @@ void main() {
     });
   });
 
-  test('a whole hand: grande, chica, pares and juego, in order', () {
+  test('R-LAN-1 · a whole hand: grande, chica, pares and juego, in order', () {
     final start = dealt(_someParesOneJuego);
     final state = run(start, [
       (0, noHayMus),

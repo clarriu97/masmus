@@ -7,6 +7,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/game/cards.dart';
+import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/theme/app_theme.dart';
 import 'package:masmus/ui/widgets/action_button.dart';
 import 'package:masmus/ui/widgets/felt.dart';
@@ -135,7 +137,75 @@ Widget _components() => Scaffold(
   ),
 );
 
+/// The 40 faces and the back, at [width].
+Widget _deck(double width) => ColoredBox(
+  color: AppColors.felt,
+  child: Padding(
+    padding: const EdgeInsets.all(AppSpacing.sm),
+    child: Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (final suit in Suit.values)
+          for (final number in cardNumbers)
+            PlayingCardView(PlayingCard(suit, number), width: width),
+        PlayingCardView(
+          const PlayingCard(Suit.oros, 1),
+          width: width,
+          faceUp: false,
+        ),
+      ],
+    ),
+  ),
+);
+
+/// A card face up, marked to be thrown away and face down.
+Widget _cardStates() => ColoredBox(
+  color: AppColors.felt,
+  child: Center(
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.lg,
+      children: [
+        PlayingCardView(PlayingCard.parse('Rc'), onTap: () {}),
+        PlayingCardView(PlayingCard.parse('Rc'), selected: true, onTap: () {}),
+        PlayingCardView(PlayingCard.parse('Rc'), faceUp: false),
+      ],
+    ),
+  ),
+);
+
+/// Captures [child] on a surface of [size] logical pixels at 2x.
+Future<void> _capture(
+  WidgetTester tester,
+  Widget child,
+  Size size,
+  String name,
+) async {
+  tester.view
+    ..physicalSize = size * 2
+    ..devicePixelRatio = 2;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(buildTestApp(child));
+  await expectLater(
+    find.byType(MaterialApp),
+    matchesGoldenFile('goldens/$name.png'),
+  );
+}
+
 void main() {
+  testWidgets('the deck at the size of a hand', (tester) async {
+    await _capture(tester, _deck(88), const Size(968, 716), 'deck');
+  });
+
+  testWidgets('the deck at the size of the count', (tester) async {
+    await _capture(tester, _deck(52), const Size(608, 442), 'deck_compact');
+  });
+
+  testWidgets('the states of a card', (tester) async {
+    await _capture(tester, _cardStates(), const Size(360, 200), 'card_states');
+  });
+
   _devices.forEach((deviceName, device) {
     testWidgets('components on $deviceName', (tester) async {
       device.apply(tester);

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_text_styles.dart';
 import '../game/cards.dart';
-import 'playing_card_widget.dart';
+import '../ui/cards/playing_card_view.dart';
 
 /// What the table shows of a seat: who sits there and their cards (face up
 /// only for the human).
@@ -383,11 +383,11 @@ class _MusTableState extends State<MusTable> with TickerProviderStateMixin {
               offset: Offset(0, transY),
               child: Transform.rotate(
                 angle: angle,
-                child: PlayingCardWidget(
-                  card: card,
+                child: PlayingCardView(
+                  card,
                   width: 70,
-                  isSelected: widget.selectedCards.contains(card),
-                  onTap: (card) => widget.onCardTap(playerIndex, card),
+                  selected: widget.selectedCards.contains(card),
+                  onTap: () => widget.onCardTap(playerIndex, card),
                 ),
               ),
             ),

@@ -43,6 +43,8 @@ class AppColors {
   static const Color copas = Color(0xFFB1251D);
   static const Color espadas = Color(0xFF2C5787);
   static const Color bastos = Color(0xFF3D6A2C);
+  static const Color espadasShine = Color(0xFF9FB9D6);
+  static const Color bastosShade = Color(0xFF24401B);
 
   static const Color stone = Color(0xFFEFE6CC);
   static const Color stoneShade = Color(0xFFC9BE9F);

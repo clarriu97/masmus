@@ -74,6 +74,14 @@ class AppTheme {
     fontFeatures: [FontFeature.liningFigures()],
   );
 
+  /// The number in a card's corner; the card sets its size.
+  static const TextStyle cardIndex = TextStyle(
+    fontFamily: displayFont,
+    fontWeight: FontWeight.w400,
+    height: 1,
+    color: AppColors.cardInk,
+  );
+
   static ButtonStyle _action(Color background, Color foreground, Color edge) =>
       ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(

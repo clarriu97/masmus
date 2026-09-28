@@ -7,7 +7,9 @@ import '../../helpers/test_app.dart';
 
 void main() {
   testWidgets('says it in dark ink on a cream bubble', (tester) async {
-    await tester.pumpWidget(buildTestApp(const SpeechBubble('No hay mus')));
+    await tester.pumpWidget(
+      buildTestComponent(const SpeechBubble('No hay mus')),
+    );
     expect(
       tester.widget<Text>(find.text('No hay mus')).style?.color,
       AppColors.onBubble,

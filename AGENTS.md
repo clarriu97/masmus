@@ -76,7 +76,7 @@ Played on a phone, in portrait, often one-handed, in sessions that get interrupt
 - Nothing the bots do is instant or hidden: every action stays on screen long enough to be read, and the pace is adjustable.
 - At the end of a hand every hand is shown, and each lance says who won it, with what, and how many points. The player can check the score.
 - Mus vocabulary is used the way players use it (mano, postre, envido, órdago, "no hay mus", medias, duples, la 31…). Beginners get help in the app, not a different vocabulary.
-- Every user-visible string goes through `AppLocalizations` (Spanish first). No hardcoded strings in widgets.
+- Every user-visible string goes through `AppLocalizations` (Spanish first, template `lib/l10n/app_es.arb`). No hardcoded strings in widgets.
 - Colors, typography, spacing and radii come from theme tokens. No inline `Color(...)` / `TextStyle(...)` in screens. Fonts are bundled: the game works offline.
 - Respect platform conventions: iOS swipe-back works, system text scaling up to 200 % doesn't overflow, and `MediaQuery.disableAnimations` gets a static fallback for any non-trivial motion.
 - No fake features: nothing on screen that doesn't work (no placeholder rankings, shops, logins or "coming soon" tabs).
@@ -114,15 +114,17 @@ flutter pub get
 dart format .                      # CI runs: dart format --set-exit-if-changed .
 flutter analyze
 flutter test                       # full suite — a partial pass is a failure
-tool/ci.sh                         # exactly what the PR checks run (~1 min)
-tool/ci.sh all                     # + release builds for Android and iOS
+tool/ci.sh                         # exactly what the PR checks run (~1 min): lint, tests, goldens (macOS)
+tool/ci.sh all                     # + release builds for Android and iOS, e2e on the simulator and emulator
+flutter test --update-goldens --tags golden   # after an intentional visual change (macOS); review the PNG diff
+tool/ci.sh e2e-ios small           # e2e flows (integration_test/) on the small iPhone simulator; also large, e2e-android
 SIMULATION_MATCHES=20000 flutter test test/game/simulation_test.dart   # before merging engine changes (~2 min)
 dart run tool/arena.dart strategic heuristic 250   # bots against each other: win rate, style (Markdown)
 flutter devices
 flutter run -d <device-id>         # simulator, emulator or device; keep it running for hot reload
 ```
 
-**Every change must pass `tool/ci.sh` (format, analyze, full `flutter test`) before it is considered done.** Iterate autonomously until green. Changes to dependencies or native config (`android/`, `ios/`) also pass `tool/ci.sh all` before merging. `git config core.hooksPath tool/git-hooks` runs `tool/ci.sh` before every push.
+**Every change must pass `tool/ci.sh` (format, analyze, full `flutter test`, goldens) before it is considered done.** Iterate autonomously until green. Changes to dependencies or native config (`android/`, `ios/`) also pass `tool/ci.sh all` before merging. `git config core.hooksPath tool/git-hooks` runs `tool/ci.sh` before every push.
 
 When the app is running (via `flutter run` or the Dart MCP server), hot reload after editing UI in `lib/`, and hot restart after changing `main()`, `initState`, or global/static state.
 

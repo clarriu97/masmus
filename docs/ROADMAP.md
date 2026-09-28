@@ -32,7 +32,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **in progress** (#18 #19 done) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M3 · Mesa jugable | in progress (#22 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,17 +44,31 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** #20, our own Spanish deck in Tapete, then the identity (#21)
-and the table of M3 (#22 → #31), where the owner's points on the prototype
-table (comments in #24, #25 and #20) are done criteria. The rest of M4
-(#35 → #37) comes once the new table is playable. Work one issue per branch
-and PR, following AGENTS.md → Workflow.
+**Next step:** #20, our own Spanish deck in Tapete, with its goldens; then
+the table of M3 (#23 → #31), where the owner's points on the prototype
+table (comments in #24, #25 and #20) are done criteria, and the identity
+(#21) whenever it fits. The rest of M4 (#35 → #37) comes once the new table
+is playable. Work one issue per branch and PR, following AGENTS.md →
+Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · The UI safety net before the first screen (#22).** It went
+  ahead of the deck, which needs goldens. Texts in ARB (template
+  `lib/l10n/app_es.arb`, generated `AppLocalizations`). Test helpers in
+  `test/helpers/`: real devices from iPhone SE to Pro Max and Android
+  compact to tablet, `buildTestApp` for screens and `buildTestComponent`
+  for pieces. Goldens on macOS with 1RM's tolerant comparator
+  (`test/goldens/`, tag `golden`, job `goldens` required on `master`); the
+  first ones, the Tapete components on iPhone SE and Pro, caught "Órdago"
+  wrapping on the SE. E2E skeleton in `integration_test/` with one flow from
+  opening the app to the table, run by `tool/ci.sh e2e-ios small|large` and
+  `e2e-android` and by `tool/ci.sh all`; running them in CI, the local gate
+  and the Release workflow are #41. The layout matrix is born with the first screen (#23) on
+  these helpers, and the storage and relaunch helpers with #29.
 - **2026-09-28 · The Tapete design system (#19).** Tokens in
   `lib/ui/theme/`: the felt and its inks, brass for whose turn it is (as a
   fill or an edge, never as text), maroon for the órdago, the card's cream,
@@ -210,12 +224,15 @@ or right after; business model; languages at launch; license.
 | App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`; the rest of `lib/` is the legacy UI |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
-| CI | `.github/workflows/`: `flutter.yml` (PR checks), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
-| Branch protection | `master`: required `analyze` and `test`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
+| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
+| Branch protection | `master`: required `analyze`, `test` and `goldens`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name still "Masmus" until #21 |
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
-| Design system | `lib/ui/theme/` (Tapete tokens and `ThemeData`), shared components in `lib/ui/widgets/`, fonts in `assets/fonts/` with their OFL licenses (registered in `main.dart` for the licenses page) |
+| Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
+| Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |
+| E2E flows | `integration_test/app_test.dart` (single entry point) and `integration_test/flows/` |
+| Design system | `lib/ui/theme/` (Tapete tokens and `ThemeData`), shared components in `lib/ui/widgets/` (golden: `test/goldens/goldens/components.*.png`), fonts in `assets/fonts/` with their OFL licenses (registered in `main.dart` for the licenses page) |
 | Visual directions | `docs/design/directions/`: Tapete (chosen), Noche and Tanteo on the same table (#19), source `index.html` and one JPG each |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

@@ -18,7 +18,7 @@ void main() {
     testWidgets('$points tantos are $big amarracos and $small stones', (
       tester,
     ) async {
-      await tester.pumpWidget(buildTestApp(Amarracos(points)));
+      await tester.pumpWidget(buildTestComponent(Amarracos(points)));
       expect(_stones(big: true), findsNWidgets(big));
       expect(_stones(big: false), findsNWidgets(small));
     });
@@ -28,7 +28,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const ScoreBoard(
           usLabel: 'Nosotros',
           us: 12,
@@ -49,7 +49,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const ScoreBoard(
           usLabel: 'Nosotros',
           us: 12,

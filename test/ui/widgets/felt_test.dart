@@ -9,7 +9,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      buildTestApp(
+      buildTestComponent(
         const Felt(
           child: SizedBox(width: 300, height: 400, child: Text('mesa')),
         ),

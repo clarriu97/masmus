@@ -4,6 +4,7 @@
 // (one flow: add --plain-name '<test name>')
 import 'package:flutter_test/flutter_test.dart';
 
+import 'flows/resume_flow.dart';
 import 'flows/start_flow.dart';
 import 'flows/table_flow.dart';
 import 'helpers.dart';
@@ -13,4 +14,5 @@ void main() {
 
   group('start', startFlows);
   group('table', tableFlows);
+  group('resume', resumeFlows);
 }

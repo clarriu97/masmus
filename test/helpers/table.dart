@@ -47,6 +47,7 @@ MatchController tableController({
   return MatchController(
     match: match,
     bots: {for (final seat in tableBots.keys) seat: RandomBot(Random(seat))},
+    seats: tableBots,
     scheduler: scheduler ?? ManualScheduler(),
     store: MatchStore.inMemory(),
   );
@@ -172,3 +173,14 @@ final Map<String, MatchController Function()> tableMoments = {
     ],
   ),
 };
+
+/// A match saved at its 12th hand, 23 to 31, with El Calculador as partner.
+SavedMatch savedMatch() => SavedMatch(
+  match: MatchState(
+    rules: const Rules(),
+    score: const [23, 31],
+    handNumber: 12,
+    hand: dealt(const {0: 'R R 7 7', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'}),
+  ),
+  bots: tableBots,
+);

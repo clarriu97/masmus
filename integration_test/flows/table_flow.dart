@@ -44,6 +44,7 @@ void tableFlows() {
         for (final MapEntry(key: seat, value: personality) in _bots.entries)
           seat: StrategicBot(personality, Random(seat)),
       },
+      seats: _bots,
       scheduler: Scheduler(),
       store: MatchStore.inMemory(),
       pace: Pace.fast,

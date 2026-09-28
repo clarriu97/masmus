@@ -686,5 +686,63 @@
   "endHome": "Volver al inicio",
   "@endHome": {
     "description": "Goes back to the start screen."
+  },
+  "savedTitle": "Partida en curso",
+  "@savedTitle": {
+    "description": "Heading of the match saved, on the start screen."
+  },
+  "savedScore": "Nosotros {us} · Ellos {them}",
+  "@savedScore": {
+    "description": "The saved match's score.",
+    "placeholders": {
+      "us": {
+        "type": "int"
+      },
+      "them": {
+        "type": "int"
+      }
+    }
+  },
+  "savedDetails": "{kings, select, eight{8 reyes} other{4 reyes}} · a {target} · mano {hand} · con {partner}",
+  "@savedDetails": {
+    "description": "The saved match's rules, which hand it is at and your partner.",
+    "placeholders": {
+      "kings": {
+        "type": "String"
+      },
+      "target": {
+        "type": "int"
+      },
+      "hand": {
+        "type": "int"
+      },
+      "partner": {
+        "type": "String"
+      }
+    }
+  },
+  "savedContinue": "Continuar",
+  "@savedContinue": {
+    "description": "Resumes the saved match where it was left."
+  },
+  "confirmNewTitle": "¿Empezar otra partida?",
+  "@confirmNewTitle": {
+    "description": "Asks before a new match replaces the saved one."
+  },
+  "confirmNewBody": "La partida en curso se pierde.",
+  "@confirmNewBody": {
+    "description": "What starting another match means."
+  },
+  "confirmNewCancel": "Cancelar",
+  "@confirmNewCancel": {
+    "description": "Keeps the saved match."
+  },
+  "confirmNewOk": "Empezar otra",
+  "@confirmNewOk": {
+    "description": "Starts the new match and drops the saved one."
+  },
+  "savedSetAside": "No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.",
+  "@savedSetAside": {
+    "description": "When the saved match couldn't be read."
   }
 }

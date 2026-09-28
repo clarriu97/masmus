@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../bots/bot.dart';
+import '../bots/heuristic_bot.dart';
 import '../game/event.dart';
 import '../game/match.dart';
 import '../game/move.dart';
@@ -29,6 +30,7 @@ final class MatchController extends ChangeNotifier {
   MatchController({
     required MatchState match,
     required this.bots,
+    required this.seats,
     required Scheduler scheduler,
     required MatchStore store,
     this.pace = Pace.normal,
@@ -40,6 +42,9 @@ final class MatchController extends ChangeNotifier {
   }
 
   final Map<int, Bot> bots;
+
+  /// Who each bot is, saved with the match so it resumes with the same.
+  final Map<int, Personality> seats;
   final Scheduler _scheduler;
   final MatchStore _store;
   MatchState _match;
@@ -88,8 +93,13 @@ final class MatchController extends ChangeNotifier {
     _changed();
   }
 
+  /// Saves after every move; a match that is over is no longer resumed.
   void _changed() {
-    unawaited(_store.save(_match));
+    unawaited(
+      _match.isOver
+          ? _store.clear()
+          : _store.save(SavedMatch(match: _match, bots: seats)),
+    );
     notifyListeners();
     _scheduleBot();
   }

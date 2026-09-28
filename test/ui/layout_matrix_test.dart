@@ -4,6 +4,7 @@
 // pass too.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
 import 'package:masmus/ui/table/end_view.dart';
@@ -13,7 +14,16 @@ import '../helpers/table.dart';
 import '../helpers/test_app.dart';
 
 final Map<String, Widget Function()> _screens = {
-  'start': () => StartScreen(table: (partner, rules) => const SizedBox()),
+  'start': () => StartScreen(
+    store: MatchStore.inMemory(),
+    table: (partner, rules) => const SizedBox(),
+    resume: (_) => const SizedBox(),
+  ),
+  'start with a match saved': () => StartScreen(
+    store: MatchStore.inMemory(savedMatch()),
+    table: (partner, rules) => const SizedBox(),
+    resume: (_) => const SizedBox(),
+  ),
   'new match': () => NewMatchScreen(onStart: (partner, rules) {}),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table at $moment': () => tableScreen(controller()),

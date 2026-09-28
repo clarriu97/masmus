@@ -1,15 +1,32 @@
+import 'dart:io';
+
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:masmus/main.dart';
+import 'package:masmus/services/match_store.dart';
 
 void setUpE2E() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 }
 
-/// Starts the app the way `main()` does.
-Future<void> launchApp(WidgetTester tester) async {
-  await tester.pumpWidget(const MasmusApp());
+/// Starts the app the way `main()` does, with [store], or one in memory.
+Future<void> launchApp(WidgetTester tester, {MatchStore? store}) async {
+  await tester.pumpWidget(MasmusApp(store: store ?? MatchStore.inMemory()));
   await tester.pumpAndSettle();
+}
+
+/// Kills and reopens the app: throws the whole widget tree away and opens
+/// the match store in [directory] again, as `main()` does.
+Future<void> relaunchApp(WidgetTester tester, Directory directory) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  await tester.pumpAndSettle();
+  // Lets the last write already in flight land, as it would on a phone.
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 300)),
+  );
+  final store = (await tester.runAsync(() => MatchStore.open(directory)))!;
+  await launchApp(tester, store: store);
 }
 
 /// Waits for [finder] to show (or, with [gone], to disappear), pumping frames

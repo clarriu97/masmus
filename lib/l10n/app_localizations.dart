@@ -753,6 +753,60 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Volver al inicio'**
   String get endHome;
+
+  /// Heading of the match saved, on the start screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Partida en curso'**
+  String get savedTitle;
+
+  /// The saved match's score.
+  ///
+  /// In es, this message translates to:
+  /// **'Nosotros {us} · Ellos {them}'**
+  String savedScore(int us, int them);
+
+  /// The saved match's rules, which hand it is at and your partner.
+  ///
+  /// In es, this message translates to:
+  /// **'{kings, select, eight{8 reyes} other{4 reyes}} · a {target} · mano {hand} · con {partner}'**
+  String savedDetails(String kings, int target, int hand, String partner);
+
+  /// Resumes the saved match where it was left.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get savedContinue;
+
+  /// Asks before a new match replaces the saved one.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Empezar otra partida?'**
+  String get confirmNewTitle;
+
+  /// What starting another match means.
+  ///
+  /// In es, this message translates to:
+  /// **'La partida en curso se pierde.'**
+  String get confirmNewBody;
+
+  /// Keeps the saved match.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get confirmNewCancel;
+
+  /// Starts the new match and drops the saved one.
+  ///
+  /// In es, this message translates to:
+  /// **'Empezar otra'**
+  String get confirmNewOk;
+
+  /// When the saved match couldn't be read.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.'**
+  String get savedSetAside;
 }
 
 class _AppLocalizationsDelegate

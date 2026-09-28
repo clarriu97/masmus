@@ -5,11 +5,12 @@ import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/game/rules.dart';
+import 'package:masmus/l10n/app_localizations.dart';
 import 'package:masmus/screens/game_screen.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
+import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/widgets/mus_table.dart';
-import 'package:masmus/widgets/playing_card_widget.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +42,8 @@ void main() {
     final scheduler = ManualScheduler();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: GameScreen(
           partner: Personality.calculador,
           seed: seed,
@@ -95,12 +98,12 @@ void main() {
     final none = find.widgetWithText(ElevatedButton, 'DESCARTAR (0)');
     expect(tester.widget<ElevatedButton>(none).onPressed, isNull);
 
-    await tester.tap(find.byType(PlayingCardWidget).first);
+    await tester.tap(find.byType(PlayingCardView).first);
     await tester.pump();
     expect(
       tester
-          .widget<PlayingCardWidget>(find.byType(PlayingCardWidget).first)
-          .isSelected,
+          .widget<PlayingCardView>(find.byType(PlayingCardView).first)
+          .selected,
       isTrue,
     );
     final one = find.widgetWithText(ElevatedButton, 'DESCARTAR (1)');
@@ -118,6 +121,8 @@ void main() {
     final scheduler = ManualScheduler();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => TextButton(
             onPressed: () => Navigator.of(context).push(
@@ -169,6 +174,8 @@ void main() {
   testWidgets('MusTable shows your cards face up', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: MusTable(
             seats: [
@@ -183,8 +190,8 @@ void main() {
         ),
       ),
     );
-    expect(find.byType(PlayingCardWidget), findsNWidgets(2));
-    expect(find.text('1'), findsNWidgets(2));
-    expect(find.text('12'), findsNWidgets(2));
+    expect(find.byType(PlayingCardView), findsNWidgets(2));
+    expect(find.bySemanticsLabel('As de oros'), findsOneWidget);
+    expect(find.bySemanticsLabel('Rey de copas'), findsOneWidget);
   });
 }

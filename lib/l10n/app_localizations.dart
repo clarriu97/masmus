@@ -99,6 +99,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Masmus'**
   String get appTitle;
+
+  /// A card as a screen reader says it: «Rey de oros». number is 1–7, 10, 11 or 12; suit is oros, copas, espadas or bastos.
+  ///
+  /// In es, this message translates to:
+  /// **'{number, select, 1{As} 2{Dos} 3{Tres} 4{Cuatro} 5{Cinco} 6{Seis} 7{Siete} 10{Sota} 11{Caballo} 12{Rey} other{{number}}} de {suit, select, oros{oros} copas{copas} espadas{espadas} bastos{bastos} other{{suit}}}'**
+  String cardName(String number, String suit);
+
+  /// A card whose face can't be seen, as a screen reader says it.
+  ///
+  /// In es, this message translates to:
+  /// **'Carta boca abajo'**
+  String get cardFaceDown;
 }
 
 class _AppLocalizationsDelegate

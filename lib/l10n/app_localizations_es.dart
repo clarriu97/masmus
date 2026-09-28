@@ -10,4 +10,32 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get appTitle => 'Masmus';
+
+  @override
+  String cardName(String number, String suit) {
+    String _temp0 = intl.Intl.selectLogic(number, {
+      '1': 'As',
+      '2': 'Dos',
+      '3': 'Tres',
+      '4': 'Cuatro',
+      '5': 'Cinco',
+      '6': 'Seis',
+      '7': 'Siete',
+      '10': 'Sota',
+      '11': 'Caballo',
+      '12': 'Rey',
+      'other': '$number',
+    });
+    String _temp1 = intl.Intl.selectLogic(suit, {
+      'oros': 'oros',
+      'copas': 'copas',
+      'espadas': 'espadas',
+      'bastos': 'bastos',
+      'other': '$suit',
+    });
+    return '$_temp0 de $_temp1';
+  }
+
+  @override
+  String get cardFaceDown => 'Carta boca abajo';
 }

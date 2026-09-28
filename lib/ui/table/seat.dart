@@ -13,6 +13,7 @@ class Seat extends StatelessWidget {
     required this.role,
     required this.thinking,
     this.said,
+    this.asked,
     super.key,
   });
 
@@ -20,6 +21,9 @@ class Seat extends StatelessWidget {
   final String role;
   final bool thinking;
   final String? said;
+
+  /// How many cards it asked for in the last discards, in words.
+  final String? asked;
 
   static const _back = PlayingCard(Suit.oros, 1);
 
@@ -29,7 +33,7 @@ class Seat extends StatelessWidget {
     final said = this.said;
     return Semantics(
       container: true,
-      label: [name, role, ?said].join('. '),
+      label: [name, role, ?asked, ?said].join('. '),
       child: ExcludeSemantics(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -58,6 +62,8 @@ class Seat extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(name, style: text.titleSmall, textAlign: TextAlign.center),
             Text(role, style: text.labelSmall, textAlign: TextAlign.center),
+            if (asked case final asked?)
+              Text(asked, style: text.labelSmall, textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.xs),
             Row(
               mainAxisSize: MainAxisSize.min,

@@ -555,6 +555,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'cuánto'**
   String get actionRaiseAny;
+
+  /// Button: throw away the cards marked, for new ones.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartar'**
+  String get actionDiscard;
+
+  /// Under the discard button: how many cards are marked.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =0{marca las que cambias} =1{una carta} other{{count} cartas}}'**
+  String actionDiscardCount(int count);
+
+  /// Above your cards while you choose which to throw away.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca las cartas que quieres cambiar'**
+  String get discardHint;
+
+  /// Under a bot's name: how many cards it asked for in the last discards.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{pidió una} other{pidió {count}}}'**
+  String seatAsked(int count);
 }
 
 class _AppLocalizationsDelegate

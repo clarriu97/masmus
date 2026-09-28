@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../game/cards.dart';
 import '../../game/hand_state.dart';
 import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
@@ -18,6 +19,7 @@ class TableActions extends StatefulWidget {
     required this.view,
     required this.bettor,
     required this.onMove,
+    this.marked = const [],
     super.key,
   });
 
@@ -26,6 +28,9 @@ class TableActions extends StatefulWidget {
 
   /// Who made the bet waiting for your answer, if there is one.
   final String? bettor;
+
+  /// The cards you have marked to throw away.
+  final List<PlayingCard> marked;
 
   final ValueChanged<Move> onMove;
 
@@ -45,6 +50,17 @@ class _TableActionsState extends State<TableActions> {
       spacing: AppSpacing.sm,
       children: [for (final button in buttons) Expanded(child: button)],
     );
+    if (moves.contains(MoveKind.discard)) {
+      final marked = widget.marked;
+      return row([
+        ActionButton(
+          label: l10n.actionDiscard,
+          detail: l10n.actionDiscardCount(marked.length),
+          kind: ActionKind.primary,
+          onPressed: marked.isEmpty ? null : () => play(Discard(marked)),
+        ),
+      ]);
+    }
     if (moves.contains(MoveKind.mus)) {
       return row([
         ActionButton(label: l10n.actionMus, onPressed: () => play(const Mus())),

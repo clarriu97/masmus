@@ -455,5 +455,31 @@
   "actionRaiseAny": "cuánto",
   "@actionRaiseAny": {
     "description": "Under the raise button: it asks how much."
+  },
+  "actionDiscard": "Descartar",
+  "@actionDiscard": {
+    "description": "Button: throw away the cards marked, for new ones."
+  },
+  "actionDiscardCount": "{count, plural, =0{marca las que cambias} =1{una carta} other{{count} cartas}}",
+  "@actionDiscardCount": {
+    "description": "Under the discard button: how many cards are marked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "discardHint": "Toca las cartas que quieres cambiar",
+  "@discardHint": {
+    "description": "Above your cards while you choose which to throw away."
+  },
+  "seatAsked": "{count, plural, =1{pidió una} other{pidió {count}}}",
+  "@seatAsked": {
+    "description": "Under a bot's name: how many cards it asked for in the last discards.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

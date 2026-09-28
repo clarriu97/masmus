@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../bots/heuristic_bot.dart';
 import '../../controllers/match_controller.dart';
+import '../../game/cards.dart';
+import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
 import '../cards/playing_card_view.dart';
@@ -20,7 +22,7 @@ import 'table_view.dart';
 /// The match being played, seen from your seat: the score, where the hand
 /// is and how each lance went, who is mano and whose turn it is, what each
 /// player just said and what is on the table, and your cards.
-class TableScreen extends StatelessWidget {
+class TableScreen extends StatefulWidget {
   const TableScreen({
     required this.controller,
     required this.bots,
@@ -40,24 +42,50 @@ class TableScreen extends StatelessWidget {
   static const maxTextScale = 1.3;
 
   @override
+  State<TableScreen> createState() => _TableScreenState();
+}
+
+class _TableScreenState extends State<TableScreen> {
+  /// The cards you have marked to throw away.
+  final _marked = <PlayingCard>{};
+
+  void _toggle(PlayingCard card) => setState(
+    () => _marked.contains(card) ? _marked.remove(card) : _marked.add(card),
+  );
+
+  void _play(Move move) {
+    _marked.clear();
+    widget.controller.play(move);
+  }
+
+  @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: controller,
+    listenable: widget.controller,
     builder: (context, _) {
       final l10n = AppLocalizations.of(context);
+      final controller = widget.controller;
+      final bots = widget.bots;
       final view = TableView.of(controller.match, you: controller.humanSeat!);
+      if (!view.youDiscard) {
+        _marked.clear();
+      }
       return MediaQuery.withClampedTextScaling(
-        maxScaleFactor: maxTextScale,
+        maxScaleFactor: TableScreen.maxTextScale,
         child: Scaffold(
           body: Felt(
             child: SafeArea(
               child: Column(
                 children: [
-                  _TopBar(view: view, onExit: onExit),
+                  _TopBar(view: view, onExit: widget.onExit),
                   _Steps(view: view),
                   Expanded(
                     child: _Seats(view: view, bots: bots),
                   ),
-                  _YourHand(view: view),
+                  _YourHand(
+                    view: view,
+                    marked: _marked,
+                    onTap: view.youDiscard ? _toggle : null,
+                  ),
                   _Status(view: view, bots: bots),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
@@ -76,7 +104,8 @@ class TableScreen extends StatelessWidget {
                                 l10n.personalityName(bots[bettor]!),
                               _ => null,
                             },
-                            onMove: controller.play,
+                            marked: _marked.toList(),
+                            onMove: _play,
                           )
                         : _TurnBar(view: view, bots: bots),
                   ),
@@ -188,6 +217,10 @@ class _Seats extends StatelessWidget {
       name: l10n.personalityName(bots[seat]!),
       role: l10n.seatRole(view, seat),
       thinking: view.turn == seat,
+      asked: switch (view.asked[seat]) {
+        final count? => l10n.seatAsked(count),
+        null => null,
+      },
       said: switch (view.said[seat]) {
         final event? => l10n.said(event, view),
         null => null,
@@ -274,31 +307,47 @@ class _Stake extends StatelessWidget {
   }
 }
 
-/// Your cards, big, with what they are worth above them.
+/// Your cards, big, with what they are worth above them. While you
+/// discard, a tap marks a card to throw away and the marked ones rise. New
+/// cards come in with a short fade, or at once with reduced motion.
 class _YourHand extends StatelessWidget {
-  const _YourHand({required this.view});
+  const _YourHand({
+    required this.view,
+    required this.marked,
+    required this.onTap,
+  });
 
   final TableView view;
+  final Set<PlayingCard> marked;
+  final ValueChanged<PlayingCard>? onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final onTap = this.onTap;
+    final motion = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : AppMotion.medium;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         spacing: AppSpacing.sm,
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-              spacing: AppSpacing.sm,
-              children: [
-                if (view.mano == view.you)
-                  TableChip(l10n.tableMano, highlighted: true),
-                for (final help in l10n.handHelp(view.value)) TableChip(help),
-              ],
+          if (onTap != null)
+            Text(l10n.discardHint, style: text.bodySmall)
+          else
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                spacing: AppSpacing.sm,
+                children: [
+                  if (view.mano == view.you)
+                    TableChip(l10n.tableMano, highlighted: true),
+                  for (final help in l10n.handHelp(view.value)) TableChip(help),
+                ],
+              ),
             ),
-          ),
           LayoutBuilder(
             builder: (context, constraints) {
               final byHeight =
@@ -310,13 +359,40 @@ class _YourHand extends StatelessWidget {
                 byHeight,
                 88.0,
               ].reduce(min);
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: AppSpacing.sm,
-                children: [
-                  for (final card in view.cards)
-                    PlayingCardView(card, width: width),
-                ],
+              return Padding(
+                padding: EdgeInsets.only(
+                  top: onTap == null
+                      ? 0
+                      : width /
+                            PlayingCardView.aspectRatio *
+                            PlayingCardView.lift,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    for (final card in view.cards)
+                      TweenAnimationBuilder<double>(
+                        key: ValueKey(card),
+                        tween: Tween(begin: 0, end: 1),
+                        duration: motion,
+                        curve: AppMotion.curve,
+                        builder: (context, shown, child) => Opacity(
+                          opacity: shown,
+                          child: Transform.translate(
+                            offset: Offset(0, (1 - shown) * 24),
+                            child: child,
+                          ),
+                        ),
+                        child: PlayingCardView(
+                          card,
+                          width: width,
+                          selected: marked.contains(card),
+                          onTap: onTap == null ? null : () => onTap(card),
+                        ),
+                      ),
+                  ],
+                ),
               );
             },
           ),

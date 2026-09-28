@@ -32,7 +32,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **in progress** (#18 #19 #20 done) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| M3 · Mesa jugable | in progress (#22 → #25 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M3 · Mesa jugable | in progress (#22 → #26 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,18 +44,25 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** the discards (#26) and the count (#27) at the new table:
-with them the app switches to it and the prototype's is deleted. Then #28 →
-#31; the owner's points on the prototype table (comments in #24, #25 and
-#20) are done criteria. The identity (#21) whenever it fits; the rest of M4
-(#35 → #37) once the new table is playable. Work one issue per branch and
-PR, following AGENTS.md → Workflow.
+**Next step:** the count (#27) at the new table: with it the app switches
+to the new table and the prototype's is deleted. Then #28 → #31; the
+owner's points on the prototype table (comments in #24, #25 and #20) are
+done criteria. The identity (#21) whenever it fits; the rest of M4 (#35 →
+#37) once the new table is playable. Work one issue per branch and PR,
+following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · Discards at the table (#26).** While you discard, a tap
+  marks a card to throw away (it rises, edged in brass) and another tap
+  unmarks it; «Descartar» says how many and can't be pressed with none.
+  Each player's bubble says how many it asked for during the discards, and
+  «pidió N» stays under its name for the rest of the hand, as a table
+  remembers it. Cards come in with a short fade and rise, keyed by card, so
+  only the new ones move; with reduced motion they are there at once.
 - **2026-09-28 · Your moves at the table (#25).** The table offers exactly
   the engine's legal moves, in the thumb zone:
   - at the mus, mus or no hay mus;

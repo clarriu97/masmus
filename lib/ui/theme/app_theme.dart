@@ -175,6 +175,19 @@ class AppTheme {
         textStyle: WidgetStatePropertyAll(textTheme.titleSmall),
       ),
     ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? AppColors.onTurn
+            : AppColors.inkSecondary,
+      ),
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? AppColors.turn
+            : AppColors.chip,
+      ),
+      trackOutlineColor: const WidgetStatePropertyAll(AppColors.lineStrong),
+    ),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.feltDark,
       surfaceTintColor: Colors.transparent,

@@ -744,5 +744,34 @@
   "savedSetAside": "No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.",
   "@savedSetAside": {
     "description": "When the saved match couldn't be read."
+  },
+  "settingsTitle": "Ajustes",
+  "@settingsTitle": {
+    "description": "Title of the settings screen, and the link to it."
+  },
+  "settingsRules": "Reglas por defecto",
+  "@settingsRules": {
+    "description": "Heading: the rules new matches start with."
+  },
+  "settingsPace": "Ritmo de los bots",
+  "@settingsPace": {
+    "description": "Heading: how long the bots take to move."
+  },
+  "paceName": "{pace, select, slow{Lento} normal{Normal} other{Rápido}}",
+  "@paceName": {
+    "description": "A pace for the bots.",
+    "placeholders": {
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsHelp": "Ayuda con tu jugada",
+  "@settingsHelp": {
+    "description": "Setting: the table says what your hand is worth."
+  },
+  "settingsHelpDetail": "La mesa te dice qué llevas: pares, juego o punto.",
+  "@settingsHelpDetail": {
+    "description": "What the hand help does."
   }
 }

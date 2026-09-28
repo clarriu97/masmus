@@ -1,0 +1,84 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+
+import '../game/rules.dart';
+import '../services/json_file.dart';
+import 'match_controller.dart';
+
+/// What the player chose in Ajustes.
+final class Settings {
+  const Settings({
+    this.rules = const Rules(),
+    this.pace = Pace.normal,
+    this.handHelp = true,
+  });
+
+  factory Settings.fromJson(Map<String, Object?> json) => Settings(
+    rules: Rules.fromJson(json['rules']! as Map<String, Object?>),
+    pace: Pace.values.byName(json['pace']! as String),
+    handHelp: json['handHelp']! as bool,
+  );
+
+  /// Version written with the settings. Bump it with every change to the
+  /// format, with a migration from the previous one.
+  static const schemaVersion = 1;
+
+  /// The rules a new match starts with.
+  final Rules rules;
+
+  /// How long the bots take to move.
+  final Pace pace;
+
+  /// Whether the table says what your hand is worth.
+  final bool handHelp;
+
+  Settings copyWith({Rules? rules, Pace? pace, bool? handHelp}) => Settings(
+    rules: rules ?? this.rules,
+    pace: pace ?? this.pace,
+    handHelp: handHelp ?? this.handHelp,
+  );
+
+  Map<String, Object?> toJson() => {
+    'schemaVersion': schemaVersion,
+    'rules': rules.toJson(),
+    'pace': pace.name,
+    'handHelp': handHelp,
+  };
+}
+
+/// Keeps the settings and saves every change. A file it can't read is set
+/// aside and the defaults are used.
+final class SettingsController extends ChangeNotifier {
+  SettingsController._(this._file, this._settings);
+
+  factory SettingsController.inMemory([Settings settings = const Settings()]) =>
+      SettingsController._(JsonFile.inMemory(), settings);
+
+  static Future<SettingsController> open(JsonFile file) async {
+    try {
+      final json = await file.read();
+      if (json != null && json['schemaVersion'] != Settings.schemaVersion) {
+        throw FormatException('Unknown schema', json['schemaVersion']);
+      }
+      return SettingsController._(
+        file,
+        json == null ? const Settings() : Settings.fromJson(json),
+      );
+    } on Object {
+      await file.setAside();
+      return SettingsController._(file, const Settings());
+    }
+  }
+
+  final JsonFile _file;
+  Settings _settings;
+
+  Settings get settings => _settings;
+
+  set settings(Settings settings) {
+    _settings = settings;
+    unawaited(_file.write(settings.toJson()));
+    notifyListeners();
+  }
+}

@@ -56,6 +56,16 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · Settings (part of #30).** «Ajustes», from the start
+  screen, keeps:
+  - the rules new matches start with (8 or 4 reyes, a 40 or 30);
+  - the bots' pace (lento, normal, rápido);
+  - whether the table says what your hand is worth.
+  Every change is saved at once to `settings.json`, through `JsonFile`, the
+  same safe write the match uses: a temporary file renamed over the real
+  one, writes queued, unreadable files set aside. A damaged file, or one
+  from a newer version, gives the defaults. Sound and vibration come with
+  #39.
 - **2026-09-28 · Saving and resuming a match (#29).**
   - **What is saved**: after every move the match in progress is saved to
     `match.json` in the app's support directory (`path_provider`), with who
@@ -339,6 +349,7 @@ or right after; business model; languages at launch; license.
 | Design references | `docs/design/concept/`: the original concept mockups (online, rankings, señas guide). A vision, not the app |
 | Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
 | Deck | `lib/ui/cards/`: suit and figure art (`card_art.dart`), pip layouts, `PlayingCardView`; goldens `deck.png`, `deck_compact.png`, `card_states.png` |
+| Settings | `settings.json` next to the saved match (`SettingsController.open`) |
 | Saved match | `match.json` in the app's support directory (`MatchStore.open`); unreadable ones renamed `match.unreadable-<time>.json` beside it |
 | Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |

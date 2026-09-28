@@ -607,4 +607,30 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get savedSetAside =>
       'No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.';
+
+  @override
+  String get settingsTitle => 'Ajustes';
+
+  @override
+  String get settingsRules => 'Reglas por defecto';
+
+  @override
+  String get settingsPace => 'Ritmo de los bots';
+
+  @override
+  String paceName(String pace) {
+    String _temp0 = intl.Intl.selectLogic(pace, {
+      'slow': 'Lento',
+      'normal': 'Normal',
+      'other': 'Rápido',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get settingsHelp => 'Ayuda con tu jugada';
+
+  @override
+  String get settingsHelpDetail =>
+      'La mesa te dice qué llevas: pares, juego o punto.';
 }

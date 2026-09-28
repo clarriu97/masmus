@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:masmus/controllers/match_controller.dart';
+import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/main.dart';
+import 'package:masmus/services/json_file.dart';
 import 'package:masmus/services/match_store.dart';
 
 void setUpE2E() {
@@ -12,7 +15,12 @@ void setUpE2E() {
 
 /// Starts the app the way `main()` does, with [store], or one in memory.
 Future<void> launchApp(WidgetTester tester, {MatchStore? store}) async {
-  await tester.pumpWidget(MasmusApp(store: store ?? MatchStore.inMemory()));
+  await tester.pumpWidget(
+    MasmusApp(
+      store: store ?? MatchStore.inMemory(),
+      settings: SettingsController.inMemory(const Settings(pace: Pace.fast)),
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -25,7 +33,9 @@ Future<void> relaunchApp(WidgetTester tester, Directory directory) async {
   await tester.runAsync(
     () => Future<void>.delayed(const Duration(milliseconds: 300)),
   );
-  final store = (await tester.runAsync(() => MatchStore.open(directory)))!;
+  final store = (await tester.runAsync(
+    () => MatchStore.open(JsonFile.at(File('${directory.path}/match.json'))),
+  ))!;
   await launchApp(tester, store: store);
 }
 

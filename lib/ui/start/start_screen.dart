@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../bots/heuristic_bot.dart';
+import '../../controllers/settings_controller.dart';
 import '../../game/cards.dart';
 import '../../game/rules.dart';
 import '../../game/table.dart';
@@ -8,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
 import '../../services/match_store.dart';
 import '../cards/playing_card_view.dart';
+import '../settings/settings_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/action_button.dart';
 import '../widgets/felt.dart';
@@ -18,12 +20,14 @@ import 'new_match_screen.dart';
 class StartScreen extends StatefulWidget {
   const StartScreen({
     required this.store,
+    required this.settings,
     required this.table,
     required this.resume,
     super.key,
   });
 
   final MatchStore store;
+  final SettingsController settings;
 
   /// The table a new match is played on.
   final Widget Function(Personality partner, Rules rules) table;
@@ -48,6 +52,7 @@ class _StartScreenState extends State<StartScreen> {
     Navigator.of(context),
     MaterialPageRoute(
       builder: (context) => NewMatchScreen(
+        rules: widget.settings.settings.rules,
         onStart: (partner, rules) async {
           final navigator = Navigator.of(context);
           if (widget.store.saved != null && !await _confirmNew(context)) {
@@ -145,6 +150,17 @@ class _StartScreenState extends State<StartScreen> {
                               ? ActionKind.primary
                               : ActionKind.secondary,
                           onPressed: _newMatch,
+                        ),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) =>
+                                    SettingsScreen(settings: widget.settings),
+                              ),
+                            ),
+                            child: Text(l10n.settingsTitle),
+                          ),
                         ),
                       ],
                     ),

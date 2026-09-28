@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/services/json_file.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/table_screen.dart';
@@ -15,7 +16,9 @@ void resumeFlows() {
       () => Directory.systemTemp.createTemp('masmus_e2e_'),
     ))!;
     addTearDown(() => directory.delete(recursive: true));
-    final store = (await tester.runAsync(() => MatchStore.open(directory)))!;
+    final store = (await tester.runAsync(
+      () => MatchStore.open(JsonFile.at(File('${directory.path}/match.json'))),
+    ))!;
     await launchApp(tester, store: store);
     await tester.tap(find.text('Nueva partida'));
     await tester.pumpAndSettle();

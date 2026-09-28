@@ -7,9 +7,11 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
+import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
 import 'package:masmus/ui/table/end_view.dart';
@@ -202,15 +204,18 @@ Future<void> _capture(
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(
     store: MatchStore.inMemory(),
+    settings: SettingsController.inMemory(),
     table: (partner, rules) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
   'start_saved': () => StartScreen(
     store: MatchStore.inMemory(savedMatch()),
+    settings: SettingsController.inMemory(),
     table: (partner, rules) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
   'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table_$moment': () => tableScreen(controller()),
   for (final MapEntry(key: moment, value: controller) in countMoments.entries)

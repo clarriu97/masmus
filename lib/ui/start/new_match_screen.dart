@@ -8,13 +8,21 @@ import '../theme/app_theme.dart';
 import '../widgets/action_button.dart';
 import '../widgets/choice_tile.dart';
 import '../widgets/felt.dart';
+import '../widgets/setting_row.dart';
 
 /// Setting up a match: the partner and the rules. Everything starts at its
 /// default, so one tap is enough to play.
 class NewMatchScreen extends StatefulWidget {
-  const NewMatchScreen({required this.onStart, super.key});
+  const NewMatchScreen({
+    required this.onStart,
+    this.rules = const Rules(),
+    super.key,
+  });
 
   final void Function(Personality partner, Rules rules) onStart;
+
+  /// The rules it starts with: the defaults from Ajustes.
+  final Rules rules;
 
   @override
   State<NewMatchScreen> createState() => _NewMatchScreenState();
@@ -22,7 +30,7 @@ class NewMatchScreen extends StatefulWidget {
 
 class _NewMatchScreenState extends State<NewMatchScreen> {
   var _partner = Personality.calculador;
-  var _rules = const Rules();
+  late var _rules = widget.rules;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +74,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                             setState(() => _partner = partner),
                       ),
                       const SizedBox(height: AppSpacing.xl),
-                      _Rule(
+                      SettingRow(
                         label: l10n.newMatchKings,
                         control: SegmentedButton<Kings>(
                           showSelectedIcon: false,
@@ -90,7 +98,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                         ),
                       ),
                       const Divider(height: AppSpacing.xl),
-                      _Rule(
+                      SettingRow(
                         label: l10n.newMatchTarget,
                         control: SegmentedButton<int>(
                           showSelectedIcon: false,
@@ -179,24 +187,4 @@ class _Partners extends StatelessWidget {
       ],
     );
   }
-}
-
-/// A rule's name and its options, side by side while they fit.
-class _Rule extends StatelessWidget {
-  const _Rule({required this.label, required this.control});
-
-  final String label;
-  final Widget control;
-
-  @override
-  Widget build(BuildContext context) => Wrap(
-    alignment: WrapAlignment.spaceBetween,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    spacing: AppSpacing.md,
-    runSpacing: AppSpacing.sm,
-    children: [
-      Text(label, style: Theme.of(context).textTheme.titleMedium),
-      control,
-    ],
-  );
 }

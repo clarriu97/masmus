@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'controllers/settings_controller.dart';
 import 'l10n/app_localizations.dart';
+import 'services/json_file.dart';
 import 'services/match_store.dart';
 import 'ui/start/start_screen.dart';
 import 'ui/table/table_page.dart';
@@ -24,14 +28,21 @@ Future<void> main() async {
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
-  final store = await MatchStore.open(await getApplicationSupportDirectory());
-  runApp(MasmusApp(store: store));
+  final directory = await getApplicationSupportDirectory();
+  final store = await MatchStore.open(
+    JsonFile.at(File('${directory.path}/match.json')),
+  );
+  final settings = await SettingsController.open(
+    JsonFile.at(File('${directory.path}/settings.json')),
+  );
+  runApp(MasmusApp(store: store, settings: settings));
 }
 
 class MasmusApp extends StatelessWidget {
-  const MasmusApp({required this.store, super.key});
+  const MasmusApp({required this.store, required this.settings, super.key});
 
   final MatchStore store;
+  final SettingsController settings;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -42,9 +53,20 @@ class MasmusApp extends StatelessWidget {
     theme: AppTheme.tapete,
     home: StartScreen(
       store: store,
-      table: (partner, rules) =>
-          TablePage(partner: partner, rules: rules, store: store),
-      resume: (saved) => TablePage.resume(saved, store: store),
+      settings: settings,
+      table: (partner, rules) => TablePage(
+        partner: partner,
+        rules: rules,
+        pace: settings.settings.pace,
+        handHelp: settings.settings.handHelp,
+        store: store,
+      ),
+      resume: (saved) => TablePage.resume(
+        saved,
+        pace: settings.settings.pace,
+        handHelp: settings.settings.handHelp,
+        store: store,
+      ),
     ),
   );
 }

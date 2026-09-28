@@ -31,8 +31,12 @@ class TableScreen extends StatefulWidget {
     required this.bots,
     required this.onExit,
     required this.onRematch,
+    this.handHelp = true,
     super.key,
   });
+
+  /// Whether it says what your hand is worth.
+  final bool handHelp;
 
   final MatchController controller;
 
@@ -117,6 +121,7 @@ class _TableScreenState extends State<TableScreen> {
                   ),
                   _YourHand(
                     view: view,
+                    help: widget.handHelp,
                     marked: _marked,
                     onTap: view.youDiscard ? _toggle : null,
                   ),
@@ -347,11 +352,13 @@ class _Stake extends StatelessWidget {
 class _YourHand extends StatelessWidget {
   const _YourHand({
     required this.view,
+    required this.help,
     required this.marked,
     required this.onTap,
   });
 
   final TableView view;
+  final bool help;
   final Set<PlayingCard> marked;
   final ValueChanged<PlayingCard>? onTap;
 
@@ -378,7 +385,9 @@ class _YourHand extends StatelessWidget {
                 children: [
                   if (view.mano == view.you)
                     TableChip(l10n.tableMano, highlighted: true),
-                  for (final help in l10n.handHelp(view.value)) TableChip(help),
+                  if (help)
+                    for (final line in l10n.handHelp(view.value))
+                      TableChip(line),
                 ],
               ),
             ),

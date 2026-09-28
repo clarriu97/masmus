@@ -30,7 +30,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | Milestone | Status | Issues, in order | What it delivers |
 |---|---|---|---|
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
-| M1 · Reglas y motor | ✅ done (#11 waits for the owner's review in #49) | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
+| M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **🔜 next** | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | planned | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |

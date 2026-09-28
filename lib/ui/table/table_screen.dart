@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../bots/heuristic_bot.dart';
 import '../../controllers/match_controller.dart';
 import '../../game/cards.dart';
+import '../../game/hand_state.dart';
 import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
@@ -14,6 +15,7 @@ import '../widgets/felt.dart';
 import '../widgets/lance_chip.dart';
 import '../widgets/score_board.dart';
 import '../widgets/table_chip.dart';
+import 'count_view.dart';
 import 'seat.dart';
 import 'table_actions.dart';
 import 'table_texts.dart';
@@ -65,7 +67,21 @@ class _TableScreenState extends State<TableScreen> {
       final l10n = AppLocalizations.of(context);
       final controller = widget.controller;
       final bots = widget.bots;
-      final view = TableView.of(controller.match, you: controller.humanSeat!);
+      final you = controller.humanSeat!;
+      if (controller.match.hand.phase is HandOver) {
+        return CountView(
+          match: controller.match,
+          you: you,
+          names: {
+            you: l10n.countYou,
+            for (final MapEntry(key: seat, value: bot) in bots.entries)
+              seat: l10n.personalityName(bot),
+          },
+          onNext: controller.nextHand,
+          onExit: widget.onExit,
+        );
+      }
+      final view = TableView.of(controller.match, you: you);
       if (!view.youDiscard) {
         _marked.clear();
       }

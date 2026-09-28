@@ -413,4 +413,131 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get countTitle => 'Recuento';
+
+  @override
+  String get countYou => 'Tú';
+
+  @override
+  String countWinner(String name, String hand) {
+    return '$name, con $hand';
+  }
+
+  @override
+  String countByNoQuiero(String team) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return '$_temp0, por el no quiero';
+  }
+
+  @override
+  String countNobody(String lance) {
+    String _temp0 = intl.Intl.selectLogic(lance, {
+      'pares': 'pares',
+      'other': 'juego',
+    });
+    return 'Nadie tenía $_temp0';
+  }
+
+  @override
+  String countPunto(int points) {
+    return '$points de punto';
+  }
+
+  @override
+  String get countEnPaso => 'en paso';
+
+  @override
+  String countQuerido(int stake) {
+    return 'querido $stake';
+  }
+
+  @override
+  String countNoQuerido(int points) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: '$points tantos',
+      one: '1 tanto',
+    );
+    return 'no quiero: $_temp0 ya contado';
+  }
+
+  @override
+  String get countSinDisputa => 'sin disputa';
+
+  @override
+  String get countOrdago => 'órdago querido';
+
+  @override
+  String get countNotCounted => 'no se cuenta: la partida ya estaba ganada';
+
+  @override
+  String countPart(String kind, int points) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'par': 'par',
+      'medias': 'medias',
+      'duples': 'duples',
+      'juego31': 'la 31',
+      'other': 'juego',
+    });
+    return '$_temp0 $points';
+  }
+
+  @override
+  String countPoints(String team, int points) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return '$_temp0 +$points';
+  }
+
+  @override
+  String countScore(String team, int before, int after) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Nosotros',
+      'other': 'Ellos',
+    });
+    return '$_temp0 $before → $after';
+  }
+
+  @override
+  String countWon(String team) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': '¡Ganáis la partida!',
+      'other': 'Ganan ellos la partida',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get countNextHand => 'Siguiente mano';
+
+  @override
+  String get countDeal => 'Ver el reparto';
+
+  @override
+  String get dealTitle => 'El reparto';
+
+  @override
+  String dealDiscards(String name) {
+    return 'Descartes de $name';
+  }
+
+  @override
+  String get dealAllDiscards => 'Descartes';
+
+  @override
+  String get dealNoDiscards =>
+      'Nadie ha descartado: se cortó el mus de entrada.';
+
+  @override
+  String dealTotal(int hands, int discards, int stock) {
+    return '$hands en las manos + $discards descartadas + $stock en el mazo = 40';
+  }
 }

@@ -481,5 +481,178 @@
         "type": "int"
       }
     }
+  },
+  "countTitle": "Recuento",
+  "@countTitle": {
+    "description": "Title of the count at the end of a hand."
+  },
+  "countYou": "Tú",
+  "@countYou": {
+    "description": "Your hand, in the count."
+  },
+  "countWinner": "{name}, con {hand}",
+  "@countWinner": {
+    "description": "Who takes a lance and with what: «El Farolero, con 31».",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "hand": {
+        "type": "String"
+      }
+    }
+  },
+  "countByNoQuiero": "{team, select, us{Nosotros} other{Ellos}}, por el no quiero",
+  "@countByNoQuiero": {
+    "description": "A lance taken because the other pair refused the bet.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "countNobody": "Nadie tenía {lance, select, pares{pares} other{juego}}",
+  "@countNobody": {
+    "description": "A lance nobody could play.",
+    "placeholders": {
+      "lance": {
+        "type": "String"
+      }
+    }
+  },
+  "countPunto": "{points} de punto",
+  "@countPunto": {
+    "description": "A hand at the punto: «27 de punto».",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "countEnPaso": "en paso",
+  "@countEnPaso": {
+    "description": "Why a lance counts: nobody bet."
+  },
+  "countQuerido": "querido {stake}",
+  "@countQuerido": {
+    "description": "Why a lance counts: the bet was accepted.",
+    "placeholders": {
+      "stake": {
+        "type": "int"
+      }
+    }
+  },
+  "countNoQuerido": "no quiero: {points, plural, =1{1 tanto} other{{points} tantos}} ya contado",
+  "@countNoQuerido": {
+    "description": "A lance refused: its points were taken during the hand.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "countSinDisputa": "sin disputa",
+  "@countSinDisputa": {
+    "description": "Why a lance counts: only one pair could play it."
+  },
+  "countOrdago": "órdago querido",
+  "@countOrdago": {
+    "description": "The lance where an accepted órdago decided the match."
+  },
+  "countNotCounted": "no se cuenta: la partida ya estaba ganada",
+  "@countNotCounted": {
+    "description": "A lance after the match was already won."
+  },
+  "countPart": "{kind, select, par{par} medias{medias} duples{duples} juego31{la 31} other{juego}} {points}",
+  "@countPart": {
+    "description": "What one hand adds in pares or juego: «duples 3», «la 31 3».",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "countPoints": "{team, select, us{Nosotros} other{Ellos}} +{points}",
+  "@countPoints": {
+    "description": "The tantos a lance adds at the count.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "countScore": "{team, select, us{Nosotros} other{Ellos}} {before} → {after}",
+  "@countScore": {
+    "description": "A pair's score before and after the count.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      },
+      "before": {
+        "type": "int"
+      },
+      "after": {
+        "type": "int"
+      }
+    }
+  },
+  "countWon": "{team, select, us{¡Ganáis la partida!} other{Ganan ellos la partida}}",
+  "@countWon": {
+    "description": "Who won the match in this count.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "countNextHand": "Siguiente mano",
+  "@countNextHand": {
+    "description": "Deals the next hand."
+  },
+  "countDeal": "Ver el reparto",
+  "@countDeal": {
+    "description": "Opens every card discarded in the hand, to check the deal."
+  },
+  "dealTitle": "El reparto",
+  "@dealTitle": {
+    "description": "Title of the cards discarded in the hand."
+  },
+  "dealDiscards": "Descartes de {name}",
+  "@dealDiscards": {
+    "description": "The cards one player threw away.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dealAllDiscards": "Descartes",
+  "@dealAllDiscards": {
+    "description": "Every card thrown away in the hand."
+  },
+  "dealNoDiscards": "Nadie ha descartado: se cortó el mus de entrada.",
+  "@dealNoDiscards": {
+    "description": "When nobody changed cards."
+  },
+  "dealTotal": "{hands} en las manos + {discards} descartadas + {stock} en el mazo = 40",
+  "@dealTotal": {
+    "description": "That the 40 cards are all there.",
+    "placeholders": {
+      "hands": {
+        "type": "int"
+      },
+      "discards": {
+        "type": "int"
+      },
+      "stock": {
+        "type": "int"
+      }
+    }
   }
 }

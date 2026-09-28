@@ -1,8 +1,8 @@
 {
   "@@locale": "es",
-  "appTitle": "Masmus",
+  "appTitle": "Más Mus",
   "@appTitle": {
-    "description": "The app's name, until the identity (#21) settles it."
+    "description": "The app's name, as the system shows it."
   },
   "cardName": "{number, select, 1{As} 2{Dos} 3{Tres} 4{Cuatro} 5{Cinco} 6{Seis} 7{Siete} 10{Sota} 11{Caballo} 12{Rey} other{{number}}} de {suit, select, oros{oros} copas{copas} espadas{espadas} bastos{bastos} other{{suit}}}",
   "@cardName": {

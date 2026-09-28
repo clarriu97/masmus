@@ -94,10 +94,10 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('es')];
 
-  /// The app's name, until the identity (#21) settles it.
+  /// The app's name, as the system shows it.
   ///
   /// In es, this message translates to:
-  /// **'Masmus'**
+  /// **'Más Mus'**
   String get appTitle;
 
   /// A card as a screen reader says it: «Rey de oros». number is 1–7, 10, 11 or 12; suit is oros, copas, espadas or bastos.

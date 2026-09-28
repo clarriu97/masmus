@@ -9,7 +9,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'Masmus';
+  String get appTitle => 'Más Mus';
 
   @override
   String cardName(String number, String suit) {

@@ -51,6 +51,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -81,3 +83,24 @@ flutter:
           weight: 700
         - asset: assets/fonts/AlegreyaSans-ExtraBold.ttf
           weight: 800
+
+# Artwork: test/goldens/branding_test.dart → assets/branding/
+flutter_launcher_icons:
+  image_path: assets/branding/app_icon.png
+  ios: true
+  remove_alpha_ios: true
+  android: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#174634"
+  adaptive_icon_foreground: assets/branding/app_icon_foreground.png
+  adaptive_icon_monochrome: assets/branding/app_icon_monochrome.png
+
+flutter_native_splash:
+  color: "#174634"
+  image: assets/branding/splash.png
+  android_12:
+    color: "#174634"
+    image: assets/branding/splash_android12.png
+  ios: true
+  android: true
+  web: false

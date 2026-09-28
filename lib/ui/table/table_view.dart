@@ -60,6 +60,10 @@ final class TableView {
       turn: hand.turn,
       steps: _steps(hand),
       said: _said(hand.log),
+      asked: {
+        for (final event in hand.log.whereType<Discarded>())
+          event.seat: event.count,
+      },
       stake: switch (hand.phase) {
         LanceTurn(:final envite?) => envite,
         _ => null,
@@ -78,6 +82,7 @@ final class TableView {
     required this.turn,
     required this.steps,
     required this.said,
+    required this.asked,
     required this.stake,
     required this.cards,
     required this.value,
@@ -101,11 +106,19 @@ final class TableView {
   /// just over while nobody has spoken in the new one.
   final Map<int, GameEvent> said;
 
+  /// How many cards each seat asked for in the last discards of the hand.
+  final Map<int, int> asked;
+
+  /// Whether it is your turn to throw cards away.
+  bool get youDiscard => yourTurn && _discarding;
+
   /// The bet on the table in the lance being played.
   final Envite? stake;
 
   final List<PlayingCard> cards;
   final HandValue value;
+
+  bool get _discarding => steps.first.discarding;
 
   bool partnerOf(int seat) => teamOf(seat) == teamOf(you) && seat != you;
 }

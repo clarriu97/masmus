@@ -169,6 +169,7 @@ void main() {
       you: 0,
     );
     expect(asked.said, {0: const Discarded(0, count: 2)});
+    expect(asked.asked, {0: 2});
   });
 
   test('your hand and what it is worth', () {

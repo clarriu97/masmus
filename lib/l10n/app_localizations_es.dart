@@ -384,4 +384,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get actionRaiseAny => 'cuánto';
+
+  @override
+  String get actionDiscard => 'Descartar';
+
+  @override
+  String actionDiscardCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartas',
+      one: 'una carta',
+      zero: 'marca las que cambias',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get discardHint => 'Toca las cartas que quieres cambiar';
+
+  @override
+  String seatAsked(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pidió $count',
+      one: 'pidió una',
+    );
+    return '$_temp0';
+  }
 }

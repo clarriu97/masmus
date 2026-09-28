@@ -28,6 +28,7 @@ MatchController tableController({
   bool musCorrido = false,
   List<int> score = const [0, 0],
   List<(int, Move)> moves = const [],
+  Scheduler? scheduler,
 }) {
   var match = MatchState(
     rules: const Rules(),
@@ -41,7 +42,7 @@ MatchController tableController({
   return MatchController(
     match: match,
     bots: {for (final seat in tableBots.keys) seat: RandomBot(Random(seat))},
-    scheduler: ManualScheduler(),
+    scheduler: scheduler ?? ManualScheduler(),
     store: MatchStore.inMemory(),
   );
 }
@@ -53,12 +54,21 @@ Widget tableScreen(MatchController controller, {VoidCallback? onExit}) =>
       onExit: onExit ?? () {},
     );
 
+const _discardHands = {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'};
+
 /// Moments of a hand the table must show well.
 final Map<String, MatchController Function()> tableMoments = {
   // First hand: the mus goes round; you are mano.
   'mus': () => tableController(
     hands: const {0: 'R R 5 2', 1: 'S C 7 6', 2: '4 5 6 7', 3: '4 5 1 7'},
     musCorrido: true,
+  ),
+  // Everyone asked for mus: your turn to throw cards away.
+  'discard': () => tableController(
+    hands: _discardHands,
+    moves: [
+      for (final seat in [0, 1, 2, 3]) (seat, const Mus()),
+    ],
   ),
   // The grande after you cut the mus: your turn to open it.
   'grande_open': () => tableController(

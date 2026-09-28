@@ -25,7 +25,9 @@ const _bots = {
 
 void tableFlows() {
   testWidgets('a whole hand at the new table, from a stacked deck: you cut '
-      'the mus, then pass or refuse until the hand is over', (tester) async {
+      'the mus, pass or refuse until the count, then deal the next hand', (
+    tester,
+  ) async {
     final controller = MatchController(
       match: MatchState(
         rules: const Rules(),
@@ -76,6 +78,11 @@ void tableFlows() {
       }
     }
     expect(controller.match.count, isNotNull);
+    await tester.pump();
+    expect(find.text('Recuento'), findsOneWidget);
+    await tester.tap(find.text('Siguiente mano'));
+    await tester.pump();
+    expect(controller.match.hand.phase, isA<MusTurn>());
     expect(tester.takeException(), isNull);
   });
 }

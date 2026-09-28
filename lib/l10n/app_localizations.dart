@@ -579,6 +579,144 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{count, plural, =1{pidió una} other{pidió {count}}}'**
   String seatAsked(int count);
+
+  /// Title of the count at the end of a hand.
+  ///
+  /// In es, this message translates to:
+  /// **'Recuento'**
+  String get countTitle;
+
+  /// Your hand, in the count.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú'**
+  String get countYou;
+
+  /// Who takes a lance and with what: «El Farolero, con 31».
+  ///
+  /// In es, this message translates to:
+  /// **'{name}, con {hand}'**
+  String countWinner(String name, String hand);
+
+  /// A lance taken because the other pair refused the bet.
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Nosotros} other{Ellos}}, por el no quiero'**
+  String countByNoQuiero(String team);
+
+  /// A lance nobody could play.
+  ///
+  /// In es, this message translates to:
+  /// **'Nadie tenía {lance, select, pares{pares} other{juego}}'**
+  String countNobody(String lance);
+
+  /// A hand at the punto: «27 de punto».
+  ///
+  /// In es, this message translates to:
+  /// **'{points} de punto'**
+  String countPunto(int points);
+
+  /// Why a lance counts: nobody bet.
+  ///
+  /// In es, this message translates to:
+  /// **'en paso'**
+  String get countEnPaso;
+
+  /// Why a lance counts: the bet was accepted.
+  ///
+  /// In es, this message translates to:
+  /// **'querido {stake}'**
+  String countQuerido(int stake);
+
+  /// A lance refused: its points were taken during the hand.
+  ///
+  /// In es, this message translates to:
+  /// **'no quiero: {points, plural, =1{1 tanto} other{{points} tantos}} ya contado'**
+  String countNoQuerido(int points);
+
+  /// Why a lance counts: only one pair could play it.
+  ///
+  /// In es, this message translates to:
+  /// **'sin disputa'**
+  String get countSinDisputa;
+
+  /// The lance where an accepted órdago decided the match.
+  ///
+  /// In es, this message translates to:
+  /// **'órdago querido'**
+  String get countOrdago;
+
+  /// A lance after the match was already won.
+  ///
+  /// In es, this message translates to:
+  /// **'no se cuenta: la partida ya estaba ganada'**
+  String get countNotCounted;
+
+  /// What one hand adds in pares or juego: «duples 3», «la 31 3».
+  ///
+  /// In es, this message translates to:
+  /// **'{kind, select, par{par} medias{medias} duples{duples} juego31{la 31} other{juego}} {points}'**
+  String countPart(String kind, int points);
+
+  /// The tantos a lance adds at the count.
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Nosotros} other{Ellos}} +{points}'**
+  String countPoints(String team, int points);
+
+  /// A pair's score before and after the count.
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Nosotros} other{Ellos}} {before} → {after}'**
+  String countScore(String team, int before, int after);
+
+  /// Who won the match in this count.
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{¡Ganáis la partida!} other{Ganan ellos la partida}}'**
+  String countWon(String team);
+
+  /// Deals the next hand.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente mano'**
+  String get countNextHand;
+
+  /// Opens every card discarded in the hand, to check the deal.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver el reparto'**
+  String get countDeal;
+
+  /// Title of the cards discarded in the hand.
+  ///
+  /// In es, this message translates to:
+  /// **'El reparto'**
+  String get dealTitle;
+
+  /// The cards one player threw away.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartes de {name}'**
+  String dealDiscards(String name);
+
+  /// Every card thrown away in the hand.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartes'**
+  String get dealAllDiscards;
+
+  /// When nobody changed cards.
+  ///
+  /// In es, this message translates to:
+  /// **'Nadie ha descartado: se cortó el mus de entrada.'**
+  String get dealNoDiscards;
+
+  /// That the 40 cards are all there.
+  ///
+  /// In es, this message translates to:
+  /// **'{hands} en las manos + {discards} descartadas + {stock} en el mazo = 40'**
+  String dealTotal(int hands, int discards, int stock);
 }
 
 class _AppLocalizationsDelegate

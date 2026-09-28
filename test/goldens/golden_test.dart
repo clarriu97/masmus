@@ -202,6 +202,8 @@ final Map<String, Widget Function()> _screens = {
   'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table_$moment': () => tableScreen(controller()),
+  for (final MapEntry(key: moment, value: controller) in countMoments.entries)
+    moment: () => tableScreen(controller()),
 };
 
 void main() {

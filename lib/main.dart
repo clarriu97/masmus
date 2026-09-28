@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/theme/app_theme.dart';
 import 'navigation/app_router.dart';
+import 'ui/theme/font_licenses.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  registerFontLicenses();
 
   // Configurar orientación y barra de estado
   SystemChrome.setPreferredOrientations([

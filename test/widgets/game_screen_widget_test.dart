@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/match_controller.dart';
-import 'package:masmus/core/theme/app_text_styles.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/game/rules.dart';
 import 'package:masmus/screens/game_screen.dart';
@@ -14,7 +13,6 @@ import 'package:masmus/widgets/playing_card_widget.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  AppTextStyles.useGoogleFonts = false;
 
   const MethodChannel vibrationChannel = MethodChannel('vibration');
 

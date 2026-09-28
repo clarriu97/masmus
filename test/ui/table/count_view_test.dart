@@ -19,16 +19,9 @@ const _names = {
   3: 'La Temeraria',
 };
 
-Widget _count(MatchState match, {VoidCallback? onNext, VoidCallback? onExit}) =>
-    buildTestApp(
-      CountView(
-        match: match,
-        you: 0,
-        names: _names,
-        onNext: onNext ?? () {},
-        onExit: onExit ?? () {},
-      ),
-    );
+Widget _count(MatchState match, {VoidCallback? onNext}) => buildTestApp(
+  CountView(match: match, you: 0, names: _names, onNext: onNext ?? () {}),
+);
 
 void main() {
   testWidgets('the four hands face up, each with its owner', (tester) async {
@@ -67,10 +60,10 @@ void main() {
   });
 
   testWidgets('when the match is won in the count, the rest is not counted '
-      'and the button leaves', (tester) async {
-    var left = false;
+      'and the button goes to the end', (tester) async {
+    var ended = false;
     await tester.pumpWidget(
-      _count(countMoments['count_won']!().match, onExit: () => left = true),
+      _count(countMoments['count_won']!().match, onNext: () => ended = true),
     );
     expect(find.text('¡Ganáis la partida!'), findsOneWidget);
     expect(
@@ -82,8 +75,8 @@ void main() {
       find.text('El Prudente, con duples de reyes y caballos'),
       findsOneWidget,
     );
-    await tester.tap(find.text('Salir'));
-    expect(left, isTrue);
+    await tester.tap(find.text('Ver el final'));
+    expect(ended, isTrue);
   });
 
   testWidgets('«Siguiente mano» deals the next hand at the table', (

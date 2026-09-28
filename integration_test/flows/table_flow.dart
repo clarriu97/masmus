@@ -54,7 +54,12 @@ void tableFlows() {
         theme: AppTheme.tapete,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: TableScreen(controller: controller, bots: _bots, onExit: () {}),
+        home: TableScreen(
+          controller: controller,
+          bots: _bots,
+          onExit: () {},
+          onRematch: () {},
+        ),
       ),
     );
     await tester.tap(find.text('No hay mus'));

@@ -11,6 +11,7 @@ import 'package:masmus/game/cards.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
+import 'package:masmus/ui/table/end_view.dart';
 import 'package:masmus/ui/theme/app_theme.dart';
 import 'package:masmus/ui/widgets/action_button.dart';
 import 'package:masmus/ui/widgets/felt.dart';
@@ -204,6 +205,13 @@ final Map<String, Widget Function()> _screens = {
     'table_$moment': () => tableScreen(controller()),
   for (final MapEntry(key: moment, value: controller) in countMoments.entries)
     moment: () => tableScreen(controller()),
+  for (final MapEntry(key: moment, value: controller) in endMoments.entries)
+    moment: () => EndView(
+      match: controller().match,
+      you: 0,
+      onRematch: () {},
+      onHome: () {},
+    ),
 };
 
 void main() {

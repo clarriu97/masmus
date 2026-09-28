@@ -32,7 +32,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | **M2 · Producto y diseño** | **in progress** (#18 #19 #20 done) | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| M3 · Mesa jugable | in progress (#22 #23 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M3 · Mesa jugable | in progress (#22 #23 #24 done) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,17 +44,36 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** #24, the table redesigned on the new engine, then #25 → #31;
-the owner's points on the prototype table (comments in #24, #25 and #20)
-are done criteria. The identity (#21) whenever it fits; the rest of M4
-(#35 → #37) once the new table is playable. Work one issue per branch and
-PR, following AGENTS.md → Workflow.
+**Next step:** #25, your moves at the new table, then the discards (#26)
+and the count (#27): with them the app switches to the new table and the
+prototype's is deleted. Then #28 → #31; the owner's points on the prototype
+table (comments in #24, #25 and #20) are done criteria. The identity (#21)
+whenever it fits; the rest of M4 (#35 → #37) once the new table is
+playable. Work one issue per branch and PR, following AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-28 · The new table (#24).** `TableScreen` (`lib/ui/table/`)
+  draws a match from `MatchController` through `TableView`, a pure reading
+  of the engine's state and log from your seat. It shows:
+  - the score with amarracos;
+  - the row of the hand (mus and the four lances, or the punto), with how
+    each went (en paso, querido 2, Nosotros +1, de Ellos, no se juega) or
+    what is going on (te toca, envite 5, corrido, descartes);
+  - each bot with its name, partner or rival, mano or postre, four cards
+    face down and what it just said, which stays until someone speaks in
+    the next step; the one whose turn it is is edged in brass;
+  - what is bet in the middle;
+  - your cards, big, with what they are worth and whether you are mano.
+  One live region tells screen readers the lance, whose turn it is and what
+  is on the table. The table is a dense board: its text grows up to 130 %
+  and the seats scale down to fit short screens; the layout matrix runs it
+  in three moments of a hand. The app keeps opening the prototype table
+  until the new one can be played: your moves (#25), the discards (#26) and
+  the count (#27).
 - **2026-09-28 · Start and new match (#23).** The app opens on a Tapete
   start screen (`lib/ui/start/`) with one action, «Nueva partida», and a
   fan of la 31; the new match screen picks the partner among the four bots,
@@ -260,7 +279,7 @@ or right after; business model; languages at launch; license.
 | Deck | `lib/ui/cards/`: suit and figure art (`card_art.dart`), pip layouts, `PlayingCardView`; goldens `deck.png`, `deck_compact.png`, `card_states.png` |
 | Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |
-| Screens | `lib/ui/<feature>/`: `start/` (start and new match); layout matrix `test/ui/layout_matrix_test.dart` |
+| Screens | `lib/ui/<feature>/`: `start/` (start and new match), `table/` (the table and `TableView`); layout matrix `test/ui/layout_matrix_test.dart`, table fixtures `test/helpers/table.dart` |
 | E2E flows | `integration_test/app_test.dart` (single entry point) and `integration_test/flows/` |
 | Design system | `lib/ui/theme/` (Tapete tokens and `ThemeData`), shared components in `lib/ui/widgets/` (golden: `test/goldens/goldens/components.*.png`), fonts in `assets/fonts/` with their OFL licenses (registered in `main.dart` for the licenses page) |
 | Visual directions | `docs/design/directions/`: Tapete (chosen), Noche and Tanteo on the same table (#19), source `index.html` and one JPG each |

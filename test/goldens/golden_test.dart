@@ -20,6 +20,7 @@ import 'package:masmus/ui/widgets/speech_bubble.dart';
 import 'package:masmus/ui/widgets/table_chip.dart';
 
 import '../helpers/devices.dart';
+import '../helpers/table.dart';
 import '../helpers/test_app.dart';
 
 /// The narrowest iPhone the app supports and the most common one.
@@ -199,6 +200,8 @@ Future<void> _capture(
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(table: (partner, rules) => const SizedBox()),
   'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
+    'table_$moment': () => tableScreen(controller()),
 };
 
 void main() {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:vibration/vibration.dart';
 
 import '../bots/heuristic_bot.dart';
+import '../bots/strategic_bot.dart';
 import '../controllers/match_controller.dart';
 import '../game/cards.dart';
 import '../game/event.dart';
@@ -66,9 +67,9 @@ class _GameScreenState extends State<GameScreen> {
         mano: widget.mano,
       ),
       bots: {
-        1: HeuristicBot(rivals[0], math.Random(seed + 1)),
-        2: HeuristicBot(widget.partner, math.Random(seed + 2)),
-        3: HeuristicBot(rivals[1], math.Random(seed + 3)),
+        1: StrategicBot(rivals[0], math.Random(seed + 1)),
+        2: StrategicBot(widget.partner, math.Random(seed + 2)),
+        3: StrategicBot(rivals[1], math.Random(seed + 3)),
       },
       scheduler: widget.scheduler ?? Scheduler(),
       store: widget.store ?? MatchStore.inMemory(),

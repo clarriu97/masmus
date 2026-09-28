@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:masmus/core/theme/app_text_styles.dart';
 import 'package:masmus/game/count.dart';
 import 'package:masmus/game/hand_state.dart';
 import 'package:masmus/widgets/round_summary.dart';
@@ -42,8 +41,6 @@ Future<void> _pump(
 );
 
 void main() {
-  AppTextStyles.useGoogleFonts = false;
-
   testWidgets('explains every lance and the score after the hand', (
     tester,
   ) async {

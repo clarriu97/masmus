@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 
@@ -181,12 +180,6 @@ class AppTheme {
         labelLarge: AppTextStyles.label,
         labelMedium: AppTextStyles.caption,
         labelSmall: AppTextStyles.labelSmall,
-      ),
-
-      // Typography
-      typography: Typography.material2021(
-        black: GoogleFonts.interTextTheme(),
-        white: GoogleFonts.interTextTheme(),
       ),
     );
   }

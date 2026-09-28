@@ -52,6 +52,7 @@ lib/
   services/          # I/O wrappers (storage, preferences). Abstract class + `forTesting()` fake
   ui/<feature>/      # screens + widgets; listen to controllers via ListenableBuilder
   ui/theme/          # design tokens + ThemeData
+  ui/widgets/        # components shared by screens: action buttons, chips, bubbles, score
   l10n/              # ARB files
 ```
 

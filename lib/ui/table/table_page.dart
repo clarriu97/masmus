@@ -12,20 +12,30 @@ import '../../services/scheduler.dart';
 import 'table_screen.dart';
 
 /// A match against the bots: your [partner] across the table and two rivals
-/// picked at random among the other personalities, and a rematch with the
-/// same ones when it is over.
+/// picked at random among the other personalities, or a [saved] one resumed
+/// where it was left; and a rematch with the same bots when it is over.
 class TablePage extends StatefulWidget {
   const TablePage({
-    required this.partner,
-    required this.rules,
+    required Personality this.partner,
+    required Rules this.rules,
     this.seed,
     this.scheduler,
     this.store,
     super.key,
-  });
+  }) : saved = null;
 
-  final Personality partner;
-  final Rules rules;
+  const TablePage.resume(
+    SavedMatch this.saved, {
+    this.scheduler,
+    this.store,
+    super.key,
+  }) : partner = null,
+       rules = null,
+       seed = null;
+
+  final Personality? partner;
+  final Rules? rules;
+  final SavedMatch? saved;
 
   /// Decides the deal and the rivals; random when null.
   final int? seed;
@@ -46,20 +56,28 @@ class _TablePageState extends State<TablePage> {
   void initState() {
     super.initState();
     _seed = widget.seed ?? Random().nextInt(1 << 32);
+    final saved = widget.saved;
+    if (saved != null) {
+      _bots = saved.bots;
+      _controller = _play(saved.match);
+      return;
+    }
+    final partner = widget.partner!;
     final rivals = [
       for (final personality in Personality.values)
-        if (personality != widget.partner) personality,
+        if (personality != partner) personality,
     ]..shuffle(Random(_seed));
-    _bots = {1: rivals[0], 2: widget.partner, 3: rivals[1]};
-    _controller = _start();
+    _bots = {1: rivals[0], 2: partner, 3: rivals[1]};
+    _controller = _play(MatchState.start(seed: _seed, rules: widget.rules!));
   }
 
-  MatchController _start() => MatchController(
-    match: MatchState.start(seed: _seed, rules: widget.rules),
+  MatchController _play(MatchState match) => MatchController(
+    match: match,
     bots: {
       for (final MapEntry(key: seat, value: personality) in _bots.entries)
         seat: StrategicBot(personality, Random(_seed + seat)),
     },
+    seats: _bots,
     scheduler: widget.scheduler ?? Scheduler(),
     store: widget.store ?? MatchStore.inMemory(),
   );
@@ -67,9 +85,10 @@ class _TablePageState extends State<TablePage> {
   /// Another match: the same bots in the same seats and the same rules,
   /// a new deal.
   void _rematch() => setState(() {
+    final rules = _controller.match.rules;
     _controller.dispose();
     _seed++;
-    _controller = _start();
+    _controller = _play(MatchState.start(seed: _seed, rules: rules));
   });
 
   @override

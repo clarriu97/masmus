@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/bots/random_bot.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/event.dart';
@@ -9,6 +10,12 @@ import 'package:masmus/game/match.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
+
+const _seats = {
+  1: Personality.prudente,
+  2: Personality.calculador,
+  3: Personality.temeraria,
+};
 
 typedef _Table = ({
   MatchController controller,
@@ -26,6 +33,7 @@ _Table _table({int mano = 1, int seed = 3, Pace pace = Pace.normal}) {
     bots: {
       for (final seat in [1, 2, 3]) seat: RandomBot(Random(seat)),
     },
+    seats: _seats,
     scheduler: scheduler,
     store: store,
     pace: pace,
@@ -81,7 +89,8 @@ void main() {
       expect(controller.match.hand.log, const [MusSaid(0)]);
       expect(controller.lastEvents, const [MusSaid(0)]);
       expect(notified, 1);
-      expect((await store.load())!.toJson(), controller.match.toJson());
+      expect(store.saved!.match.toJson(), controller.match.toJson());
+      expect(store.saved!.bots, _seats);
       expect(scheduler.hasPending, isTrue, reason: 'seat 1 thinks next');
     },
   );
@@ -106,6 +115,7 @@ void main() {
       bots: {
         for (final seat in [1, 2, 3]) seat: RandomBot(Random(seat)),
       },
+      seats: _seats,
       scheduler: scheduler,
       store: MatchStore.inMemory(),
     ).dispose();
@@ -127,6 +137,7 @@ void main() {
       bots: {
         for (final seat in [0, 1, 2, 3]) seat: RandomBot(Random(seat)),
       },
+      seats: {..._seats, 0: Personality.farolero},
       scheduler: scheduler,
       store: store,
       pace: Pace.fast,
@@ -146,6 +157,6 @@ void main() {
       expect(++steps, lessThan(20000));
     }
     expect(scheduler.hasPending, isFalse);
-    expect((await store.load())!.toJson(), controller.match.toJson());
+    expect(store.saved, isNull, reason: 'a match that is over is not resumed');
   });
 }

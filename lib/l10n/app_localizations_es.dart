@@ -571,4 +571,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get endHome => 'Volver al inicio';
+
+  @override
+  String get savedTitle => 'Partida en curso';
+
+  @override
+  String savedScore(int us, int them) {
+    return 'Nosotros $us · Ellos $them';
+  }
+
+  @override
+  String savedDetails(String kings, int target, int hand, String partner) {
+    String _temp0 = intl.Intl.selectLogic(kings, {
+      'eight': '8 reyes',
+      'other': '4 reyes',
+    });
+    return '$_temp0 · a $target · mano $hand · con $partner';
+  }
+
+  @override
+  String get savedContinue => 'Continuar';
+
+  @override
+  String get confirmNewTitle => '¿Empezar otra partida?';
+
+  @override
+  String get confirmNewBody => 'La partida en curso se pierde.';
+
+  @override
+  String get confirmNewCancel => 'Cancelar';
+
+  @override
+  String get confirmNewOk => 'Empezar otra';
+
+  @override
+  String get savedSetAside =>
+      'No se pudo recuperar la partida guardada. La hemos apartado sin borrarla.';
 }

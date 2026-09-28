@@ -175,6 +175,16 @@ class AppTheme {
         textStyle: WidgetStatePropertyAll(textTheme.titleSmall),
       ),
     ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.feltDark,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadii.lg),
+        side: const BorderSide(color: AppColors.line, width: 1.5),
+      ),
+      titleTextStyle: textTheme.headlineSmall,
+      contentTextStyle: textTheme.bodyLarge,
+    ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
         color: AppColors.bubble,

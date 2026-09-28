@@ -843,6 +843,288 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'La mesa te dice qué llevas: pares, juego o punto.'**
   String get settingsHelpDetail;
+
+  /// Title of how to play, and the link to it.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo se juega'**
+  String get howTitle;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo básico'**
+  String get howBasicsTitle;
+
+  /// How to play: the basics.
+  ///
+  /// In es, this message translates to:
+  /// **'Juegas con tu compañero, sentado enfrente, contra dos rivales. Cada uno recibe cuatro cartas de una baraja española de 40. Gana la primera pareja que llega a 40 tantos, o a 30 si lo eliges.'**
+  String get howBasics;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Las cartas'**
+  String get howCardsTitle;
+
+  /// How to play: card values.
+  ///
+  /// In es, this message translates to:
+  /// **'Con 8 reyes, lo normal, los treses cuentan como reyes y los doses como ases. Para la grande, la chica y los pares, de mayor a menor: rey, caballo, sota, 7, 6, 5, 4 y as. Para el juego y el punto, rey, caballo y sota valen 10 y las demás, su número.'**
+  String get howCards;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Mano y postre'**
+  String get howTurnsTitle;
+
+  /// How to play: turns and ties.
+  ///
+  /// In es, this message translates to:
+  /// **'Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.'**
+  String get howTurns;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus o no hay mus'**
+  String get howMusTitle;
+
+  /// How to play: mus and discards.
+  ///
+  /// In es, this message translates to:
+  /// **'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.'**
+  String get howMus;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Los cuatro lances'**
+  String get howLancesTitle;
+
+  /// How to play: the grande.
+  ///
+  /// In es, this message translates to:
+  /// **'Grande: gana la carta más alta y, si empatan, la siguiente. R-R-7-4 gana a R-C-C-C.'**
+  String get howGrande;
+
+  /// How to play: the chica.
+  ///
+  /// In es, this message translates to:
+  /// **'Chica: gana la carta más baja y, si empatan, la siguiente. 1-1-4-5 gana a 1-4-5-6.'**
+  String get howChica;
+
+  /// How to play: the pares.
+  ///
+  /// In es, this message translates to:
+  /// **'Pares: par (dos iguales), medias (tres) o duples (dos parejas, o cuatro iguales). Gana el tipo más alto y, si es el mismo, las cartas más altas de la jugada. Solo juegan quienes tienen pares.'**
+  String get howPares;
+
+  /// How to play: juego and punto.
+  ///
+  /// In es, this message translates to:
+  /// **'Juego: tienes juego si sumas 31 o más. La mejor es la 31; luego 32, 40, 37, 36, 35, 34 y 33. Si nadie tiene juego se juega al punto: gana quien más se acerca a 30.'**
+  String get howJuego;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Envidar'**
+  String get howBetsTitle;
+
+  /// How to play: bets.
+  ///
+  /// In es, this message translates to:
+  /// **'En cada lance puedes pasar, envidar (2 tantos o más) o echar un órdago, que se juega la partida entera. Ante un envite, la otra pareja quiere, no quiere o sube; basta con que uno de los dos quiera. Si no quieren, quien envidó cobra en el acto 1 tanto, o lo último que se había aceptado. Lo querido se decide en el recuento. Un órdago querido se resuelve al momento, con las cartas boca arriba.'**
+  String get howBets;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'El recuento'**
+  String get howCountTitle;
+
+  /// How to play: the count.
+  ///
+  /// In es, this message translates to:
+  /// **'Al acabar la mano se enseñan todas las cartas y se cuenta lance a lance. La mejor grande y la mejor chica se llevan 1 tanto si nadie envidó, o lo querido. En pares, cada jugador de la pareja ganadora suma par 1, medias 2 o duples 3; en juego, 3 por la 31 y 2 por cualquier otro. La primera pareja que llega a los tantos gana, aunque queden lances por contar.'**
+  String get howCount;
+
+  /// How to play: heading.
+  ///
+  /// In es, this message translates to:
+  /// **'Reparto limpio'**
+  String get howFairTitle;
+
+  /// How to play: the deal is fair.
+  ///
+  /// In es, this message translates to:
+  /// **'Las cartas se barajan al azar en cada mano. Los bots juegan con lo mismo que tú: sus cartas y lo que se dice en la mesa, nunca las tuyas ni el mazo. Al final de cada mano puedes ver todas las cartas y todos los descartes.'**
+  String get howFair;
+
+  /// How to play: heading of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Glosario'**
+  String get glossaryTitle;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Mano'**
+  String get glossaryTerm0;
+
+  /// What «Mano» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Quien habla primero en una mano; gana los empates.'**
+  String get glossaryMeaning0;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Postre'**
+  String get glossaryTerm1;
+
+  /// What «Postre» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Quien habla el último.'**
+  String get glossaryMeaning1;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Lance'**
+  String get glossaryTerm2;
+
+  /// What «Lance» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada una de las partes de la mano: grande, chica, pares y juego o punto.'**
+  String get glossaryMeaning2;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Envido'**
+  String get glossaryTerm3;
+
+  /// What «Envido» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Apostar tantos en un lance: «envido» son 2; «cinco más» sube la apuesta.'**
+  String get glossaryMeaning3;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Órdago'**
+  String get glossaryTerm4;
+
+  /// What «Órdago» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Apostar la partida entera en un lance.'**
+  String get glossaryMeaning4;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Quiero / No quiero'**
+  String get glossaryTerm5;
+
+  /// What «Quiero / No quiero» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar o rechazar un envite.'**
+  String get glossaryMeaning5;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'En paso'**
+  String get glossaryTerm6;
+
+  /// What «En paso» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Un lance en el que nadie envida; se cuenta al final.'**
+  String get glossaryMeaning6;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin disputa'**
+  String get glossaryTerm7;
+
+  /// What «Sin disputa» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Un lance que solo puede jugar una pareja; se lo lleva en el recuento.'**
+  String get glossaryMeaning7;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Par, medias, duples'**
+  String get glossaryTerm8;
+
+  /// What «Par, medias, duples» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Dos cartas iguales; tres; dos parejas o cuatro iguales.'**
+  String get glossaryMeaning8;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'La 31'**
+  String get glossaryTerm9;
+
+  /// What «La 31» means.
+  ///
+  /// In es, this message translates to:
+  /// **'El mejor juego: sumar exactamente 31.'**
+  String get glossaryMeaning9;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Punto'**
+  String get glossaryTerm10;
+
+  /// What «Punto» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo que suman las cartas cuando nadie tiene juego.'**
+  String get glossaryMeaning10;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus corrido'**
+  String get glossaryTerm11;
+
+  /// What «Mus corrido» means.
+  ///
+  /// In es, this message translates to:
+  /// **'En la primera mano, la mano pasa al siguiente mientras todos pidan mus.'**
+  String get glossaryMeaning11;
+
+  /// A term of the glossary.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarracos'**
+  String get glossaryTerm12;
+
+  /// What «Amarracos» means.
+  ///
+  /// In es, this message translates to:
+  /// **'Las piedras con las que se llevan los tantos: cada amarraco son cinco.'**
+  String get glossaryMeaning12;
 }
 
 class _AppLocalizationsDelegate

@@ -11,6 +11,7 @@ import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
+import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
@@ -215,6 +216,7 @@ final Map<String, Widget Function()> _screens = {
     resume: (_) => const SizedBox(),
   ),
   'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  'how_to_play': () => const HowToPlayScreen(),
   'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table_$moment': () => tableScreen(controller()),

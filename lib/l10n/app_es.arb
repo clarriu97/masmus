@@ -773,5 +773,193 @@
   "settingsHelpDetail": "La mesa te dice qué llevas: pares, juego o punto.",
   "@settingsHelpDetail": {
     "description": "What the hand help does."
+  },
+  "howTitle": "Cómo se juega",
+  "@howTitle": {
+    "description": "Title of how to play, and the link to it."
+  },
+  "howBasicsTitle": "Lo básico",
+  "@howBasicsTitle": {
+    "description": "How to play: heading."
+  },
+  "howBasics": "Juegas con tu compañero, sentado enfrente, contra dos rivales. Cada uno recibe cuatro cartas de una baraja española de 40. Gana la primera pareja que llega a 40 tantos, o a 30 si lo eliges.",
+  "@howBasics": {
+    "description": "How to play: the basics."
+  },
+  "howCardsTitle": "Las cartas",
+  "@howCardsTitle": {
+    "description": "How to play: heading."
+  },
+  "howCards": "Con 8 reyes, lo normal, los treses cuentan como reyes y los doses como ases. Para la grande, la chica y los pares, de mayor a menor: rey, caballo, sota, 7, 6, 5, 4 y as. Para el juego y el punto, rey, caballo y sota valen 10 y las demás, su número.",
+  "@howCards": {
+    "description": "How to play: card values."
+  },
+  "howTurnsTitle": "Mano y postre",
+  "@howTurnsTitle": {
+    "description": "How to play: heading."
+  },
+  "howTurns": "Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.",
+  "@howTurns": {
+    "description": "How to play: turns and ties."
+  },
+  "howMusTitle": "Mus o no hay mus",
+  "@howMusTitle": {
+    "description": "How to play: heading."
+  },
+  "howMus": "Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.",
+  "@howMus": {
+    "description": "How to play: mus and discards."
+  },
+  "howLancesTitle": "Los cuatro lances",
+  "@howLancesTitle": {
+    "description": "How to play: heading."
+  },
+  "howGrande": "Grande: gana la carta más alta y, si empatan, la siguiente. R-R-7-4 gana a R-C-C-C.",
+  "@howGrande": {
+    "description": "How to play: the grande."
+  },
+  "howChica": "Chica: gana la carta más baja y, si empatan, la siguiente. 1-1-4-5 gana a 1-4-5-6.",
+  "@howChica": {
+    "description": "How to play: the chica."
+  },
+  "howPares": "Pares: par (dos iguales), medias (tres) o duples (dos parejas, o cuatro iguales). Gana el tipo más alto y, si es el mismo, las cartas más altas de la jugada. Solo juegan quienes tienen pares.",
+  "@howPares": {
+    "description": "How to play: the pares."
+  },
+  "howJuego": "Juego: tienes juego si sumas 31 o más. La mejor es la 31; luego 32, 40, 37, 36, 35, 34 y 33. Si nadie tiene juego se juega al punto: gana quien más se acerca a 30.",
+  "@howJuego": {
+    "description": "How to play: juego and punto."
+  },
+  "howBetsTitle": "Envidar",
+  "@howBetsTitle": {
+    "description": "How to play: heading."
+  },
+  "howBets": "En cada lance puedes pasar, envidar (2 tantos o más) o echar un órdago, que se juega la partida entera. Ante un envite, la otra pareja quiere, no quiere o sube; basta con que uno de los dos quiera. Si no quieren, quien envidó cobra en el acto 1 tanto, o lo último que se había aceptado. Lo querido se decide en el recuento. Un órdago querido se resuelve al momento, con las cartas boca arriba.",
+  "@howBets": {
+    "description": "How to play: bets."
+  },
+  "howCountTitle": "El recuento",
+  "@howCountTitle": {
+    "description": "How to play: heading."
+  },
+  "howCount": "Al acabar la mano se enseñan todas las cartas y se cuenta lance a lance. La mejor grande y la mejor chica se llevan 1 tanto si nadie envidó, o lo querido. En pares, cada jugador de la pareja ganadora suma par 1, medias 2 o duples 3; en juego, 3 por la 31 y 2 por cualquier otro. La primera pareja que llega a los tantos gana, aunque queden lances por contar.",
+  "@howCount": {
+    "description": "How to play: the count."
+  },
+  "howFairTitle": "Reparto limpio",
+  "@howFairTitle": {
+    "description": "How to play: heading."
+  },
+  "howFair": "Las cartas se barajan al azar en cada mano. Los bots juegan con lo mismo que tú: sus cartas y lo que se dice en la mesa, nunca las tuyas ni el mazo. Al final de cada mano puedes ver todas las cartas y todos los descartes.",
+  "@howFair": {
+    "description": "How to play: the deal is fair."
+  },
+  "glossaryTitle": "Glosario",
+  "@glossaryTitle": {
+    "description": "How to play: heading of the glossary."
+  },
+  "glossaryTerm0": "Mano",
+  "@glossaryTerm0": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning0": "Quien habla primero en una mano; gana los empates.",
+  "@glossaryMeaning0": {
+    "description": "What «Mano» means."
+  },
+  "glossaryTerm1": "Postre",
+  "@glossaryTerm1": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning1": "Quien habla el último.",
+  "@glossaryMeaning1": {
+    "description": "What «Postre» means."
+  },
+  "glossaryTerm2": "Lance",
+  "@glossaryTerm2": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning2": "Cada una de las partes de la mano: grande, chica, pares y juego o punto.",
+  "@glossaryMeaning2": {
+    "description": "What «Lance» means."
+  },
+  "glossaryTerm3": "Envido",
+  "@glossaryTerm3": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning3": "Apostar tantos en un lance: «envido» son 2; «cinco más» sube la apuesta.",
+  "@glossaryMeaning3": {
+    "description": "What «Envido» means."
+  },
+  "glossaryTerm4": "Órdago",
+  "@glossaryTerm4": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning4": "Apostar la partida entera en un lance.",
+  "@glossaryMeaning4": {
+    "description": "What «Órdago» means."
+  },
+  "glossaryTerm5": "Quiero / No quiero",
+  "@glossaryTerm5": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning5": "Aceptar o rechazar un envite.",
+  "@glossaryMeaning5": {
+    "description": "What «Quiero / No quiero» means."
+  },
+  "glossaryTerm6": "En paso",
+  "@glossaryTerm6": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning6": "Un lance en el que nadie envida; se cuenta al final.",
+  "@glossaryMeaning6": {
+    "description": "What «En paso» means."
+  },
+  "glossaryTerm7": "Sin disputa",
+  "@glossaryTerm7": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning7": "Un lance que solo puede jugar una pareja; se lo lleva en el recuento.",
+  "@glossaryMeaning7": {
+    "description": "What «Sin disputa» means."
+  },
+  "glossaryTerm8": "Par, medias, duples",
+  "@glossaryTerm8": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning8": "Dos cartas iguales; tres; dos parejas o cuatro iguales.",
+  "@glossaryMeaning8": {
+    "description": "What «Par, medias, duples» means."
+  },
+  "glossaryTerm9": "La 31",
+  "@glossaryTerm9": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning9": "El mejor juego: sumar exactamente 31.",
+  "@glossaryMeaning9": {
+    "description": "What «La 31» means."
+  },
+  "glossaryTerm10": "Punto",
+  "@glossaryTerm10": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning10": "Lo que suman las cartas cuando nadie tiene juego.",
+  "@glossaryMeaning10": {
+    "description": "What «Punto» means."
+  },
+  "glossaryTerm11": "Mus corrido",
+  "@glossaryTerm11": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning11": "En la primera mano, la mano pasa al siguiente mientras todos pidan mus.",
+  "@glossaryMeaning11": {
+    "description": "What «Mus corrido» means."
+  },
+  "glossaryTerm12": "Amarracos",
+  "@glossaryTerm12": {
+    "description": "A term of the glossary."
+  },
+  "glossaryMeaning12": "Las piedras con las que se llevan los tantos: cada amarraco son cinco.",
+  "@glossaryMeaning12": {
+    "description": "What «Amarracos» means."
   }
 }

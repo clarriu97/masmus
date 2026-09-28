@@ -4,6 +4,7 @@ import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/rules.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
 import 'package:masmus/ui/start/start_screen.dart';
@@ -138,5 +139,12 @@ void main() {
     await tester.tap(find.text('Ajustes'));
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  testWidgets('«Cómo se juega» opens how to play', (tester) async {
+    await pump(tester);
+    await tester.tap(find.text('Cómo se juega'));
+    await tester.pumpAndSettle();
+    expect(find.byType(HowToPlayScreen), findsOneWidget);
   });
 }

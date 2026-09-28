@@ -5,6 +5,8 @@ import 'package:flutter/painting.dart';
 class AppColors {
   AppColors._();
 
+  static const Color none = Color(0x00000000);
+
   static const Color felt = Color(0xFF174634);
   static const Color feltLight = Color(0xFF1F5A43);
   static const Color feltDark = Color(0xFF10362A);

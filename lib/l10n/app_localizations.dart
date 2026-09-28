@@ -111,6 +111,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Carta boca abajo'**
   String get cardFaceDown;
+
+  /// Title of the start screen: the name of the game.
+  ///
+  /// In es, this message translates to:
+  /// **'Más Mus'**
+  String get startTitle;
+
+  /// What the game is, under the title of the start screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú y tu compañero contra dos rivales'**
+  String get startSubtitle;
+
+  /// Button of the start screen and title of the screen where a match is set up.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva partida'**
+  String get newMatch;
+
+  /// Goes back to the previous screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver'**
+  String get back;
+
+  /// Heading over the bots to choose a partner from.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu compañero'**
+  String get newMatchPartner;
+
+  /// Rule: how many kings the deck plays with (8 or 4).
+  ///
+  /// In es, this message translates to:
+  /// **'Reyes'**
+  String get newMatchKings;
+
+  /// An option of the kings rule: «8 reyes».
+  ///
+  /// In es, this message translates to:
+  /// **'{count} reyes'**
+  String kingsCount(int count);
+
+  /// Rule: how many tantos win the match (40 or 30).
+  ///
+  /// In es, this message translates to:
+  /// **'Tantos'**
+  String get newMatchTarget;
+
+  /// An option of the tantos rule: «A 40».
+  ///
+  /// In es, this message translates to:
+  /// **'A {count}'**
+  String targetPoints(int count);
+
+  /// Starts the match set up on the screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Empezar partida'**
+  String get newMatchStart;
+
+  /// Name of a bot who plays it safe.
+  ///
+  /// In es, this message translates to:
+  /// **'El Prudente'**
+  String get personalityPrudente;
+
+  /// Name of a bot who takes risks.
+  ///
+  /// In es, this message translates to:
+  /// **'La Temeraria'**
+  String get personalityTemeraria;
+
+  /// Name of a bot who plays the odds.
+  ///
+  /// In es, this message translates to:
+  /// **'El Calculador'**
+  String get personalityCalculador;
+
+  /// Name of a bot who bluffs a lot.
+  ///
+  /// In es, this message translates to:
+  /// **'El Farolero'**
+  String get personalityFarolero;
+
+  /// How El Prudente plays, in one line.
+  ///
+  /// In es, this message translates to:
+  /// **'Envida con buena mano; casi no farolea'**
+  String get personalityPrudenteStyle;
+
+  /// How La Temeraria plays, in one line.
+  ///
+  /// In es, this message translates to:
+  /// **'Quiere casi todo; le gusta el órdago'**
+  String get personalityTemerariaStyle;
+
+  /// How El Calculador plays, in one line.
+  ///
+  /// In es, this message translates to:
+  /// **'Juega las probabilidades'**
+  String get personalityCalculadorStyle;
+
+  /// How El Farolero plays, in one line.
+  ///
+  /// In es, this message translates to:
+  /// **'Envida sin nada cuando puede'**
+  String get personalityFaroleroStyle;
 }
 
 class _AppLocalizationsDelegate

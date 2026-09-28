@@ -8,37 +8,13 @@ import 'bot.dart';
 
 /// How a bot likes to play. The same bot plays every personality; only
 /// these numbers change.
-final class Personality {
-  const Personality({
-    required this.name,
-    required this.boldness,
-    required this.bluffing,
-  });
+enum Personality {
+  prudente(boldness: 0.2, bluffing: 0.1),
+  temeraria(boldness: 0.9, bluffing: 0.8),
+  calculador(boldness: 0.5, bluffing: 0.3),
+  farolero(boldness: 0.7, bluffing: 0.95);
 
-  static const prudente = Personality(
-    name: 'El Prudente',
-    boldness: 0.2,
-    bluffing: 0.1,
-  );
-  static const temeraria = Personality(
-    name: 'La Temeraria',
-    boldness: 0.9,
-    bluffing: 0.8,
-  );
-  static const calculador = Personality(
-    name: 'El Calculador',
-    boldness: 0.5,
-    bluffing: 0.3,
-  );
-  static const farolero = Personality(
-    name: 'El Farolero',
-    boldness: 0.7,
-    bluffing: 0.95,
-  );
-
-  static const all = [prudente, temeraria, calculador, farolero];
-
-  final String name;
+  const Personality({required this.boldness, required this.bluffing});
 
   /// 0 to 1: how readily it bets and accepts.
   final double boldness;

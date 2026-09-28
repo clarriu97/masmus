@@ -113,7 +113,7 @@ void main() {
       final match = _playAll(grande('R R R R', mano: 1), [
         (1, const Envido(2)),
       ]);
-      for (final personality in Personality.all) {
+      for (final personality in Personality.values) {
         expect(
           _choose(personality, match, 0),
           isNot(isA<NoQuiero>()),
@@ -141,7 +141,7 @@ void main() {
   test('plays whole matches with only legal moves', () {
     for (var seed = 0; seed < 30; seed++) {
       final bots = [
-        for (final personality in Personality.all)
+        for (final personality in Personality.values)
           HeuristicBot(personality, Random(seed)),
       ];
       var match = MatchState.start(seed: seed);

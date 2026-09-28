@@ -38,4 +38,64 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cardFaceDown => 'Carta boca abajo';
+
+  @override
+  String get startTitle => 'Más Mus';
+
+  @override
+  String get startSubtitle => 'Tú y tu compañero contra dos rivales';
+
+  @override
+  String get newMatch => 'Nueva partida';
+
+  @override
+  String get back => 'Volver';
+
+  @override
+  String get newMatchPartner => 'Tu compañero';
+
+  @override
+  String get newMatchKings => 'Reyes';
+
+  @override
+  String kingsCount(int count) {
+    return '$count reyes';
+  }
+
+  @override
+  String get newMatchTarget => 'Tantos';
+
+  @override
+  String targetPoints(int count) {
+    return 'A $count';
+  }
+
+  @override
+  String get newMatchStart => 'Empezar partida';
+
+  @override
+  String get personalityPrudente => 'El Prudente';
+
+  @override
+  String get personalityTemeraria => 'La Temeraria';
+
+  @override
+  String get personalityCalculador => 'El Calculador';
+
+  @override
+  String get personalityFarolero => 'El Farolero';
+
+  @override
+  String get personalityPrudenteStyle =>
+      'Envida con buena mano; casi no farolea';
+
+  @override
+  String get personalityTemerariaStyle =>
+      'Quiere casi todo; le gusta el órdago';
+
+  @override
+  String get personalityCalculadorStyle => 'Juega las probabilidades';
+
+  @override
+  String get personalityFaroleroStyle => 'Envida sin nada cuando puede';
 }

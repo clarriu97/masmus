@@ -155,7 +155,7 @@ void main() {
   test('plays whole matches with only legal moves', () {
     for (var seed = 0; seed < 12; seed++) {
       final bots = [
-        for (final personality in Personality.all)
+        for (final personality in Personality.values)
           StrategicBot(personality, Random(seed)),
       ];
       var match = MatchState.start(seed: seed);

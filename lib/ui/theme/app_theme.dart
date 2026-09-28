@@ -147,6 +147,34 @@ class AppTheme {
     dividerColor: AppColors.line,
     filledButtonTheme: FilledButtonThemeData(style: primaryButton),
     outlinedButtonTheme: OutlinedButtonThemeData(style: secondaryButton),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.ink,
+        minimumSize: const Size(kMinTapTarget, kMinTapTarget),
+        textStyle: textTheme.titleSmall,
+      ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(
+          Size(kMinTapTarget, kMinTapTarget),
+        ),
+        backgroundColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? AppColors.primary
+              : AppColors.none,
+        ),
+        foregroundColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? AppColors.onPrimary
+              : AppColors.ink,
+        ),
+        side: const WidgetStatePropertyAll(
+          BorderSide(color: AppColors.lineStrong, width: 1.5),
+        ),
+        textStyle: WidgetStatePropertyAll(textTheme.titleSmall),
+      ),
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.feltDark,
       modalBackgroundColor: AppColors.feltDark,

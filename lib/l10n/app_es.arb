@@ -8,12 +8,98 @@
   "@cardName": {
     "description": "A card as a screen reader says it: «Rey de oros». number is 1–7, 10, 11 or 12; suit is oros, copas, espadas or bastos.",
     "placeholders": {
-      "number": {"type": "String"},
-      "suit": {"type": "String"}
+      "number": {
+        "type": "String"
+      },
+      "suit": {
+        "type": "String"
+      }
     }
   },
   "cardFaceDown": "Carta boca abajo",
   "@cardFaceDown": {
     "description": "A card whose face can't be seen, as a screen reader says it."
+  },
+  "startTitle": "Más Mus",
+  "@startTitle": {
+    "description": "Title of the start screen: the name of the game."
+  },
+  "startSubtitle": "Tú y tu compañero contra dos rivales",
+  "@startSubtitle": {
+    "description": "What the game is, under the title of the start screen."
+  },
+  "newMatch": "Nueva partida",
+  "@newMatch": {
+    "description": "Button of the start screen and title of the screen where a match is set up."
+  },
+  "back": "Volver",
+  "@back": {
+    "description": "Goes back to the previous screen."
+  },
+  "newMatchPartner": "Tu compañero",
+  "@newMatchPartner": {
+    "description": "Heading over the bots to choose a partner from."
+  },
+  "newMatchKings": "Reyes",
+  "@newMatchKings": {
+    "description": "Rule: how many kings the deck plays with (8 or 4)."
+  },
+  "kingsCount": "{count} reyes",
+  "@kingsCount": {
+    "description": "An option of the kings rule: «8 reyes».",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newMatchTarget": "Tantos",
+  "@newMatchTarget": {
+    "description": "Rule: how many tantos win the match (40 or 30)."
+  },
+  "targetPoints": "A {count}",
+  "@targetPoints": {
+    "description": "An option of the tantos rule: «A 40».",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newMatchStart": "Empezar partida",
+  "@newMatchStart": {
+    "description": "Starts the match set up on the screen."
+  },
+  "personalityPrudente": "El Prudente",
+  "personalityTemeraria": "La Temeraria",
+  "personalityCalculador": "El Calculador",
+  "personalityFarolero": "El Farolero",
+  "@personalityPrudente": {
+    "description": "Name of a bot who plays it safe."
+  },
+  "@personalityTemeraria": {
+    "description": "Name of a bot who takes risks."
+  },
+  "@personalityCalculador": {
+    "description": "Name of a bot who plays the odds."
+  },
+  "@personalityFarolero": {
+    "description": "Name of a bot who bluffs a lot."
+  },
+  "personalityPrudenteStyle": "Envida con buena mano; casi no farolea",
+  "personalityTemerariaStyle": "Quiere casi todo; le gusta el órdago",
+  "personalityCalculadorStyle": "Juega las probabilidades",
+  "personalityFaroleroStyle": "Envida sin nada cuando puede",
+  "@personalityPrudenteStyle": {
+    "description": "How El Prudente plays, in one line."
+  },
+  "@personalityTemerariaStyle": {
+    "description": "How La Temeraria plays, in one line."
+  },
+  "@personalityCalculadorStyle": {
+    "description": "How El Calculador plays, in one line."
+  },
+  "@personalityFaroleroStyle": {
+    "description": "How El Farolero plays, in one line."
   }
 }

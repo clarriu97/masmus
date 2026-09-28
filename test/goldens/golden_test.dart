@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
+import 'package:masmus/ui/start/new_match_screen.dart';
+import 'package:masmus/ui/start/start_screen.dart';
 import 'package:masmus/ui/theme/app_theme.dart';
 import 'package:masmus/ui/widgets/action_button.dart';
 import 'package:masmus/ui/widgets/felt.dart';
@@ -193,7 +195,29 @@ Future<void> _capture(
   );
 }
 
+/// Screens, by the name of their golden.
+final Map<String, Widget Function()> _screens = {
+  'start': () => StartScreen(table: (partner, rules) => const SizedBox()),
+  'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
+};
+
 void main() {
+  _devices.forEach((deviceName, device) {
+    _screens.forEach((screenName, screen) {
+      testWidgets('$screenName on $deviceName', (tester) async {
+        device.apply(tester);
+        await tester.pumpWidget(
+          buildTestApp(screen(), platform: device.platform),
+        );
+        await tester.pumpAndSettle();
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('goldens/$screenName.$deviceName.png'),
+        );
+      });
+    });
+  });
+
   testWidgets('the deck at the size of a hand', (tester) async {
     await _capture(tester, _deck(88), const Size(968, 716), 'deck');
   });

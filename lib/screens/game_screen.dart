@@ -14,6 +14,8 @@ import '../game/hand_value.dart';
 import '../game/match.dart';
 import '../game/move.dart';
 import '../game/rules.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/localized_names.dart';
 import '../services/match_store.dart';
 import '../services/scheduler.dart';
 import '../widgets/game_controls.dart';
@@ -48,18 +50,18 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late final MatchController _controller;
-  late final List<String> _names;
+  late final List<Personality> _rivals;
+  List<String> _names = const [];
   final Set<PlayingCard> _selectedCards = {};
 
   @override
   void initState() {
     super.initState();
     final seed = widget.seed ?? math.Random().nextInt(1 << 32);
-    final rivals = Personality.all
+    final rivals = _rivals = Personality.values
         .where((personality) => personality != widget.partner)
         .take(2)
         .toList();
-    _names = ['Tú', rivals[0].name, widget.partner.name, rivals[1].name];
     _controller = MatchController(
       match: MatchState.start(
         seed: seed,
@@ -75,6 +77,18 @@ class _GameScreenState extends State<GameScreen> {
       store: widget.store ?? MatchStore.inMemory(),
     );
     unawaited(_vibrateShort());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context);
+    _names = [
+      'Tú',
+      l10n.personalityName(_rivals[0]),
+      l10n.personalityName(widget.partner),
+      l10n.personalityName(_rivals[1]),
+    ];
   }
 
   @override

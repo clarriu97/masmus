@@ -8,13 +8,10 @@ void startFlows() {
     tester,
   ) async {
     await launchApp(tester);
-    await tester.tap(find.text('Explorar como invitado'));
+    expect(find.text('Más Mus'), findsOneWidget);
+    await tester.tap(find.text('Nueva partida'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('JUGAR'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('El Calculador'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Comenzar Partida'));
+    await tester.tap(find.text('Empezar partida'));
     await waitFor(tester, find.byType(MusTable));
   });
 }

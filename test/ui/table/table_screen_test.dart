@@ -1,10 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/controllers/match_controller.dart';
+import 'package:masmus/game/event.dart';
 import 'package:masmus/game/move.dart';
+import 'package:masmus/services/scheduler.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/count_view.dart';
+import 'package:masmus/ui/table/hand_history.dart';
 import 'package:masmus/ui/table/seat.dart';
 import 'package:masmus/ui/widgets/lance_chip.dart';
+import 'package:masmus/ui/widgets/speech_bubble.dart';
+import 'package:masmus/ui/widgets/table_chip.dart';
 
+import '../../helpers/devices.dart';
 import '../../helpers/table.dart';
 import '../../helpers/test_app.dart';
 
@@ -34,7 +41,7 @@ void main() {
     for (final step in ['Mus', 'Grande', 'Chica', 'Pares', 'Juego']) {
       expect(find.widgetWithText(LanceChip, step), findsOneWidget);
     }
-    expect(find.text('corrido'), findsOneWidget);
+    expect(find.widgetWithText(LanceChip, 'corrido'), findsOneWidget);
     expect(find.text('Mano'), findsOneWidget);
     expect(find.text('Par de reyes'), findsOneWidget);
     expect(find.text('Punto 26'), findsOneWidget);
@@ -123,5 +130,94 @@ void main() {
       find.bySemanticsLabel('El Prudente. rival · mano. Envido 2'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('the bot whose turn it is shows three dots, and a screen '
+      'reader hears it is thinking', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    expect(
+      find.descendant(
+        of: find.ancestor(
+          of: find.text('El Calculador'),
+          matching: find.byType(Seat),
+        ),
+        matching: find.byType(ThinkingBubble),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(ThinkingBubble), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('El Calculador. compañero. pensando'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('on your turn it says so by your cards; once you speak, what '
+      'you said stays there', (tester) async {
+    final controller = tableMoments['mus']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    expect(find.widgetWithText(TableChip, 'Te toca'), findsOneWidget);
+    controller.play(const Mus());
+    await tester.pump();
+    expect(find.widgetWithText(TableChip, 'Te toca'), findsNothing);
+    expect(find.widgetWithText(SpeechBubble, 'Mus'), findsOneWidget);
+  });
+
+  testWidgets('the middle of the table shows the lance and what is bet, and '
+      'how a lance went while the table holds it', (tester) async {
+    testDevices[2].apply(tester);
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    expect(find.text('GRANDE'), findsOneWidget);
+    expect(find.text('2'), findsWidgets);
+
+    final scheduler = ManualScheduler();
+    final controller = tableController(
+      hands: const {0: 'R 6 5 4', 1: 'S 7 6 1', 2: '4 5 6 7', 3: '4 5 1 7'},
+      mano: 1,
+      moves: [(1, const NoHayMus()), ...passes(1).take(3)],
+      scheduler: scheduler,
+    );
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    controller.play(const Paso());
+    scheduler.advance(Pace.normal.hold(const PasoSaid(0)));
+    await tester.pump();
+    expect(find.text('GRANDE'), findsOneWidget);
+    expect(find.text('en paso'), findsWidgets);
+    catchUp(controller);
+    await tester.pump();
+    expect(find.text('CHICA'), findsOneWidget);
+  });
+
+  testWidgets('what has happened in the hand, as a conversation, a tap away', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['chica_answer']!())),
+    );
+    await tester.tap(find.byTooltip('Lo que va de mano'));
+    await tester.pumpAndSettle();
+    final sheet = find.byType(HandHistory);
+    for (final line in [
+      'La Temeraria: No hay mus',
+      'La Temeraria: Paso',
+      'Tú: Envido 2',
+      'El Prudente: Decide su compañero',
+      'La Temeraria: No quiero',
+      '→ Nosotros +1',
+      'La Temeraria: Envido 5',
+    ]) {
+      expect(
+        find.descendant(of: sheet, matching: find.text(line)),
+        findsOneWidget,
+        reason: line,
+      );
+    }
+    for (final step in ['Mus', 'Grande', 'Chica']) {
+      expect(find.descendant(of: sheet, matching: find.text(step)), findsOne);
+    }
   });
 }

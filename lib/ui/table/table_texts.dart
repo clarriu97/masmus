@@ -34,6 +34,45 @@ extension TableTexts on AppLocalizations {
     };
   }
 
+  /// In the middle of the table: the step being played, or the lance that
+  /// just closed while the table holds it.
+  String center(TableView view) => switch (view.latest) {
+    LanceClosed(:final outcome) => stepName(outcome.lance.name),
+    HandEnded() => centerHandOver,
+    _ => switch (view.current) {
+      final step? => stepLabel(step),
+      null => '',
+    },
+  };
+
+  /// Under it: how that lance went, what is bet, or what is going on.
+  String centerValue(TableView view) {
+    final current = view.current;
+    return switch (view.latest) {
+      LanceClosed(:final outcome) =>
+        stepStatus(
+              StepView(
+                TableStep.values.byName(outcome.lance.name),
+                StepProgress.done,
+                outcome: outcome,
+              ),
+              view,
+            ) ??
+            '',
+      HandEnded() => centerToCount,
+      _ => switch (current) {
+        null => '—',
+        StepView(step: TableStep.mus, discarding: true) => stepDiscards,
+        StepView(step: TableStep.mus, corrido: true) => stepCorrido,
+        StepView(step: TableStep.mus) => centerMus,
+        StepView(declaring: true, :final step) => centerDeclaring(step.name),
+        StepView(envite: (ordago: true, stake: _)) => stepOrdago,
+        StepView(envite: (:final stake, ordago: false)) => '$stake',
+        _ => '—',
+      },
+    };
+  }
+
   /// A bot's place at the table: partner or rival, and mano or postre.
   String seatRole(TableView view, int seat) => roleSeat(
     view.partnerOf(seat) ? 'partner' : 'rival',

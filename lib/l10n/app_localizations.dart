@@ -1125,6 +1125,66 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Las piedras con las que se llevan los tantos: cada amarraco son cinco.'**
   String get glossaryMeaning12;
+
+  /// A bot deciding what to say, for screen readers.
+  ///
+  /// In es, this message translates to:
+  /// **'pensando'**
+  String get seatThinking;
+
+  /// In the middle of the table while the mus goes round.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Mus?'**
+  String get centerMus;
+
+  /// In the middle of the table while the players say whether they have pares or juego.
+  ///
+  /// In es, this message translates to:
+  /// **'{lance, select, pares{¿Pares?} other{¿Juego?}}'**
+  String centerDeclaring(String lance);
+
+  /// In the middle of the table once the last lance closes.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de la mano'**
+  String get centerHandOver;
+
+  /// Under «Fin de la mano»: the count comes next.
+  ///
+  /// In es, this message translates to:
+  /// **'a contar'**
+  String get centerToCount;
+
+  /// Everything said in the hand so far, as a conversation; also the tooltip of the button that opens it.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo que va de mano'**
+  String get historyTitle;
+
+  /// The hand's conversation before anyone speaks.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no ha hablado nadie.'**
+  String get historyEmpty;
+
+  /// A line of the hand's conversation: who said what.
+  ///
+  /// In es, this message translates to:
+  /// **'{name}: {said}'**
+  String historyLine(String name, String said);
+
+  /// During mus corrido, the mano moves.
+  ///
+  /// In es, this message translates to:
+  /// **'{name} pasa a ser mano'**
+  String historyManoMoved(String name);
+
+  /// The stock ran out during the discards and the thrown cards are shuffled.
+  ///
+  /// In es, this message translates to:
+  /// **'Se acaba el mazo: se barajan los descartes'**
+  String get historyReshuffled;
 }
 
 class _AppLocalizationsDelegate

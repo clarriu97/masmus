@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../game/cards.dart';
+import '../../l10n/app_localizations.dart';
 import '../cards/playing_card_view.dart';
 import '../theme/app_theme.dart';
 import '../widgets/speech_bubble.dart';
 
 /// A bot at the table: who it is, its four cards face down and what it just
-/// said. Edged in brass while it is thinking.
+/// said, which pops up as it says it. While it is thinking, it is edged in
+/// brass and its bubble is three dots.
 class Seat extends StatelessWidget {
   const Seat({
     required this.name,
     required this.role,
     required this.thinking,
     this.said,
+    this.saidAt,
     this.asked,
     super.key,
   });
@@ -21,6 +24,9 @@ class Seat extends StatelessWidget {
   final String role;
   final bool thinking;
   final String? said;
+
+  /// Where in the hand it was said: a new place, a new word.
+  final int? saidAt;
 
   /// How many cards it asked for in the last discards, in words.
   final String? asked;
@@ -31,9 +37,12 @@ class Seat extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final said = this.said;
+    final thinking = this.thinking
+        ? AppLocalizations.of(context).seatThinking
+        : null;
     return Semantics(
       container: true,
-      label: [name, role, ?asked, ?said].join('. '),
+      label: [name, role, ?asked, ?thinking ?? said].join('. '),
       child: ExcludeSemantics(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -41,7 +50,7 @@ class Seat extends StatelessWidget {
             DecoratedBox(
               decoration: ShapeDecoration(
                 shape: CircleBorder(
-                  side: thinking
+                  side: thinking != null
                       ? const BorderSide(color: AppColors.turn, width: 3)
                       : BorderSide.none,
                 ),
@@ -80,10 +89,16 @@ class Seat extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
-            Visibility.maintain(
-              visible: said != null,
-              child: SpeechBubble(said ?? ' '),
-            ),
+            if (thinking != null)
+              const ThinkingBubble()
+            else
+              Visibility.maintain(
+                visible: said != null,
+                child: PopIn(
+                  key: ValueKey(saidAt),
+                  child: SpeechBubble(said ?? ' '),
+                ),
+              ),
           ],
         ),
       ),

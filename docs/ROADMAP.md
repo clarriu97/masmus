@@ -56,6 +56,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Who speaks and what happened, at a glance (#78).**
+  - The bot whose turn it is is edged in brass, and its bubble is three
+    dots lighting up in turn (still with reduced motion); screen readers
+    hear «pensando».
+  - A word just said pops into its bubble; rebuilding the table doesn't
+    pop it again, only a new word.
+  - By your cards: «Te toca», in brass, when it is your turn, and
+    otherwise what you last said. «Mano» is a plain chip now, so brass
+    means only whose turn it is.
+  - In the middle of the table, the lance being played and what is bet
+    («GRANDE 2», «¿Pares?», «¿Mus?», «descartes»), and while the table
+    holds the close of a lance, how it went («en paso», «Nosotros +1»),
+    edged in brass.
+  - «Lo que va de mano», from the top bar: everything said so far, step by
+    step, as a conversation («El Prudente: Envido 2», «→ querido 2»,
+    «La Temeraria pasa a ser mano»).
 - **2026-09-29 · The table tells the hand one thing at a time (#77).**
   Playing the new table, the owner still couldn't follow who speaks, who
   cut the mus or what happened before his turn, and the bots were too fast

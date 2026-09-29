@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../bots/heuristic_bot.dart';
 import '../../controllers/match_controller.dart';
 import '../../game/cards.dart';
+import '../../game/event.dart';
 import '../../game/hand_state.dart';
 import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
@@ -15,9 +16,11 @@ import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 import '../widgets/lance_chip.dart';
 import '../widgets/score_board.dart';
+import '../widgets/speech_bubble.dart';
 import '../widgets/table_chip.dart';
 import 'count_view.dart';
 import 'end_view.dart';
+import 'hand_history.dart';
 import 'seat.dart';
 import 'table_actions.dart';
 import 'table_texts.dart';
@@ -116,7 +119,24 @@ class _TableScreenState extends State<TableScreen> {
             child: SafeArea(
               child: Column(
                 children: [
-                  _TopBar(view: view, onExit: widget.onExit),
+                  _TopBar(
+                    view: view,
+                    onExit: widget.onExit,
+                    onHistory: () => showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => HandHistory(
+                        log: match.hand.log.sublist(0, controller.shown),
+                        view: view,
+                        names: {
+                          you: l10n.countYou,
+                          for (final MapEntry(key: seat, value: bot)
+                              in bots.entries)
+                            seat: l10n.personalityName(bot),
+                        },
+                      ),
+                    ),
+                  ),
                   _Steps(view: view),
                   Expanded(
                     child: _Seats(view: view, bots: bots),
@@ -161,10 +181,15 @@ class _TableScreenState extends State<TableScreen> {
 }
 
 class _TopBar extends StatelessWidget {
-  const _TopBar({required this.view, required this.onExit});
+  const _TopBar({
+    required this.view,
+    required this.onExit,
+    required this.onHistory,
+  });
 
   final TableView view;
   final VoidCallback onExit;
+  final VoidCallback onHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -193,6 +218,11 @@ class _TopBar extends StatelessWidget {
           Text(
             l10n.tableTarget(view.target),
             style: Theme.of(context).textTheme.labelSmall,
+          ),
+          IconButton(
+            tooltip: l10n.historyTitle,
+            onPressed: onHistory,
+            icon: const Icon(Icons.forum_outlined),
           ),
           IconButton(
             tooltip: l10n.howTitle,
@@ -268,6 +298,7 @@ class _Seats extends StatelessWidget {
         final event? => l10n.said(event, view),
         null => null,
       },
+      saidAt: view.saidAt[seat],
     );
     final you = view.you;
     return LayoutBuilder(
@@ -296,7 +327,7 @@ class _Seats extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(child: seatOf((you + 3) % 4)),
-                          _Stake(view: view),
+                          _Center(view: view),
                           Expanded(child: seatOf((you + 1) % 4)),
                         ],
                       ),
@@ -309,9 +340,12 @@ class _Seats extends StatelessWidget {
   }
 }
 
-/// What is bet in the lance being played.
-class _Stake extends StatelessWidget {
-  const _Stake({required this.view});
+/// In the middle of the table: the step being played and what is bet in
+/// it, or how the lance that just closed went, while the table holds it.
+class _Center extends StatelessWidget {
+  const _Center({required this.view});
+
+  static const _width = 104.0;
 
   final TableView view;
 
@@ -319,29 +353,37 @@ class _Stake extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final stake = view.bet;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.line, width: 1.5),
-        borderRadius: BorderRadius.circular(AppRadii.md),
-      ),
-      child: Padding(
+    final value = l10n.centerValue(view);
+    final number = int.tryParse(value) != null;
+    return ExcludeSemantics(
+      child: Container(
+        width: _width,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
+          horizontal: AppSpacing.sm,
           vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: view.latest is LanceClosed ? AppColors.turn : AppColors.line,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(AppRadii.md),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(l10n.tableStake, style: text.labelSmall),
             Text(
-              switch (stake) {
-                null => '—',
-                _ when stake.ordago => l10n.stepOrdago,
-                _ => '${stake.stake}',
-              },
-              style: text.displaySmall,
-              semanticsLabel: stake == null ? l10n.tableStakeNone : null,
+              l10n.center(view).toUpperCase(),
+              style: text.labelSmall,
+              textAlign: TextAlign.center,
+            ),
+            PopIn(
+              key: ValueKey((view.latest, value)),
+              child: Text(
+                value,
+                textAlign: TextAlign.center,
+                style: number ? text.displaySmall : text.titleMedium,
+              ),
             ),
           ],
         ),
@@ -387,8 +429,16 @@ class _YourHand extends StatelessWidget {
               child: Row(
                 spacing: AppSpacing.sm,
                 children: [
-                  if (view.mano == view.you)
-                    TableChip(l10n.tableMano, highlighted: true),
+                  if (view.yourTurn)
+                    PopIn(
+                      child: TableChip(l10n.tableYourTurn, highlighted: true),
+                    )
+                  else if (view.said[view.you] case final said?)
+                    PopIn(
+                      key: ValueKey(view.saidAt[view.you]),
+                      child: SpeechBubble(l10n.said(said, view)),
+                    ),
+                  if (view.mano == view.you) TableChip(l10n.tableMano),
                   if (help)
                     for (final line in l10n.handHelp(view.value))
                       TableChip(line),

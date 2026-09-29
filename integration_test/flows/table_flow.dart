@@ -65,6 +65,10 @@ void tableFlows() {
     );
     await tester.tap(find.text('No hay mus'));
     await tester.pump();
+    await tester.tap(find.byTooltip('Lo que va de mano'));
+    await waitFor(tester, find.text('Tú: No hay mus'));
+    await tester.tapAt(const Offset(20, 20));
+    await waitFor(tester, find.text('Tú: No hay mus'), gone: true);
 
     final answers = [
       for (final label in ['Paso', 'No quiero'])

@@ -794,4 +794,44 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get glossaryMeaning12 =>
       'Las piedras con las que se llevan los tantos: cada amarraco son cinco.';
+
+  @override
+  String get seatThinking => 'pensando';
+
+  @override
+  String get centerMus => '¿Mus?';
+
+  @override
+  String centerDeclaring(String lance) {
+    String _temp0 = intl.Intl.selectLogic(lance, {
+      'pares': '¿Pares?',
+      'other': '¿Juego?',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get centerHandOver => 'Fin de la mano';
+
+  @override
+  String get centerToCount => 'a contar';
+
+  @override
+  String get historyTitle => 'Lo que va de mano';
+
+  @override
+  String get historyEmpty => 'Todavía no ha hablado nadie.';
+
+  @override
+  String historyLine(String name, String said) {
+    return '$name: $said';
+  }
+
+  @override
+  String historyManoMoved(String name) {
+    return '$name pasa a ser mano';
+  }
+
+  @override
+  String get historyReshuffled => 'Se acaba el mazo: se barajan los descartes';
 }

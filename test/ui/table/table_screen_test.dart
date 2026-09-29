@@ -11,6 +11,7 @@ import 'package:masmus/ui/table/count_view.dart';
 import 'package:masmus/ui/table/hand_history.dart';
 import 'package:masmus/ui/table/seat.dart';
 import 'package:masmus/ui/theme/app_theme.dart';
+import 'package:masmus/ui/widgets/cut_badge.dart';
 import 'package:masmus/ui/widgets/lance_chip.dart';
 import 'package:masmus/ui/widgets/mano_token.dart';
 import 'package:masmus/ui/widgets/speech_bubble.dart';
@@ -143,7 +144,7 @@ void main() {
       buildTestApp(tableScreen(tableMoments['grande_envite']!())),
     );
     expect(
-      find.bySemanticsLabel('El Prudente. rival. mano. Envido 2'),
+      find.bySemanticsLabel('El Prudente. rival. mano. cortó el mus. Envido 2'),
       findsOneWidget,
     );
   });
@@ -373,5 +374,31 @@ void main() {
     await tester.pump();
     expect(framed(), isFalse);
     expect(haptics, hasLength(1), reason: 'only when your turn comes');
+  });
+
+  testWidgets('who cut the mus keeps the scissors and «cortó el mus» for the '
+      'rest of the hand', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['chica_answer']!())),
+    );
+    expect(_seat(tester, 'La Temeraria').cut, isTrue);
+    expect(_seat(tester, 'El Prudente').cut, isFalse);
+    expect(find.byType(CutBadge), findsOneWidget);
+    expect(find.text('cortó el mus'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp('La Temeraria.*cortó el mus')),
+      findsOneWidget,
+    );
+
+    final controller = tableMoments['mus']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    expect(find.byType(CutBadge), findsNothing);
+    controller.play(const NoHayMus());
+    await tester.pump();
+    expect(find.byType(CutBadge), findsOneWidget, reason: 'at once, by you');
+    catchUp(controller);
+    await tester.pump();
+    expect(find.byType(CutBadge), findsOneWidget);
+    expect(find.bySemanticsLabel('Cortaste el mus'), findsOneWidget);
   });
 }

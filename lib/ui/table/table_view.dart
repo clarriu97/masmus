@@ -99,6 +99,7 @@ final class TableView {
         for (final event in log.whereType<Discarded>()) event.seat: event.count,
       },
       thrown: _thrown(log),
+      cutter: log.whereType<NoHayMusSaid>().firstOrNull?.seat,
       bet: _bet(log),
       latest: live ? null : log.lastOrNull,
       stake: switch (hand.phase) {
@@ -130,6 +131,7 @@ final class TableView {
     required this.saidAt,
     required this.asked,
     required this.thrown,
+    required this.cutter,
     required this.bet,
     required this.latest,
     required this.stake,
@@ -155,6 +157,9 @@ final class TableView {
 
   /// The postre is dealing the cards.
   final bool dealing;
+
+  /// Who cut the mus this hand, once the table has shown it.
+  final int? cutter;
 
   /// Who has the floor: whose turn it is or, while the table shows what
   /// just happened, whoever just said it. Nobody while cards are dealt or

@@ -1080,5 +1080,13 @@
   "endNextGame": "Siguiente juego",
   "@endNextGame": {
     "description": "Starts the next juego of the match."
+  },
+  "seatCut": "cortó el mus",
+  "@seatCut": {
+    "description": "Under the name of whoever cut the mus this hand."
+  },
+  "tableYouCut": "Cortaste el mus",
+  "@tableYouCut": {
+    "description": "For screen readers, by your cards when you cut the mus."
   }
 }

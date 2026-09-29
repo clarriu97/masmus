@@ -798,7 +798,7 @@
   "@howTurnsTitle": {
     "description": "How to play: heading."
   },
-  "howTurns": "Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.",
+  "howTurns": "Se habla por turnos, empezando por la mano; el último en hablar es el postre, que es quien reparte. En la mesa, la mano lleva la ficha «M» y el mazo queda entre el postre y la mano. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.",
   "@howTurns": {
     "description": "How to play: turns and ties."
   },
@@ -806,7 +806,7 @@
   "@howMusTitle": {
     "description": "How to play: heading."
   },
-  "howMus": "Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.",
+  "howMus": "Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente, y quien corta pasa a ser mano.",
   "@howMus": {
     "description": "How to play: mus and discards."
   },
@@ -1019,5 +1019,13 @@
   "historyReshuffled": "Se acaba el mazo: se barajan los descartes",
   "@historyReshuffled": {
     "description": "The stock ran out during the discards and the thrown cards are shuffled."
+  },
+  "centerDeals": "Reparte",
+  "@centerDeals": {
+    "description": "In the middle of the table while the postre deals; the dealer's name goes under it."
+  },
+  "tableCorrido": "Mus corrido: quien corte será mano",
+  "@tableCorrido": {
+    "description": "Under the row of the hand during the first hand's mus, which goes round until someone cuts it."
   }
 }

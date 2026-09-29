@@ -883,7 +883,7 @@ abstract class AppLocalizations {
   /// How to play: turns and ties.
   ///
   /// In es, this message translates to:
-  /// **'Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.'**
+  /// **'Se habla por turnos, empezando por la mano; el último en hablar es el postre, que es quien reparte. En la mesa, la mano lleva la ficha «M» y el mazo queda entre el postre y la mano. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.'**
   String get howTurns;
 
   /// How to play: heading.
@@ -895,7 +895,7 @@ abstract class AppLocalizations {
   /// How to play: mus and discards.
   ///
   /// In es, this message translates to:
-  /// **'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.'**
+  /// **'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente, y quien corta pasa a ser mano.'**
   String get howMus;
 
   /// How to play: heading.
@@ -1185,6 +1185,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Se acaba el mazo: se barajan los descartes'**
   String get historyReshuffled;
+
+  /// In the middle of the table while the postre deals; the dealer's name goes under it.
+  ///
+  /// In es, this message translates to:
+  /// **'Reparte'**
+  String get centerDeals;
+
+  /// Under the row of the hand during the first hand's mus, which goes round until someone cuts it.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus corrido: quien corte será mano'**
+  String get tableCorrido;
 }
 
 class _AppLocalizationsDelegate

@@ -37,6 +37,8 @@ extension TableTexts on AppLocalizations {
   /// In the middle of the table: the step being played, or the lance that
   /// just closed while the table holds it.
   String center(TableView view) => switch (view.latest) {
+    _ when view.dealing => centerDeals,
+    ManoMoved() => tableMano,
     NoHayMusSaid() => stepName('mus'),
     LanceClosed(:final outcome) => stepName(outcome.lance.name),
     HandEnded() => centerHandOver,
@@ -46,10 +48,13 @@ extension TableTexts on AppLocalizations {
     },
   };
 
-  /// Under it: how that lance went, what is bet, or what is going on.
-  String centerValue(TableView view) {
+  /// Under it: how that lance went, what is bet, who deals or becomes
+  /// mano, or what is going on. [name] says who sits in a seat.
+  String centerValue(TableView view, String Function(int seat) name) {
     final current = view.current;
     return switch (view.latest) {
+      _ when view.dealing => name(view.postre),
+      ManoMoved(:final seat) => name(seat),
       NoHayMusSaid() => stepCut,
       LanceClosed(:final outcome) =>
         stepStatus(
@@ -75,14 +80,11 @@ extension TableTexts on AppLocalizations {
     };
   }
 
-  /// A bot's place at the table: partner or rival, and mano or postre.
+  /// A bot's place at the table: partner or rival, and whether it is postre.
+  /// The mano carries its token instead of a word.
   String seatRole(TableView view, int seat) => roleSeat(
     view.partnerOf(seat) ? 'partner' : 'rival',
-    seat == view.mano
-        ? 'mano'
-        : seat == view.postre
-        ? 'postre'
-        : 'none',
+    seat == view.postre ? 'postre' : 'none',
   );
 
   String said(GameEvent event, TableView view) => switch (event) {

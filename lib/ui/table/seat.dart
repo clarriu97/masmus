@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../theme/app_theme.dart';
+import '../widgets/mano_token.dart';
 import '../widgets/speech_bubble.dart';
 
 /// A bot at the table: who it is, its four cards face down and what it just
@@ -19,9 +20,8 @@ class Seat extends StatelessWidget {
     this.saidAt,
     this.asked,
     this.cards = 4,
-    this.deck,
+    this.mano = false,
     this.cardsKey,
-    this.deckKey,
     this.dimmed = false,
     super.key,
   });
@@ -33,14 +33,11 @@ class Seat extends StatelessWidget {
   /// while they are dealt.
   final int cards;
 
-  /// It is mano: the deck sits on this side of its cards.
-  final AxisDirection? deck;
+  /// It speaks first: it carries the [ManoToken].
+  final bool mano;
 
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
-
-  /// Where the deck is, for the deal to fly from.
-  final Key? deckKey;
 
   final String name;
   final String role;
@@ -57,102 +54,103 @@ class Seat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final said = this.said;
-    final thinking = this.thinking
-        ? AppLocalizations.of(context).seatThinking
-        : null;
+    final thinking = this.thinking ? l10n.seatThinking : null;
     return Semantics(
       container: true,
-      label: [name, role, ?asked, ?thinking ?? said].join('. '),
+      label: [
+        name,
+        role,
+        if (mano) l10n.tableMano.toLowerCase(),
+        ?asked,
+        ?thinking ?? said,
+      ].join('. '),
       child: ExcludeSemantics(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedOpacity(
-              opacity: dimmed ? 0.4 : 1,
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : AppMotion.short,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DecoratedBox(
-                    decoration: ShapeDecoration(
-                      shape: CircleBorder(
-                        side: thinking != null
-                            ? const BorderSide(color: AppColors.turn, width: 3)
-                            : BorderSide.none,
-                      ),
-                      color: AppColors.avatar,
-                    ),
-                    child: SizedBox.square(
-                      dimension: 46,
-                      child: Center(
-                        child: Text(
-                          name.split(' ').last.characters.first,
-                          style: text.headlineSmall?.copyWith(
-                            color: AppColors.onAvatar,
+            Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                AnimatedOpacity(
+                  opacity: dimmed ? 0.4 : 1,
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : AppMotion.short,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DecoratedBox(
+                        decoration: ShapeDecoration(
+                          shape: CircleBorder(
+                            side: thinking != null
+                                ? const BorderSide(
+                                    color: AppColors.turn,
+                                    width: 3,
+                                  )
+                                : BorderSide.none,
+                          ),
+                          color: AppColors.avatar,
+                        ),
+                        child: SizedBox.square(
+                          dimension: 46,
+                          child: Center(
+                            child: Text(
+                              name.split(' ').last.characters.first,
+                              style: text.headlineSmall?.copyWith(
+                                color: AppColors.onAvatar,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    name,
-                    style: text.titleSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    role,
-                    style: text.labelSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (asked case final asked?)
-                    Text(
-                      asked,
-                      style: text.labelSmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  const SizedBox(height: AppSpacing.xs),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: AppSpacing.xs,
-                      children: [
-                        _Deck(
-                          shown: deck == AxisDirection.left,
-                          deckKey: deckKey,
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        name,
+                        style: text.titleSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        role,
+                        style: text.labelSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                      if (asked case final asked?)
+                        Text(
+                          asked,
+                          style: text.labelSmall,
+                          textAlign: TextAlign.center,
                         ),
-                        Row(
-                          key: cardsKey,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            for (var i = 0; i < 4; i++)
-                              Align(
-                                widthFactor: i == 3 ? 1 : 0.55,
-                                child: Visibility.maintain(
-                                  visible: i < cards,
-                                  child: const PlayingCardView(
-                                    _back,
-                                    width: DeckView.cardWidth,
-                                    faceUp: false,
-                                  ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Row(
+                        key: cardsKey,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (var i = 0; i < 4; i++)
+                            Align(
+                              widthFactor: i == 3 ? 1 : 0.55,
+                              child: Visibility.maintain(
+                                visible: i < cards,
+                                child: const PlayingCardView(
+                                  _back,
+                                  width: DeckView.cardWidth,
+                                  faceUp: false,
                                 ),
                               ),
-                          ],
-                        ),
-                        _Deck(
-                          shown: deck == AxisDirection.right,
-                          deckKey: deckKey,
-                        ),
-                      ],
-                    ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                if (mano)
+                  Transform.translate(
+                    offset: const Offset(26, 22),
+                    child: const PopIn(child: ManoToken()),
+                  ),
+              ],
             ),
             const SizedBox(height: AppSpacing.sm),
             if (thinking != null)
@@ -170,19 +168,4 @@ class Seat extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The deck on one side of the cards, or the room it takes on the other,
-/// so the cards stay centered.
-class _Deck extends StatelessWidget {
-  const _Deck({required this.shown, required this.deckKey});
-
-  final bool shown;
-  final Key? deckKey;
-
-  @override
-  Widget build(BuildContext context) => Visibility.maintain(
-    visible: shown,
-    child: DeckView(key: shown ? deckKey : null),
-  );
 }

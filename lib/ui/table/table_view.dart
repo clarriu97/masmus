@@ -85,6 +85,7 @@ final class TableView {
       target: match.rules.target,
       mano: _manoAt(hand, log),
       turn: live && !dealing ? hand.turn : null,
+      dealing: dealing,
       steps: _steps(hand, log),
       said: {
         for (final MapEntry(:key, :value) in _said(log).entries)
@@ -119,6 +120,7 @@ final class TableView {
     required this.target,
     required this.mano,
     required this.turn,
+    required this.dealing,
     required this.steps,
     required this.said,
     required this.saidAt,
@@ -142,6 +144,9 @@ final class TableView {
 
   final int? turn;
   bool get yourTurn => turn == you;
+
+  /// The postre is dealing the cards.
+  final bool dealing;
 
   /// Who has the floor: whose turn it is or, while the table shows what
   /// just happened, whoever just said it. Nobody while cards are dealt or

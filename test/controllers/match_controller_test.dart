@@ -6,10 +6,14 @@ import 'package:masmus/bots/random_bot.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/event.dart';
 import 'package:masmus/game/hand_state.dart';
+import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/match.dart';
 import 'package:masmus/game/move.dart';
+import 'package:masmus/game/outcome.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
+
+import '../helpers/table.dart';
 
 const _seats = {
   1: Personality.prudente,
@@ -42,6 +46,19 @@ _Table _table({int mano = 1, int seed = 3, Pace pace = Pace.normal}) {
   return (controller: controller, scheduler: scheduler, store: store);
 }
 
+/// Moves the clock in small steps until the table shows something new.
+void _untilSomethingHappens(
+  MatchController controller,
+  ManualScheduler scheduler,
+) {
+  final shown = controller.shown;
+  final length = controller.match.hand.log.length;
+  while (controller.shown == shown &&
+      controller.match.hand.log.length == length) {
+    scheduler.advance(const Duration(milliseconds: 100));
+  }
+}
+
 void main() {
   test('bots move one at a time, each after its thinking pause', () {
     final (:controller, :scheduler, store: _) = _table();
@@ -55,15 +72,67 @@ void main() {
     while (!controller.isHumanTurn && !controller.match.isCounted) {
       final turn = controller.match.hand.turn;
       final before = controller.match.hand.log.length;
-      scheduler.advance(Pace.normal.thinking);
-      final added = controller.match.hand.log.sublist(before);
-      expect(added, isNotEmpty);
-      expect(controller.lastEvents, added);
+      _untilSomethingHappens(controller, scheduler);
+      expect(controller.shown, before + 1, reason: 'the move shows at once');
       expect(turn, isNot(0));
+      while (controller.catchingUp) {
+        expect(controller.match.hand.log.length, greaterThan(before));
+        _untilSomethingHappens(controller, scheduler);
+      }
       moves++;
     }
     expect(moves, greaterThan(0));
     expect(scheduler.hasPending, isFalse, reason: 'waiting for the human');
+  });
+
+  test('what a move brings is shown one thing at a time, each held as long '
+      'as its kind needs, and nobody moves meanwhile', () {
+    final scheduler = ManualScheduler();
+    final controller = tableController(
+      hands: const {0: 'R R 5 4', 1: 'C C S S', 2: '7 7 7 1', 3: '6 5 4 1'},
+      mano: 1,
+      moves: [(1, const NoHayMus()), ...passes(1).take(3)],
+      scheduler: scheduler,
+    );
+    addTearDown(controller.dispose);
+    expect(controller.isHumanTurn, isTrue);
+    final before = controller.match.hand.log.length;
+    controller.play(const Paso());
+    final log = controller.match.hand.log;
+    expect(log.length, greaterThan(before + 1));
+    expect(log[before], const PasoSaid(0));
+    expect(log[before + 1], isA<LanceClosed>());
+
+    expect(controller.shown, before + 1);
+    expect(controller.catchingUp, isTrue);
+    expect(controller.humanMoves, isEmpty);
+    expect(controller.isHumanTurn, isFalse);
+    for (var shown = before + 1; shown < log.length; shown++) {
+      final hold = Pace.normal.hold(log[shown - 1]);
+      scheduler.advance(hold - const Duration(milliseconds: 1));
+      expect(controller.shown, shown, reason: '${log[shown - 1]} still held');
+      scheduler.advance(const Duration(milliseconds: 1));
+      expect(controller.shown, shown + 1);
+    }
+    expect(controller.catchingUp, isFalse);
+    expect(controller.match.hand.turn, 1, reason: 'the chica, from the mano');
+    expect(scheduler.requested.last, Pace.normal.thinking);
+  });
+
+  test('the table holds the close of a lance longer than a word, and each '
+      'pace holds it for longer or shorter', () {
+    const closed = LanceClosed(EnPaso(Lance.grande));
+    expect(
+      Pace.normal.hold(closed),
+      greaterThan(Pace.normal.hold(const PasoSaid(0))),
+    );
+    expect(Pace.slow.hold(closed), greaterThan(Pace.normal.hold(closed)));
+    expect(Pace.fast.hold(closed), lessThan(Pace.normal.hold(closed)));
+    expect(
+      Pace.fast.thinking,
+      greaterThanOrEqualTo(const Duration(seconds: 1)),
+      reason: 'even fast, a move can be followed',
+    );
   });
 
   test('a move of the human out of turn is ignored', () {
@@ -87,7 +156,7 @@ void main() {
       controller.play(const Mus());
 
       expect(controller.match.hand.log, const [MusSaid(0)]);
-      expect(controller.lastEvents, const [MusSaid(0)]);
+      expect(controller.shown, 1);
       expect(notified, 1);
       expect(store.saved!.match.toJson(), controller.match.toJson());
       expect(store.saved!.bots, _seats);
@@ -151,11 +220,13 @@ void main() {
       if (controller.match.isCounted) {
         expect(controller.match.hand.phase, isA<HandOver>());
         controller.nextHand();
-        expect(controller.lastEvents, isEmpty);
+        expect(controller.shown, 0);
       }
       scheduler.advance(Pace.fast.thinking);
       expect(++steps, lessThan(20000));
     }
+    scheduler.advance(const Duration(minutes: 1));
+    expect(controller.catchingUp, isFalse);
     expect(scheduler.hasPending, isFalse);
     expect(store.saved, isNull, reason: 'a match that is over is not resumed');
   });

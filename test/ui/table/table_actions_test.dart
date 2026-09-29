@@ -42,6 +42,7 @@ void main() {
   ) async {
     final controller = await _pump(tester, 'mus');
     controller.play(const NoHayMus());
+    catchUp(controller);
     await tester.pump();
     expect(_button('Paso'), findsOneWidget);
     expect(_button('Envido'), findsOneWidget);
@@ -63,6 +64,7 @@ void main() {
   ) async {
     final controller = await _pump(tester, 'mus');
     controller.play(const NoHayMus());
+    catchUp(controller);
     await tester.pump();
     await tester.tap(find.text('Otra'));
     await tester.pumpAndSettle();
@@ -86,6 +88,7 @@ void main() {
   ) async {
     final controller = await _pump(tester, 'mus');
     controller.play(const NoHayMus());
+    catchUp(controller);
     await tester.pump();
 
     await tester.tap(find.byType(HoldButton));
@@ -116,6 +119,7 @@ void main() {
   ) async {
     final controller = await _pump(tester, 'mus');
     controller.play(const NoHayMus());
+    catchUp(controller);
     await tester.pump();
     tester.semantics.longPress(find.semantics.byLabel('Órdago'));
     await tester.pump();

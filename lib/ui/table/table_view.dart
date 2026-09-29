@@ -12,6 +12,9 @@ enum TableStep { mus, grande, chica, pares, juego, punto }
 
 enum StepProgress { pending, current, done }
 
+/// What is bet in the lance being played: [stake] tantos, or an órdago.
+typedef Bet = ({int stake, bool ordago});
+
 /// One step in that row: where it is and, when it is over, how it went.
 final class StepView {
   const StepView(
@@ -30,8 +33,8 @@ final class StepView {
   /// How a lance went, once it is [StepProgress.done].
   final LanceOutcome? outcome;
 
-  /// The bet waiting for an answer in the lance being played.
-  final Envite? envite;
+  /// What is bet in the lance being played.
+  final Bet? envite;
 
   /// Someone said "no hay mus".
   final bool cut;
@@ -45,27 +48,41 @@ final class StepView {
 /// What the table shows of a match from [you]r seat, worked out from the
 /// engine's state and its log: the score, who is mano and postre, whose
 /// turn it is, where the hand is, what each player just said and what is
-/// on the table.
+/// on the table. With [shown], as it was once the first [shown] events of
+/// the log had happened: while the table catches up, nobody's turn yet.
 final class TableView {
-  factory TableView.of(MatchState match, {required int you}) {
+  factory TableView.of(MatchState match, {required int you, int? shown}) {
     final hand = match.hand;
-    final score = match.scoreNow;
+    final log = shown == null ? hand.log : hand.log.sublist(0, shown);
+    final live = log.length == hand.log.length;
+    final score = live
+        ? match.scoreNow
+        : [
+            for (final team in [0, 1])
+              match.score[team] +
+                  log
+                      .whereType<LanceClosed>()
+                      .map((closed) => closed.outcome)
+                      .whereType<NoQuerido>()
+                      .where((outcome) => outcome.team == team)
+                      .fold<int>(0, (sum, outcome) => sum + outcome.points),
+          ];
     final us = teamOf(you);
     return TableView._(
       you: you,
       us: score[us],
       them: score[1 - us],
       target: match.rules.target,
-      mano: hand.mano,
-      turn: hand.turn,
-      steps: _steps(hand),
-      said: _said(hand.log),
+      mano: _manoAt(hand, log),
+      turn: live ? hand.turn : null,
+      steps: _steps(hand, log),
+      said: _said(log),
       asked: {
-        for (final event in hand.log.whereType<Discarded>())
-          event.seat: event.count,
+        for (final event in log.whereType<Discarded>()) event.seat: event.count,
       },
+      bet: _bet(log),
       stake: switch (hand.phase) {
-        LanceTurn(:final envite?) => envite,
+        LanceTurn(:final envite?) when live => envite,
         _ => null,
       },
       cards: hand.hands[you],
@@ -83,6 +100,7 @@ final class TableView {
     required this.steps,
     required this.said,
     required this.asked,
+    required this.bet,
     required this.stake,
     required this.cards,
     required this.value,
@@ -112,7 +130,10 @@ final class TableView {
   /// Whether it is your turn to throw cards away.
   bool get youDiscard => yourTurn && _discarding;
 
-  /// The bet on the table in the lance being played.
+  /// What is bet in the lance being played.
+  final Bet? bet;
+
+  /// The bet waiting for an answer, once the table has caught up.
   final Envite? stake;
 
   final List<PlayingCard> cards;
@@ -123,32 +144,41 @@ final class TableView {
   bool partnerOf(int seat) => teamOf(seat) == teamOf(you) && seat != you;
 }
 
-List<StepView> _steps(HandState hand) {
-  final phase = hand.phase;
-  final log = hand.log;
-  final inMus = phase is MusTurn || phase is DiscardTurn;
-  final punto = log.any(
-    (event) => event is LanceStarted && event.lance == Lance.punto,
-  );
+List<StepView> _steps(HandState hand, List<GameEvent> log) {
+  final closed = <Lance, LanceOutcome>{};
+  Lance? current;
+  for (final event in log) {
+    switch (event) {
+      case LanceStarted(:final lance) || Declared(:final lance):
+        current = lance;
+      case LanceClosed(:final outcome):
+        closed[outcome.lance] = outcome;
+        current = null;
+      default:
+        break;
+    }
+  }
+  final cut = log.any((event) => event is NoHayMusSaid);
+  final inMus = !cut && !log.any((event) => event is LanceStarted);
+  final punto = current == Lance.punto || closed.containsKey(Lance.punto);
+  final bet = _bet(log);
   StepView lance(TableStep step, Lance lance) {
-    final outcome = hand.outcomes.where((o) => o.lance == lance).firstOrNull;
+    final outcome = closed[lance];
     if (outcome != null) {
       return StepView(step, StepProgress.done, outcome: outcome);
     }
-    return switch (phase) {
-      LanceTurn(lance: final playing, :final envite) when playing == lance =>
-        StepView(step, StepProgress.current, envite: envite),
-      _ => StepView(step, StepProgress.pending),
-    };
+    return current == lance
+        ? StepView(step, StepProgress.current, envite: bet)
+        : StepView(step, StepProgress.pending);
   }
 
   return [
     StepView(
       TableStep.mus,
       inMus ? StepProgress.current : StepProgress.done,
-      cut: log.any((event) => event is NoHayMusSaid),
+      cut: cut,
       corrido: hand.musCorrido && inMus,
-      discarding: phase is DiscardTurn,
+      discarding: _discarding(log),
     ),
     lance(TableStep.grande, Lance.grande),
     lance(TableStep.chica, Lance.chica),
@@ -157,6 +187,56 @@ List<StepView> _steps(HandState hand) {
         ? lance(TableStep.punto, Lance.punto)
         : lance(TableStep.juego, Lance.juego),
   ];
+}
+
+/// What is bet in the lance open at the end of [log].
+Bet? _bet(List<GameEvent> log) {
+  Bet? bet;
+  for (final event in log) {
+    bet = switch (event) {
+      EnvidoSaid(:final stake) => (stake: stake, ordago: false),
+      OrdagoSaid() => (stake: bet?.stake ?? 0, ordago: true),
+      LanceStarted() || LanceClosed() => null,
+      _ => bet,
+    };
+  }
+  return bet;
+}
+
+/// Everyone asked for mus and not all of them have thrown their cards yet.
+bool _discarding(List<GameEvent> log) {
+  var mus = 0;
+  var discarded = 0;
+  for (final event in log) {
+    switch (event) {
+      case MusSaid():
+        if (discarded == 4) {
+          mus = 0;
+          discarded = 0;
+        }
+        mus++;
+      case Discarded():
+        discarded++;
+      default:
+        break;
+    }
+  }
+  return mus == 4 && discarded < 4;
+}
+
+/// Who is mano at the end of [log]. During mus corrido it moves, and the
+/// first to speak in the hand was the mano it was dealt with.
+int _manoAt(HandState hand, List<GameEvent> log) {
+  if (!hand.log.any((event) => event is ManoMoved)) {
+    return hand.mano;
+  }
+  if (log.whereType<ManoMoved>().lastOrNull case final moved?) {
+    return moved.seat;
+  }
+  return switch (hand.log.first) {
+    MusSaid(:final seat) || NoHayMusSaid(:final seat) => seat,
+    _ => hand.mano,
+  };
 }
 
 bool _spoken(GameEvent event) => switch (event) {
@@ -179,6 +259,7 @@ List<int> _stepStarts(List<GameEvent> log) => [
   for (var i = 1; i < log.length; i++)
     if (switch ((log[i - 1], log[i])) {
       (_, LanceStarted()) => true,
+      (LanceClosed(), Declared()) => true,
       (Discarded(), MusSaid() || NoHayMusSaid()) => true,
       (Reshuffled(), MusSaid() || NoHayMusSaid()) => true,
       (MusSaid(), Discarded()) => true,

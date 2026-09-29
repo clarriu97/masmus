@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/game/event.dart';
-import 'package:masmus/game/hand_state.dart';
 import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/outcome.dart';
 import 'package:masmus/l10n/app_localizations.dart';
@@ -55,13 +54,7 @@ void main() {
         const StepView(
           TableStep.chica,
           StepProgress.current,
-          envite: Envite(
-            bettor: 1,
-            stake: 7,
-            accepted: 2,
-            ordago: false,
-            responders: [0, 2],
-          ),
+          envite: (stake: 7, ordago: false),
         ),
       ),
       'envite 7',

@@ -10,20 +10,35 @@ import '../game/move.dart';
 import '../services/match_store.dart';
 import '../services/scheduler.dart';
 
-/// How long a bot takes to move, so each move can be read before the next.
+/// How long a bot takes to move, and how long the table holds what just
+/// happened, so each thing can be read before the next.
 enum Pace {
-  slow(Duration(milliseconds: 1800)),
-  normal(Duration(milliseconds: 1100)),
-  fast(Duration(milliseconds: 450));
+  slow(Duration(milliseconds: 3200), 1.4),
+  normal(Duration(milliseconds: 2200), 1),
+  fast(Duration(milliseconds: 1200), 0.6);
 
-  const Pace(this.thinking);
+  const Pace(this.thinking, this._holding);
 
   final Duration thinking;
+  final double _holding;
+
+  /// How long [event] stays alone on the table before the next one shows.
+  Duration hold(GameEvent event) => _normalHold(event) * _holding;
+
+  static Duration _normalHold(GameEvent event) => switch (event) {
+    LanceClosed() || HandEnded() => const Duration(milliseconds: 1800),
+    LanceStarted() => const Duration(milliseconds: 700),
+    _ => const Duration(milliseconds: 1000),
+  };
 }
 
 /// Runs a match against bots: takes the human's moves, makes the bots move
 /// one at a time after their thinking pause, and saves after every move.
-/// The one place where time passes in a match (AGENTS.md → Architecture).
+/// A move can bring many things at once (the last paso closes the chica,
+/// everyone declares pares…): the table is shown them one at a time
+/// ([shown]), each for as long as the [pace] holds it, and nobody moves
+/// until it has seen them all. The one place where time passes in a match
+/// (AGENTS.md → Architecture).
 final class MatchController extends ChangeNotifier {
   /// [bots] plays every seat but the human's; with a bot in every seat
   /// nobody is human.
@@ -36,6 +51,7 @@ final class MatchController extends ChangeNotifier {
     this.pace = Pace.normal,
   }) : assert(bots.length >= 3),
        _match = match,
+       _shown = match.hand.log.length,
        _scheduler = scheduler,
        _store = store {
     _scheduleBot();
@@ -48,23 +64,27 @@ final class MatchController extends ChangeNotifier {
   final Scheduler _scheduler;
   final MatchStore _store;
   MatchState _match;
-  List<GameEvent> _lastEvents = const [];
-  void Function()? _cancelBot;
+  int _shown;
+  void Function()? _cancel;
 
   MatchState get match => _match;
+
+  /// How many events of the hand's log the table shows by now.
+  int get shown => _shown;
+
+  /// The table is still being shown what the last move brought.
+  bool get catchingUp => _shown < _match.hand.log.length;
 
   /// The seat no bot plays, if any.
   int? get humanSeat =>
       [0, 1, 2, 3].where((seat) => !bots.containsKey(seat)).firstOrNull;
 
-  /// What the last move added to the table's log, to animate it.
-  List<GameEvent> get lastEvents => _lastEvents;
-
   /// Applies from the next bot move on.
   Pace pace;
 
-  Set<MoveKind> get humanMoves =>
-      humanSeat == null ? const {} : _match.legalMoves(humanSeat!);
+  Set<MoveKind> get humanMoves => humanSeat == null || catchingUp
+      ? const {}
+      : _match.legalMoves(humanSeat!);
 
   bool get isHumanTurn => humanMoves.isNotEmpty;
 
@@ -78,18 +98,18 @@ final class MatchController extends ChangeNotifier {
 
   /// Deals the next hand once the count has been seen. Ignored otherwise.
   void nextHand() {
-    if (!_match.isCounted) {
+    if (!_match.isCounted || catchingUp) {
       return;
     }
     _match = _match.nextHand();
-    _lastEvents = const [];
+    _shown = 0;
     _changed();
   }
 
+  /// The move is shown at once; what it brought, one thing at a time.
   void _apply(int seat, Move move) {
-    final before = _match.hand.log.length;
+    _shown = _match.hand.log.length + 1;
     _match = _match.play(seat, move);
-    _lastEvents = _match.hand.log.sublist(before);
     _changed();
   }
 
@@ -101,25 +121,38 @@ final class MatchController extends ChangeNotifier {
           : _store.save(SavedMatch(match: _match, bots: seats)),
     );
     notifyListeners();
-    _scheduleBot();
+    _next();
+  }
+
+  void _next() {
+    if (catchingUp) {
+      _cancel = _scheduler.after(pace.hold(_match.hand.log[_shown - 1]), () {
+        _cancel = null;
+        _shown++;
+        notifyListeners();
+        _next();
+      });
+    } else {
+      _scheduleBot();
+    }
   }
 
   void _scheduleBot() {
     final seat = _match.hand.turn;
     final bot = bots[seat];
-    if (_cancelBot != null || _match.isOver || seat == null || bot == null) {
+    if (_cancel != null || _match.isOver || seat == null || bot == null) {
       return;
     }
-    _cancelBot = _scheduler.after(pace.thinking, () {
-      _cancelBot = null;
+    _cancel = _scheduler.after(pace.thinking, () {
+      _cancel = null;
       _apply(seat, bot.choose(SeatView.of(_match, seat)));
     });
   }
 
   @override
   void dispose() {
-    _cancelBot?.call();
-    _cancelBot = null;
+    _cancel?.call();
+    _cancel = null;
     super.dispose();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
+import 'package:masmus/ui/table/count_view.dart';
 import 'package:masmus/ui/table/seat.dart';
 import 'package:masmus/ui/widgets/lance_chip.dart';
 
@@ -72,9 +73,33 @@ void main() {
     final controller = tableMoments['mus']!();
     await tester.pumpWidget(buildTestApp(tableScreen(controller)));
     controller.play(const NoHayMus());
+    catchUp(controller);
     await tester.pump();
     expect(find.text('cortado'), findsOneWidget);
     expect(find.text('te toca'), findsOneWidget);
+  });
+
+  testWidgets('the count waits until the table has shown how the hand '
+      'ended', (tester) async {
+    final controller = tableController(
+      hands: const {0: 'R 6 5 4', 1: 'S 7 6 1', 2: '4 5 6 7', 3: '4 5 1 7'},
+      mano: 1,
+      moves: [
+        (1, const NoHayMus()),
+        ...passes(1),
+        ...passes(1),
+        ...passes(1).take(3),
+      ],
+    );
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    controller.play(const Paso());
+    await tester.pump();
+    expect(find.byType(CountView), findsNothing);
+    expect(find.text('Paso'), findsWidgets);
+
+    catchUp(controller);
+    await tester.pump();
+    expect(find.byType(CountView), findsOneWidget);
   });
 
   testWidgets('Salir leaves the table', (tester) async {

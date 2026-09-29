@@ -82,7 +82,8 @@ class _TableScreenState extends State<TableScreen> {
       final bots = widget.bots;
       final you = controller.humanSeat!;
       final match = controller.match;
-      if (match.isOver && (_counted || match.count == null)) {
+      final caughtUp = !controller.catchingUp;
+      if (caughtUp && match.isOver && (_counted || match.count == null)) {
         return EndView(
           match: match,
           you: you,
@@ -90,7 +91,7 @@ class _TableScreenState extends State<TableScreen> {
           onHome: widget.onExit,
         );
       }
-      if (match.hand.phase is HandOver) {
+      if (caughtUp && match.hand.phase is HandOver) {
         return CountView(
           match: match,
           you: you,
@@ -104,7 +105,7 @@ class _TableScreenState extends State<TableScreen> {
               : controller.nextHand,
         );
       }
-      final view = TableView.of(controller.match, you: you);
+      final view = TableView.of(match, you: you, shown: controller.shown);
       if (!view.youDiscard) {
         _marked.clear();
       }
@@ -318,7 +319,7 @@ class _Stake extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final stake = view.stake;
+    final stake = view.bet;
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.line, width: 1.5),
@@ -463,7 +464,7 @@ class _Status extends StatelessWidget {
       (step) => step.state == StepProgress.current,
       orElse: () => view.steps.last,
     );
-    final stake = view.stake;
+    final stake = view.bet;
     return Semantics(
       liveRegion: true,
       label: [

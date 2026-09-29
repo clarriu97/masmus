@@ -27,11 +27,12 @@ MatchState _match(
   Map<int, String> hands, {
   int mano = 0,
   List<int> score = const [0, 0],
+  Rules rules = const Rules(),
 }) => MatchState(
-  rules: const Rules(),
+  rules: rules,
   score: score,
   handNumber: 1,
-  hand: dealt(hands, mano: mano),
+  hand: dealt(hands, mano: mano, rules: rules),
 );
 
 MatchState _playAll(MatchState match, List<(int, Move)> moves) {
@@ -149,7 +150,8 @@ void main() {
       expect(_choices(ordago(const [35, 5]), 0), everyElement(isA<NoQuiero>()));
     });
 
-    test('lets the partner decide when its own hand is not good', () {
+    test('without señas, lets the partner decide when its own hand is not '
+        'good', () {
       final match = _playAll(
         _match({
           0: '4 5 6 7',
@@ -162,6 +164,20 @@ void main() {
       expect(match.hand.turn, 2);
       expect(_choices(match, 2), everyElement(isNot(isA<NoQuiero>())));
       final weak = _playAll(
+        _match(
+          {0: 'R R R 7', 1: '6 5 4 1', 2: '4 5 6 7', 3: 'C C 6 5'},
+          mano: 1,
+          rules: const Rules(senas: false),
+        ),
+        [(1, const NoHayMus()), (1, const Envido(2))],
+      );
+      expect(weak.hand.turn, 2);
+      expect(_choices(weak, 2), everyElement(isA<NoQuiero>()));
+    });
+
+    test('with señas, a weak hand whose partner told medias de reyes plays '
+        'the grande for the pair', () {
+      final match = _playAll(
         _match({
           0: 'R R R 7',
           1: '6 5 4 1',
@@ -170,8 +186,8 @@ void main() {
         }, mano: 1),
         [(1, const NoHayMus()), (1, const Envido(2))],
       );
-      expect(weak.hand.turn, 2);
-      expect(_choices(weak, 2), everyElement(isA<NoQuiero>()));
+      expect(match.hand.turn, 2);
+      expect(_choices(match, 2), everyElement(isNot(isA<NoQuiero>())));
     });
   });
 
@@ -244,12 +260,11 @@ void main() {
       'bluffers about the same', () {
     int bluffs(Personality personality, {required bool rivalCut}) {
       final match = _playAll(
-        _match({
-          0: '4 5 6 7',
-          1: 'S C 6 5',
-          2: '4 5 6 1',
-          3: 'R R C 1',
-        }, mano: 3),
+        _match(
+          {0: '4 5 6 7', 1: 'S C 6 5', 2: '4 5 6 1', 3: 'R R C 1'},
+          mano: 3,
+          rules: const Rules(senas: false),
+        ),
         [
           if (rivalCut)
             (3, const NoHayMus())

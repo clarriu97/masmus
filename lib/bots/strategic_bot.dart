@@ -14,7 +14,11 @@ import 'heuristic_bot.dart';
 /// can't see at random, agreeing with what the table has said, and plays
 /// what does best on average.
 final class StrategicBot implements Bot {
-  StrategicBot(this.personality, this._random);
+  StrategicBot(this.personality, this._random, {this.readsSenas = true});
+
+  /// Reads what its partner tells with its señas. Off only to measure what
+  /// they are worth.
+  final bool readsSenas;
 
   /// The advantage, in points en paso, that makes a hand worth playing as it
   /// is. The mano, who wins ties, needs a little less.
@@ -50,7 +54,7 @@ final class StrategicBot implements Bot {
 
   @override
   Move choose(SeatView view) {
-    final knowledge = Knowledge.of(view);
+    final knowledge = Knowledge.of(view, senas: readsSenas);
     if (view.legal.contains(MoveKind.mus)) {
       final bonus = view.mano == view.seat ? manoBonus : 0;
       return knowledge.advantage(_random) + bonus >= cutAt

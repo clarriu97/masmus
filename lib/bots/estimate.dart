@@ -4,6 +4,7 @@ import '../game/cards.dart';
 import '../game/event.dart';
 import '../game/hand_value.dart';
 import '../game/rules.dart';
+import '../game/senas.dart';
 import '../game/table.dart';
 import 'bot.dart';
 
@@ -18,7 +19,8 @@ final class Knowledge {
   static const cutBluff = 0.25;
   static const manoCutBluff = 0.5;
 
-  Knowledge.of(SeatView view)
+  /// [senas]: whether it reads what the partner told with its señas.
+  Knowledge.of(SeatView view, {bool senas = true})
     : seat = view.seat,
       mano = view.mano,
       rules = view.rules,
@@ -31,7 +33,9 @@ final class Knowledge {
         for (final event in view.log.whereType<Declared>())
           (event.seat, event.lance): event.has,
       },
-      cutter = view.log.whereType<NoHayMusSaid>().firstOrNull?.seat;
+      cutter = view.log.whereType<NoHayMusSaid>().firstOrNull?.seat,
+      partnerSenas = senas ? view.partnerSenas : null,
+      senaMoment = view.senaMoment;
 
   final int seat;
   final int mano;
@@ -43,20 +47,32 @@ final class Knowledge {
   /// Who said «no hay mus» this hand, if anyone has.
   final int? cutter;
 
+  /// What the partner told with its señas, if it has made them: its hand is
+  /// dealt only among those that make the same ones.
+  final List<Sena>? partnerSenas;
+  final SenaMoment senaMoment;
+
+  int get partner => (seat + 2) % 4;
+
   int get team => teamOf(seat);
 
   /// A rival cut the mus: they are pleased with their cards.
   bool get rivalCut => cutter != null && teamOf(cutter!) != team;
 
   /// Hands for the three other seats from the unseen cards, each dealt again
-  /// until it agrees with that seat's declarations (after [tries] deals it is
-  /// kept anyway).
+  /// until it agrees with what the table knows of it (after [tries] deals it
+  /// is kept anyway). The partner goes first when its señas say what it
+  /// holds, so the others can't take those cards.
   Map<int, List<PlayingCard>> sampleOthers(Random random, {int tries = 100}) {
     final left = [...unseen];
-    return {
-      for (final other in seats)
-        if (other != seat) other: _deal(other, left, random, tries),
-    };
+    final known = partnerSenas != null;
+    final hands = {if (known) partner: _deal(partner, left, random, tries * 4)};
+    for (final other in seats) {
+      if (other != seat && !hands.containsKey(other)) {
+        hands[other] = _deal(other, left, random, tries);
+      }
+    }
+    return hands;
   }
 
   List<PlayingCard> _deal(
@@ -69,6 +85,7 @@ final class Knowledge {
       left.shuffle(random);
       final value = HandValue(left.sublist(0, 4), rules);
       if (_agrees(other, value) &&
+          (other != partner || _matchesSenas(value)) &&
           (other != cutter ||
               worthCutting(value) ||
               random.nextDouble() <
@@ -88,6 +105,18 @@ final class Knowledge {
       other: HandValue(hand, rules),
     seat: mine,
   };
+
+  bool _matchesSenas(HandValue value) {
+    final senas = partnerSenas;
+    if (senas == null) {
+      return true;
+    }
+    final would = senasFor(value, senaMoment);
+    return would.length == senas.length &&
+        [
+          for (var i = 0; i < would.length; i++) would[i] == senas[i],
+        ].every((same) => same);
+  }
 
   bool _agrees(int other, HandValue value) =>
       (declared[(other, Lance.pares)] ?? value.hasPares) == value.hasPares &&
@@ -117,7 +146,8 @@ final class Knowledge {
     return wins / samples;
   }
 
-  /// [advantage] after throwing away all but [keep] and drawing. Each of
+  /// [advantage] after throwing away all but [keep] and drawing. The señas
+  /// are not read here: the partner is about to change its cards too. Each of
   /// [deals] is an order of the unseen cards: the other hands first, then
   /// the draw, so that every discard is judged on the same deals.
   double advantageAfterDrawing(

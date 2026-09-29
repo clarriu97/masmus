@@ -5,6 +5,7 @@ import '../game/hand_value.dart';
 import '../game/match.dart';
 import '../game/move.dart';
 import '../game/rules.dart';
+import '../game/senas.dart';
 
 /// What one seat can see of the match: its own cards and what is public.
 /// Bots decide from this alone; they never get the other hands or the deck.
@@ -23,7 +24,11 @@ final class SeatView {
       envite = switch (match.hand.phase) {
         LanceTurn(:final envite) => envite,
         _ => null,
-      };
+      },
+      partnerSenas = senasMade(match.hand)
+          ? senasOf(match.hand, (seat + 2) % 4)
+          : null,
+      senaMoment = moment(match.hand);
 
   final int seat;
   final Rules rules;
@@ -38,6 +43,12 @@ final class SeatView {
 
   /// The bet waiting for an answer in it, if any.
   final Envite? envite;
+
+  /// The señas the partner has made, once señas are made this hand.
+  final List<Sena>? partnerSenas;
+
+  /// How far the hand is, for the señas that wait.
+  final SenaMoment senaMoment;
 }
 
 /// A player the app controls.

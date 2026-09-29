@@ -18,6 +18,7 @@ import '../help/how_to_play_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 import '../widgets/lance_chip.dart';
+import '../widgets/mano_token.dart';
 import '../widgets/score_board.dart';
 import '../widgets/speech_bubble.dart';
 import '../widgets/table_chip.dart';
@@ -75,12 +76,34 @@ class _TableScreenState extends State<TableScreen>
   late final _dealt = AnimationController(vsync: this);
 
   final _layer = GlobalKey();
-  final _deck = GlobalKey();
   final _cards = [for (var seat = 0; seat < 4; seat++) GlobalKey()];
 
-  /// Where the deck and each seat's cards were at the last frame.
-  Rect? _deckRect;
+  /// Where each seat's cards were at the last frame.
   final _rows = <int, Rect>{};
+
+  /// Where the seats sit, around the middle of the table.
+  final _table = GlobalKey();
+  Rect? _tableRect;
+
+  /// Where the deck sits: on the table, in the corner between the postre,
+  /// who deals, and the mano. [you] sit at the bottom.
+  Offset? _deckAt(int mano, int you) {
+    final table = _tableRect;
+    if (table == null) {
+      return null;
+    }
+    const inset = DeckView.cardWidth;
+    final left = table.left + inset;
+    final right = table.right - inset;
+    final top = table.top + inset * 1.5;
+    final bottom = table.bottom - inset * 1.5;
+    return switch ((mano - you) % 4) {
+      0 => Offset(left, bottom),
+      1 => Offset(right, bottom),
+      2 => Offset(right, top),
+      _ => Offset(left, top),
+    };
+  }
 
   bool get _reducedMotion => MediaQuery.disableAnimationsOf(context);
 
@@ -162,11 +185,19 @@ class _TableScreenState extends State<TableScreen>
       );
     }
 
-    _deckRect = rectOf(_deck);
+    var moved = false;
+    if (rectOf(_table) case final rect? when rect != _tableRect) {
+      _tableRect = rect;
+      moved = true;
+    }
     for (final (seat, key) in _cards.indexed) {
-      if (rectOf(key) case final rect?) {
+      if (rectOf(key) case final rect? when rect != _rows[seat]) {
         _rows[seat] = rect;
+        moved = true;
       }
+    }
+    if (moved && mounted) {
+      setState(() {});
     }
   }
 
@@ -223,9 +254,7 @@ class _TableScreenState extends State<TableScreen>
       if (!view.youDiscard) {
         _marked.clear();
       }
-      if (_deal != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
       final onTable = {
         for (final seat in [0, 1, 2, 3])
           seat: _landed(
@@ -262,13 +291,18 @@ class _TableScreenState extends State<TableScreen>
                         ),
                       ),
                       _Steps(view: view),
+                      if (view.steps.first.corrido)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.sm),
+                          child: TableChip(l10n.tableCorrido),
+                        ),
                       Expanded(
+                        key: _table,
                         child: _Seats(
                           view: view,
                           bots: bots,
                           onTable: onTable,
                           cardsKeys: _cards,
-                          deckKey: _deck,
                         ),
                       ),
                       _YourHand(
@@ -278,7 +312,6 @@ class _TableScreenState extends State<TableScreen>
                         onTap: view.youDiscard ? _toggle : null,
                         onTable: onTable[you]!,
                         cardsKey: _cards[you],
-                        deckKey: _deck,
                       ),
                       _Status(view: view, bots: bots),
                       Padding(
@@ -305,7 +338,17 @@ class _TableScreenState extends State<TableScreen>
                       ),
                     ],
                   ),
-                  ..._flying(you),
+                  if (_deckAt(view.mano, you) case final deck?)
+                    AnimatedPositioned(
+                      duration: _reducedMotion ? Duration.zero : AppMotion.long,
+                      curve: AppMotion.curve,
+                      left: deck.dx - DeckView.cardWidth / 2,
+                      top:
+                          deck.dy -
+                          DeckView.cardWidth / PlayingCardView.aspectRatio / 2,
+                      child: const IgnorePointer(child: DeckView()),
+                    ),
+                  ..._flying(you, _deckAt(view.mano, you)),
                 ],
               ),
             ),
@@ -316,9 +359,8 @@ class _TableScreenState extends State<TableScreen>
   );
 
   /// The cards in the air, from the deck to whoever gets each.
-  List<Widget> _flying(int you) {
+  List<Widget> _flying(int you, Offset? deck) {
     final deal = _deal;
-    final deck = _deckRect;
     if (deal == null || deck == null || _reducedMotion) {
       return const [];
     }
@@ -331,7 +373,7 @@ class _TableScreenState extends State<TableScreen>
       if (t > 0 && t < 1 && row != null) {
         flying.add(
           _flyingCard(
-            from: deck.center,
+            from: deck,
             to: seat == you ? _slotCenter(row, slot) : row.center,
             t: t,
             width: seat == you
@@ -474,7 +516,6 @@ class _Seats extends StatelessWidget {
     required this.bots,
     required this.onTable,
     required this.cardsKeys,
-    required this.deckKey,
   });
 
   static const compactBelow = 260.0;
@@ -486,7 +527,6 @@ class _Seats extends StatelessWidget {
   final Map<int, int> onTable;
 
   final List<Key> cardsKeys;
-  final Key deckKey;
 
   @override
   Widget build(BuildContext context) {
@@ -507,12 +547,7 @@ class _Seats extends StatelessWidget {
       cards: onTable[seat]!,
       dimmed: view.speaker != null && view.speaker != seat,
       cardsKey: cardsKeys[seat],
-      deckKey: deckKey,
-      deck: seat != view.mano
-          ? null
-          : (seat - view.you) % 4 == 1
-          ? AxisDirection.left
-          : AxisDirection.right,
+      mano: seat == view.mano,
     );
     final you = view.you;
     return LayoutBuilder(
@@ -541,7 +576,7 @@ class _Seats extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(child: seatOf((you + 3) % 4)),
-                          _Center(view: view),
+                          _Center(view: view, bots: bots),
                           Expanded(child: seatOf((you + 1) % 4)),
                         ],
                       ),
@@ -557,17 +592,22 @@ class _Seats extends StatelessWidget {
 /// In the middle of the table: the step being played and what is bet in
 /// it, or how the lance that just closed went, while the table holds it.
 class _Center extends StatelessWidget {
-  const _Center({required this.view});
+  const _Center({required this.view, required this.bots});
 
   static const _width = 104.0;
 
   final TableView view;
+  final Map<int, Personality> bots;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
-    final value = l10n.centerValue(view);
+    final value = l10n.centerValue(
+      view,
+      (seat) =>
+          seat == view.you ? l10n.countYou : l10n.personalityName(bots[seat]!),
+    );
     final number = int.tryParse(value) != null;
     return ExcludeSemantics(
       child: Container(
@@ -578,7 +618,10 @@ class _Center extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           border: Border.all(
-            color: view.latest is LanceClosed || view.latest is NoHayMusSaid
+            color:
+                view.latest is LanceClosed ||
+                    view.latest is NoHayMusSaid ||
+                    view.latest is ManoMoved
                 ? AppColors.turn
                 : AppColors.line,
             width: 1.5,
@@ -651,7 +694,6 @@ class _YourHand extends StatelessWidget {
     required this.onTap,
     required this.onTable,
     required this.cardsKey,
-    required this.deckKey,
   });
 
   final TableView view;
@@ -663,7 +705,6 @@ class _YourHand extends StatelessWidget {
   final int onTable;
 
   final Key cardsKey;
-  final Key deckKey;
 
   @override
   Widget build(BuildContext context) {
@@ -694,7 +735,7 @@ class _YourHand extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: AppSpacing.sm,
               children: [
-                if (view.mano == view.you) DeckView(key: deckKey),
+                if (view.mano == view.you) const ManoToken(),
                 Flexible(child: Text(l10n.discardHint, style: text.bodySmall)),
               ],
             )
@@ -711,7 +752,8 @@ class _YourHand extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     spacing: AppSpacing.sm,
                     children: [
-                      if (view.mano == view.you) DeckView(key: deckKey),
+                      if (view.mano == view.you)
+                        const PopIn(child: ManoToken()),
                       if (view.yourTurn)
                         PopIn(
                           child: TableChip(
@@ -724,7 +766,6 @@ class _YourHand extends StatelessWidget {
                           key: ValueKey(view.saidAt[view.you]),
                           child: SpeechBubble(l10n.said(said, view)),
                         ),
-                      if (view.mano == view.you) TableChip(l10n.tableMano),
                     ],
                   ),
                 ),

@@ -101,6 +101,15 @@ void main() {
     );
     final table = tester.widget<TableScreen>(find.byType(TableScreen));
     expect(table.controller.pace, Pace.slow);
-    expect(find.byType(TableChip), findsNothing);
+    expect(
+      tester
+          .widgetList<TableChip>(find.byType(TableChip))
+          .map((chip) => chip.label)
+          .where(
+            (label) =>
+                RegExp('^(Punto|Juego|Par|Medias|Duples)').hasMatch(label),
+          ),
+      isEmpty,
+    );
   });
 }

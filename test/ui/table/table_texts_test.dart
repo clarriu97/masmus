@@ -110,7 +110,11 @@ void main() {
     expect(l10n.seatRole(view, 2), 'compañero');
     expect(l10n.seatRole(view, 1), 'rival');
     expect(l10n.seatRole(view, 3), 'rival · postre');
-    expect(l10n.seatRole(_view(mano: 1), 1), 'rival · mano');
+    expect(
+      l10n.seatRole(_view(mano: 1), 1),
+      'rival',
+      reason: 'the mano carries its token instead',
+    );
   });
 
   test('what your hand is worth', () {

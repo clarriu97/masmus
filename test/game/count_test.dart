@@ -223,8 +223,8 @@ void main() {
     expect(to30.winner, 0);
   });
 
-  test('R-FIN-3 · an accepted órdago decides on its own; the other lances '
-      'are not counted', () {
+  test('R-FIN-3 · an accepted órdago decides on its own and scores the whole '
+      'game; the other lances are not counted', () {
     final hand = _hand(_juegos, [
       (0, envido(2)),
       (1, quiero),
@@ -236,7 +236,9 @@ void main() {
     expect(grande.counted, isFalse);
     expect(chica.outcome, const OrdagoQuerido(Lance.chica));
     expect((chica.team, chica.seat, chica.counted), (1, 3, true));
+    expect(chica.points, 30, reason: 'what takes them to the target');
     expect(count.winner, 1);
-    expect(count.after, [10, 10]);
+    expect(count.after, [10, 40]);
+    expect(countHand(hand, const [10, 38], 30).after, [10, 38]);
   });
 }

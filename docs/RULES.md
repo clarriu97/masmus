@@ -154,7 +154,9 @@ caballo, `R` rey; el palo solo se escribe cuando importa (`Ro` rey de oros,
 - **R-FIN-2.** Los tantos de un "no quiero" se apuntan en el acto: si con ellos
   una pareja llega al objetivo, la partida acaba en ese momento.
 - **R-FIN-3.** En un órdago querido se enseñan las cartas en el acto y la
-  pareja que gana ese lance (con R-LAN-7) gana la partida.
+  pareja que gana ese lance (con R-LAN-7) gana la partida: se apunta el
+  juego entero, así que su marcador pasa al objetivo. Los demás lances no
+  se cuentan.
 - **R-FIN-4.** Si nadie ha ganado, se reparte otra mano con la mano siguiente
   (R-ORD-3).
 

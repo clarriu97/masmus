@@ -56,6 +56,11 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · An accepted órdago scores the whole game (#84).** The
+  owner lost a match to an órdago and the end said «Nosotros 0 · Ellos 0»:
+  the órdago decided the match without scoring anything. Now its lance
+  carries the tantos that take the winner to the target (R-FIN-3), so the
+  count adds up and the end reads, say, «21 · 40».
 - **2026-09-29 · The deck by the mano, and the deal (#79).** As at a real
   table, the deck sits by the mano, on the side of the postre who deals:
   left of your cards when you are mano, and beside the cards of a bot

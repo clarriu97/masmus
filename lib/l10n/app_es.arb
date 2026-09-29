@@ -961,5 +961,63 @@
   "glossaryMeaning12": "Las piedras con las que se llevan los tantos: cada amarraco son cinco.",
   "@glossaryMeaning12": {
     "description": "What «Amarracos» means."
+  },
+  "seatThinking": "pensando",
+  "@seatThinking": {
+    "description": "A bot deciding what to say, for screen readers."
+  },
+  "centerMus": "¿Mus?",
+  "@centerMus": {
+    "description": "In the middle of the table while the mus goes round."
+  },
+  "centerDeclaring": "{lance, select, pares{¿Pares?} other{¿Juego?}}",
+  "@centerDeclaring": {
+    "description": "In the middle of the table while the players say whether they have pares or juego.",
+    "placeholders": {
+      "lance": {
+        "type": "String"
+      }
+    }
+  },
+  "centerHandOver": "Fin de la mano",
+  "@centerHandOver": {
+    "description": "In the middle of the table once the last lance closes."
+  },
+  "centerToCount": "a contar",
+  "@centerToCount": {
+    "description": "Under «Fin de la mano»: the count comes next."
+  },
+  "historyTitle": "Lo que va de mano",
+  "@historyTitle": {
+    "description": "Everything said in the hand so far, as a conversation; also the tooltip of the button that opens it."
+  },
+  "historyEmpty": "Todavía no ha hablado nadie.",
+  "@historyEmpty": {
+    "description": "The hand's conversation before anyone speaks."
+  },
+  "historyLine": "{name}: {said}",
+  "@historyLine": {
+    "description": "A line of the hand's conversation: who said what.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "said": {
+        "type": "String"
+      }
+    }
+  },
+  "historyManoMoved": "{name} pasa a ser mano",
+  "@historyManoMoved": {
+    "description": "During mus corrido, the mano moves.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "historyReshuffled": "Se acaba el mazo: se barajan los descartes",
+  "@historyReshuffled": {
+    "description": "The stock ran out during the discards and the thrown cards are shuffled."
   }
 }

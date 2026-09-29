@@ -25,6 +25,7 @@ final class StepView {
     this.cut = false,
     this.corrido = false,
     this.discarding = false,
+    this.declaring = false,
   });
 
   final TableStep step;
@@ -43,6 +44,9 @@ final class StepView {
   final bool corrido;
 
   final bool discarding;
+
+  /// The players are saying whether they have pares or juego.
+  final bool declaring;
 }
 
 /// What the table shows of a match from [you]r seat, worked out from the
@@ -76,11 +80,16 @@ final class TableView {
       mano: _manoAt(hand, log),
       turn: live ? hand.turn : null,
       steps: _steps(hand, log),
-      said: _said(log),
+      said: {
+        for (final MapEntry(:key, :value) in _said(log).entries)
+          key: log[value],
+      },
+      saidAt: _said(log),
       asked: {
         for (final event in log.whereType<Discarded>()) event.seat: event.count,
       },
       bet: _bet(log),
+      latest: live ? null : log.lastOrNull,
       stake: switch (hand.phase) {
         LanceTurn(:final envite?) when live => envite,
         _ => null,
@@ -99,8 +108,10 @@ final class TableView {
     required this.turn,
     required this.steps,
     required this.said,
+    required this.saidAt,
     required this.asked,
     required this.bet,
+    required this.latest,
     required this.stake,
     required this.cards,
     required this.value,
@@ -124,6 +135,12 @@ final class TableView {
   /// just over while nobody has spoken in the new one.
   final Map<int, GameEvent> said;
 
+  /// Where in the log each of [said] was said: a new word, a new place.
+  final Map<int, int> saidAt;
+
+  /// While the table catches up, what it is showing now.
+  final GameEvent? latest;
+
   /// How many cards each seat asked for in the last discards of the hand.
   final Map<int, int> asked;
 
@@ -141,13 +158,19 @@ final class TableView {
 
   bool get _discarding => steps.first.discarding;
 
+  /// The step being played, if any.
+  StepView? get current =>
+      steps.where((step) => step.state == StepProgress.current).firstOrNull;
+
   bool partnerOf(int seat) => teamOf(seat) == teamOf(you) && seat != you;
 }
 
 List<StepView> _steps(HandState hand, List<GameEvent> log) {
   final closed = <Lance, LanceOutcome>{};
   Lance? current;
+  var declaring = false;
   for (final event in log) {
+    declaring = event is Declared;
     switch (event) {
       case LanceStarted(:final lance) || Declared(:final lance):
         current = lance;
@@ -168,7 +191,12 @@ List<StepView> _steps(HandState hand, List<GameEvent> log) {
       return StepView(step, StepProgress.done, outcome: outcome);
     }
     return current == lance
-        ? StepView(step, StepProgress.current, envite: bet)
+        ? StepView(
+            step,
+            StepProgress.current,
+            envite: bet,
+            declaring: declaring,
+          )
         : StepView(step, StepProgress.pending);
   }
 
@@ -268,13 +296,15 @@ List<int> _stepStarts(List<GameEvent> log) => [
       i,
 ];
 
-Map<int, GameEvent> _said(List<GameEvent> log) {
+/// Where in [log] each seat last spoke in the step being played, or in
+/// the one just over while nobody has spoken in the new one.
+Map<int, int> _said(List<GameEvent> log) {
   final starts = _stepStarts(log);
   for (var s = starts.length - 1; s >= 0; s--) {
     final end = s + 1 < starts.length ? starts[s + 1] : log.length;
-    final said = <int, GameEvent>{
-      for (final event in log.sublist(starts[s], end))
-        if (_spoken(event)) _seatOf(event): event,
+    final said = <int, int>{
+      for (var i = starts[s]; i < end; i++)
+        if (_spoken(log[i])) _seatOf(log[i]): i,
     };
     if (said.isNotEmpty) {
       return said;

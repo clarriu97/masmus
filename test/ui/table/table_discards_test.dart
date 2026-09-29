@@ -103,8 +103,11 @@ void main() {
 
   testWidgets('the new card comes in with a short fade', (tester) async {
     await discardAll(tester, ManualScheduler());
-    final newCard = find.byWidgetPredicate(
-      (widget) => widget is Opacity && widget.opacity < 1,
+    final newCard = find.ancestor(
+      of: find.byType(PlayingCardView),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Opacity && widget.opacity < 1,
+      ),
     );
     expect(newCard, findsOneWidget);
     await tester.pumpAndSettle();
@@ -121,6 +124,7 @@ void main() {
         (widget) => widget is Opacity && widget.opacity < 1,
       ),
       findsNothing,
+      reason: 'nor a word said, nor the dots of a bot thinking',
     );
   });
 }

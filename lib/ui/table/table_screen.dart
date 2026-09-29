@@ -567,7 +567,9 @@ class _Center extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           border: Border.all(
-            color: view.latest is LanceClosed ? AppColors.turn : AppColors.line,
+            color: view.latest is LanceClosed || view.latest is NoHayMusSaid
+                ? AppColors.turn
+                : AppColors.line,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(AppRadii.md),
@@ -770,7 +772,8 @@ String? _turnText(
   final turn => l10n.tableTurnOf(l10n.personalityName(bots[turn]!)),
 };
 
-/// Whose turn it is, while it isn't yours.
+/// Whose turn it is, while it isn't yours; nothing while the table shows
+/// what just happened.
 class _TurnBar extends StatelessWidget {
   const _TurnBar({required this.view, required this.bots});
 
@@ -778,19 +781,21 @@ class _TurnBar extends StatelessWidget {
   final Map<int, Personality> bots;
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-    child: Container(
-      constraints: const BoxConstraints(minHeight: kActionHeight),
-      alignment: Alignment.center,
-      decoration: const ShapeDecoration(
-        shape: StadiumBorder(
-          side: BorderSide(color: AppColors.line, width: 1.5),
-        ),
+  Widget build(BuildContext context) {
+    final turn = _turnText(AppLocalizations.of(context), view, bots);
+    return ExcludeSemantics(
+      child: Container(
+        constraints: const BoxConstraints(minHeight: kActionHeight),
+        alignment: Alignment.center,
+        decoration: turn == null
+            ? null
+            : const ShapeDecoration(
+                shape: StadiumBorder(
+                  side: BorderSide(color: AppColors.line, width: 1.5),
+                ),
+              ),
+        child: Text(turn ?? '', style: Theme.of(context).textTheme.titleMedium),
       ),
-      child: Text(
-        _turnText(AppLocalizations.of(context), view, bots) ?? '',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-    ),
-  );
+    );
+  }
 }

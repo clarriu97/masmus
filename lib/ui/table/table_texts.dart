@@ -37,6 +37,7 @@ extension TableTexts on AppLocalizations {
   /// In the middle of the table: the step being played, or the lance that
   /// just closed while the table holds it.
   String center(TableView view) => switch (view.latest) {
+    NoHayMusSaid() => stepName('mus'),
     LanceClosed(:final outcome) => stepName(outcome.lance.name),
     HandEnded() => centerHandOver,
     _ => switch (view.current) {
@@ -49,6 +50,7 @@ extension TableTexts on AppLocalizations {
   String centerValue(TableView view) {
     final current = view.current;
     return switch (view.latest) {
+      NoHayMusSaid() => stepCut,
       LanceClosed(:final outcome) =>
         stepStatus(
               StepView(

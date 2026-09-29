@@ -262,4 +262,23 @@ void main() {
     expect(_seat(tester, 'El Prudente').deck, AxisDirection.left);
     expect(_seat(tester, 'El Calculador').deck, isNull);
   });
+
+  testWidgets('who cut the mus says so, and the middle of the table says it '
+      'is cut, longer than a word', (tester) async {
+    testDevices[2].apply(tester);
+    final controller = tableMoments['mus']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    controller.play(const NoHayMus());
+    await tester.pump();
+    expect(find.widgetWithText(SpeechBubble, 'No hay mus'), findsOneWidget);
+    expect(find.text('MUS'), findsOneWidget);
+    expect(find.text('cortado'), findsWidgets);
+    expect(
+      Pace.normal.hold(const NoHayMusSaid(0)),
+      Pace.normal.hold(const HandEnded()),
+    );
+    catchUp(controller);
+    await tester.pump();
+    expect(find.text('GRANDE'), findsOneWidget);
+  });
 }

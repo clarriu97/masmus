@@ -38,7 +38,7 @@ void main() {
       handHelp: false,
     );
     expect(notified, 1);
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await controller.saved;
 
     final reopened = (await SettingsController.open(file())).settings;
     expect(reopened.rules.kings, Kings.four);

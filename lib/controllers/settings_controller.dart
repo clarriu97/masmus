@@ -78,7 +78,12 @@ final class SettingsController extends ChangeNotifier {
 
   set settings(Settings settings) {
     _settings = settings;
-    unawaited(_file.write(settings.toJson()));
+    unawaited(_saved = _file.write(settings.toJson()));
     notifyListeners();
   }
+
+  Future<void> _saved = Future.value();
+
+  /// Completes once the last change is written.
+  Future<void> get saved => _saved;
 }

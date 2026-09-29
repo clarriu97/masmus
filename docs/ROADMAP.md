@@ -56,6 +56,13 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Nobody pays to see (#93).** The owner saw El Farolero bet
+  at grande with nothing and then accept his raise. Answering, a bot now
+  discounts its read by 0.1 more when the rivals raised over its own
+  envite, and never accepts below a read of 0.3, or 0.4 after such a
+  raise, whatever the odds of the pot; below that it refuses or, a
+  bluffer, sometimes raises again. The arena holds: 65.2 % (60.9–69.2)
+  against `HeuristicBot`. The tests of #75, lost on the way, are back.
 - **2026-09-29 · A match of one juego, or the best of three or five
   (#88).** The owner asked for it after his second playtest; vacas left
   the list of things out of v1.

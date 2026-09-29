@@ -6,9 +6,13 @@ import 'package:masmus/bots/bot.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/bots/strategic_bot.dart';
 import 'package:masmus/game/cards.dart';
+import 'package:masmus/game/event.dart';
+import 'package:masmus/game/hand_state.dart';
+import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/match.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/game/rules.dart';
+import 'package:masmus/game/table.dart';
 
 import '../game/helpers.dart';
 import '../game/scenario.dart';
@@ -43,6 +47,23 @@ List<Move> _choices(MatchState match, int seat) => [
       Random(seed),
     ).choose(SeatView.of(match, seat)),
 ];
+
+bool _playing(MatchState match, Lance lance) => switch (match.hand.phase) {
+  LanceTurn(lance: final playing) => playing == lance,
+  _ => false,
+};
+
+int _mostEnvitesByATeam(List<GameEvent> log) {
+  final start = log.lastIndexWhere((event) => event is LanceStarted);
+  final seats = [
+    for (final event in log.skip(start + 1))
+      if (event case EnvidoSaid(:final seat)) seat,
+  ];
+  return [
+    for (final team in [0, 1])
+      seats.where((seat) => teamOf(seat) == team).length,
+  ].reduce(max);
+}
 
 void main() {
   group('mus', () {
@@ -152,6 +173,71 @@ void main() {
     });
   });
 
+  test('a pair that bet with nothing and was raised never pays to see: '
+      'it refuses, or a bluffer raises again (seen in a playtest)', () {
+    for (final personality in Personality.values) {
+      for (final seed in [..._seeds, 5, 6, 7, 8, 9]) {
+        var match = _playAll(
+          _match({
+            0: 'R R 7 7',
+            1: '4 5 6 7',
+            2: 'R R C 7',
+            3: '4 5 6 1',
+          }, mano: 1),
+          [(1, const NoHayMus()), (1, const Envido(2)), (2, const Envido(2))],
+        );
+        for (var answers = 0; answers < 2; answers++) {
+          final seat = match.hand.turn!;
+          if (!_playing(match, Lance.grande) || seat.isEven) {
+            break;
+          }
+          final move = StrategicBot(
+            personality,
+            Random(seed),
+          ).choose(SeatView.of(match, seat));
+          expect(
+            move,
+            isNot(isA<Quiero>()),
+            reason: '$personality, seed $seed, seat $seat',
+          );
+          if (move is! NoQuiero) {
+            break;
+          }
+          match = match.play(seat, move);
+        }
+      }
+    }
+  });
+
+  test('two strong hands at grande raise at most once each, not without end '
+      '(a playtest reached 40 in the first hand)', () {
+    for (final seed in _seeds) {
+      var match = _match({
+        0: 'R R 3 7',
+        1: '3 3 R 6',
+        2: 'R 3 C 7',
+        3: 'C C 6 5',
+      }, mano: 1);
+      final bots = [
+        for (final personality in Personality.values)
+          StrategicBot(personality, Random(seed)),
+      ];
+      match = match.play(1, const NoHayMus());
+      while (_playing(match, Lance.grande)) {
+        final seat = match.hand.turn!;
+        match = match.play(seat, bots[seat].choose(SeatView.of(match, seat)));
+      }
+      final envites = match.hand.log.whereType<EnvidoSaid>().toList();
+      for (final team in [0, 1]) {
+        expect(
+          envites.where((envite) => teamOf(envite.seat) == team).length,
+          lessThanOrEqualTo(StrategicBot.maxEnvites),
+          reason: 'seed $seed: $envites',
+        );
+      }
+    }
+  });
+
   test('plays whole matches with only legal moves', () {
     for (var seed = 0; seed < 12; seed++) {
       final bots = [
@@ -169,6 +255,11 @@ void main() {
         final move = bots[seat].choose(SeatView.of(match, seat));
         expect(match.isLegal(seat, move), isTrue, reason: 'seed $seed: $move');
         match = match.play(seat, move);
+        expect(
+          _mostEnvitesByATeam(match.hand.log),
+          lessThanOrEqualTo(StrategicBot.maxEnvites),
+          reason: 'seed $seed',
+        );
         expect(++moves, lessThan(5000), reason: 'seed $seed never ends');
       }
     }

@@ -10,6 +10,7 @@ import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/match.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/game/outcome.dart';
+import 'package:masmus/game/rules.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
 
@@ -300,6 +301,44 @@ void main() {
     scheduler.advance(const Duration(minutes: 1));
     expect(controller.catchingUp, isFalse);
     expect(scheduler.hasPending, isFalse);
+    expect(store.saved, isNull, reason: 'a match that is over is not resumed');
+  });
+
+  test('a match of three juegos between four bots: each juego starts from '
+      'zero with its deal, until a team wins two', () {
+    final scheduler = ManualScheduler();
+    final store = MatchStore.inMemory();
+    final controller = MatchController(
+      match: MatchState.start(seed: 5, rules: const Rules(games: 3)),
+      bots: {
+        for (final seat in [0, 1, 2, 3]) seat: RandomBot(Random(seat)),
+      },
+      seats: {..._seats, 0: Personality.farolero},
+      scheduler: scheduler,
+      store: store,
+      pace: Pace.fast,
+    );
+    addTearDown(controller.dispose);
+    var juegos = 1;
+    var steps = 0;
+    while (!controller.match.isMatchOver) {
+      final match = controller.match;
+      if (match.isCounted) {
+        controller.nextHand();
+      } else if (match.isOver && !controller.catchingUp) {
+        expect(store.saved, isNotNull, reason: 'the match goes on');
+        controller.nextGame();
+        juegos++;
+        expect(controller.match.score, [0, 0]);
+        expect(controller.match.hand.musCorrido, isTrue);
+        expect(controller.dealing, isNotNull);
+      }
+      scheduler.advance(Pace.fast.thinking);
+      expect(++steps, lessThan(60000));
+    }
+    expect(juegos, inInclusiveRange(2, 3));
+    expect(controller.match.gamesNow.reduce(max), 2);
+    scheduler.advance(const Duration(minutes: 1));
     expect(store.saved, isNull, reason: 'a match that is over is not resumed');
   });
 }

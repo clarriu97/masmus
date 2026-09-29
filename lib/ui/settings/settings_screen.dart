@@ -78,9 +78,8 @@ class SettingsScreen extends StatelessWidget {
                               selected: {rules.kings},
                               onSelectionChanged: (kings) => change(
                                 (now) => now.copyWith(
-                                  rules: Rules(
+                                  rules: now.rules.copyWith(
                                     kings: kings.single,
-                                    target: now.rules.target,
                                   ),
                                 ),
                               ),
@@ -100,9 +99,29 @@ class SettingsScreen extends StatelessWidget {
                               selected: {rules.target},
                               onSelectionChanged: (target) => change(
                                 (now) => now.copyWith(
-                                  rules: Rules(
-                                    kings: now.rules.kings,
+                                  rules: now.rules.copyWith(
                                     target: target.single,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SettingRow(
+                            label: l10n.newMatchGames,
+                            control: SegmentedButton<int>(
+                              showSelectedIcon: false,
+                              segments: [
+                                for (final games in const [1, 3, 5])
+                                  ButtonSegment(
+                                    value: games,
+                                    label: Text(l10n.gamesCount(games)),
+                                  ),
+                              ],
+                              selected: {rules.games},
+                              onSelectionChanged: (games) => change(
+                                (now) => now.copyWith(
+                                  rules: now.rules.copyWith(
+                                    games: games.single,
                                   ),
                                 ),
                               ),

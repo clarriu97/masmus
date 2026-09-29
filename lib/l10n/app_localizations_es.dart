@@ -840,4 +840,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tableCorrido => 'Mus corrido: quien corte será mano';
+
+  @override
+  String get newMatchGames => 'Juegos';
+
+  @override
+  String gamesCount(int games) {
+    String _temp0 = intl.Intl.pluralLogic(
+      games,
+      locale: localeName,
+      other: 'De $games',
+      one: 'Uno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String tableGames(int us, int them) {
+    return 'juegos $us–$them';
+  }
+
+  @override
+  String endGameWon(String team) {
+    String _temp0 = intl.Intl.selectLogic(team, {
+      'us': 'Juego para vosotros',
+      'other': 'Juego para ellos',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String endGames(int us, int them, int games) {
+    return 'Juegos: Nosotros $us · Ellos $them · al mejor de $games';
+  }
+
+  @override
+  String get endNextGame => 'Siguiente juego';
 }

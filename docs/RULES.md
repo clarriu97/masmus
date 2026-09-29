@@ -159,14 +159,17 @@ caballo, `R` rey; el palo solo se escribe cuando importa (`Ro` rey de oros,
   se cuentan.
 - **R-FIN-4.** Si nadie ha ganado, se reparte otra mano con la mano siguiente
   (R-ORD-3).
+- **R-FIN-5.** **Juegos.** La partida se juega a un juego, al mejor de tres
+  o al mejor de cinco. Gana la partida la primera pareja que gana más de la
+  mitad de los juegos (uno, dos o tres). Cada juego empieza a cero, con la
+  mano siguiente a la última del juego anterior (R-ORD-3) y con mus corrido
+  (R-MUS-5).
 
 ## 9. Fuera de la v1
 
 - **31 real** (la 31 con tres sietes y una sota, o con figuras según la zona):
   no vale en ASESMUS, Madrid, Navarra, Aragón ni Galicia.
 - **Deje** (tantos extra al rechazar un reenvite, en Madrid): regional.
-- **Vacas** (partida de varios juegos, normalmente al mejor de tres): la v1
-  juega un juego.
 - **Señas**: tendrán su apartado aquí con la lista reglamentaria cuando se
   aborden (#35). Nunca durante el mus corrido.
 - **Mus visto** (una carta vista al repartir): no puede pasar en la app.

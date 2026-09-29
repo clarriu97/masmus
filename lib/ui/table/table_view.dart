@@ -83,6 +83,9 @@ final class TableView {
       us: score[us],
       them: score[1 - us],
       target: match.rules.target,
+      games: match.rules.games == 1
+          ? null
+          : (match.games[us], match.games[1 - us]),
       mano: _manoAt(hand, log),
       turn: live && !dealing ? hand.turn : null,
       dealing: dealing,
@@ -118,6 +121,7 @@ final class TableView {
     required this.us,
     required this.them,
     required this.target,
+    required this.games,
     required this.mano,
     required this.turn,
     required this.dealing,
@@ -137,6 +141,10 @@ final class TableView {
   final int us;
   final int them;
   final int target;
+
+  /// Juegos won by each team before this one, yours first, in a match of
+  /// several.
+  final (int, int)? games;
   final int mano;
 
   /// The seat that speaks last (R-ORD-2).

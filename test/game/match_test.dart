@@ -185,4 +185,73 @@ void main() {
       expect(match.end, MatchEnd.count);
     });
   });
+
+  group('R-FIN-5 · juegos', () {
+    MatchState won(MatchState match) => _play(match, [
+      (match.hand.mano, noHayMus),
+      (match.hand.mano, ordago),
+      ((match.hand.mano + 1) % 4, quiero),
+    ]);
+
+    MatchState atTheStart({int games = 3, List<int> won = const [0, 0]}) =>
+        MatchState(
+          rules: Rules(games: games),
+          score: const [0, 0],
+          handNumber: 1,
+          games: won,
+          hand: dealt(_tiedGrande),
+        );
+
+    test('a match of one juego is won with it', () {
+      final match = won(atTheStart(games: 1));
+      expect(match.winner, 0);
+      expect(match.gamesNow, [1, 0]);
+      expect(match.matchWinner, 0);
+      expect(match.isMatchOver, isTrue);
+      expect(match.nextGame, throwsStateError);
+    });
+
+    test('at the best of three, winning one juego starts the next from '
+        'zero, with the next mano and mus corrido', () {
+      final first = won(atTheStart());
+      expect(first.isOver, isTrue);
+      expect(first.isMatchOver, isFalse);
+      final second = first.nextGame();
+      expect(second.games, [1, 0]);
+      expect(second.isOver, isFalse);
+      expect(second.score, [0, 0]);
+      expect(second.handNumber, 1);
+      expect(second.hand.mano, 1);
+      expect(second.hand.musCorrido, isTrue);
+      expect(second.hand.log, isEmpty);
+      expect(
+        () => atTheStart().nextGame(),
+        throwsStateError,
+        reason: 'the juego is not over',
+      );
+    });
+
+    test('at the best of three two juegos win it; at the best of five, '
+        'three', () {
+      expect(won(atTheStart(won: const [1, 1])).matchWinner, 0);
+      expect(won(atTheStart(won: const [1, 0])).matchWinner, 0);
+      expect(won(atTheStart(games: 5, won: const [1, 2])).matchWinner, isNull);
+      expect(won(atTheStart(games: 5, won: const [2, 2])).matchWinner, 0);
+      expect(const Rules(games: 5).gamesToWin, 3);
+    });
+
+    test('the juegos survive JSON, and a match saved before them reads as '
+        'one juego with none won', () {
+      final match = won(atTheStart()).nextGame();
+      final json =
+          jsonDecode(jsonEncode(match.toJson())) as Map<String, Object?>;
+      expect(MatchState.fromJson(json).games, [1, 0]);
+      expect(MatchState.fromJson(json).rules.games, 3);
+      final old = {...json}..remove('games');
+      old['rules'] = {...json['rules']! as Map<String, Object?>}
+        ..remove('games');
+      expect(MatchState.fromJson(old).games, [0, 0]);
+      expect(MatchState.fromJson(old).rules.games, 1);
+    });
+  });
 }

@@ -42,6 +42,7 @@ final Map<String, Widget Function()> _screens = {
       you: 0,
       onRematch: () {},
       onHome: () {},
+      onNextGame: () {},
     ),
 };
 

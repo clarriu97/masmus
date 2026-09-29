@@ -18,6 +18,7 @@ void main() {
 
     await tester.tap(find.text('4 reyes'));
     await tester.tap(find.text('A 30'));
+    await tester.tap(find.text('De 5'));
     await tester.tap(find.text('Rápido'));
     await tester.pump();
     await tester.tap(find.byType(Switch));
@@ -26,6 +27,12 @@ void main() {
     final chosen = settings.settings;
     expect(chosen.rules.kings, Kings.four);
     expect(chosen.rules.target, 30);
+    expect(chosen.rules.games, 5);
+    expect(
+      chosen.rules.kings,
+      Kings.four,
+      reason: 'each change keeps the rest',
+    );
     expect(chosen.pace, Pace.fast);
     expect(chosen.handHelp, isFalse);
   });

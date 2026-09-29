@@ -43,10 +43,13 @@ MatchController tableController({
   List<(int, Move)> moves = const [],
   bool finish = false,
   Scheduler? scheduler,
+  Rules rules = const Rules(),
+  List<int> games = const [0, 0],
 }) {
   var match = MatchState(
-    rules: const Rules(),
+    rules: rules,
     score: score,
+    games: games,
     handNumber: 1,
     hand: dealt(hands, mano: mano, musCorrido: musCorrido),
   );
@@ -131,9 +134,25 @@ final Map<String, MatchController Function()> countMoments = {
   ),
 };
 
-/// Matches that are over: won in the count, lost to an órdago.
+/// The chica querida at 38 to 36 wins the juego (S-10).
+MatchController _chicaWins({Rules rules = const Rules()}) => tableController(
+  hands: const {0: '1 4 5 6', 1: 'R R C C', 2: '1 5 6 7', 3: 'R C S 7'},
+  score: const [38, 36],
+  rules: rules,
+  moves: [
+    (0, const NoHayMus()),
+    ...passes(0),
+    (0, const Envido(2)),
+    (1, const Quiero()),
+  ],
+  finish: true,
+);
+
+/// Juegos that are over: a match won in the count, one lost to an órdago,
+/// and the first juego of three, won.
 final Map<String, MatchController Function()> endMoments = {
   'end_won': countMoments['count_won']!,
+  'end_game': () => _chicaWins(rules: const Rules(games: 3)),
   'end_lost': () => tableController(
     hands: const {0: '4 5 6 7', 1: 'R R R R', 2: 'S C 6 5', 3: '4 5 1 7'},
     mano: 1,

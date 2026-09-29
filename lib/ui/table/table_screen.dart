@@ -567,7 +567,9 @@ class _Center extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           border: Border.all(
-            color: view.latest is LanceClosed ? AppColors.turn : AppColors.line,
+            color: view.latest is LanceClosed || view.latest is NoHayMusSaid
+                ? AppColors.turn
+                : AppColors.line,
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(AppRadii.md),

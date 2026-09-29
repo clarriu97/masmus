@@ -27,7 +27,9 @@ enum Pace {
   Duration hold(GameEvent event) => _normalHold(event) * _holding;
 
   static Duration _normalHold(GameEvent event) => switch (event) {
-    LanceClosed() || HandEnded() => const Duration(milliseconds: 1800),
+    NoHayMusSaid() ||
+    LanceClosed() ||
+    HandEnded() => const Duration(milliseconds: 1800),
     LanceStarted() => const Duration(milliseconds: 700),
     _ => const Duration(milliseconds: 1000),
   };

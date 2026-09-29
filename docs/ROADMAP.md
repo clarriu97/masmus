@@ -93,8 +93,11 @@ or right after; business model; languages at launch; license.
   `MatchController` shows the table one event of the log at a time
   (`shown`): the move at once, then each thing it brought after the one
   before has been held long enough to read it: 1 s a word or a
-  declaration, 1.8 s the close of a lance or of the hand, 0.7 s the start
-  of a lance. Nobody moves and nothing can be tapped meanwhile, and the
+  declaration, 1.8 s a «no hay mus» and the close of a lance or of the
+  hand, 0.7 s the start of a lance. While the cut is held, the middle of
+  the table says «MUS · cortado»: in mus corrido whoever cuts becomes
+  mano and speaks first in the grande, so their bubble soon gives way to
+  their dots. Nobody moves and nothing can be tapped meanwhile, and the
   count and the end of the match wait for it. `TableView.of(…, shown:)`
   reads the table at that point of the log: the steps, what each one said,
   what is bet, the score and who is mano. Declarations of pares and juego

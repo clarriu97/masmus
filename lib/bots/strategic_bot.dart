@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../game/cards.dart';
+import '../game/event.dart';
 import '../game/hand_state.dart';
 import '../game/hand_value.dart';
 import '../game/move.dart';
@@ -21,8 +22,12 @@ final class StrategicBot implements Bot {
   static const manoBonus = 0.4;
 
   /// How much a rival's envite says about their hand: the chance of winning
-  /// is discounted by this much before answering it.
+  /// is discounted by this much for every envite of theirs in the lance.
   static const betSignal = 0.12;
+
+  /// Envites a team says at most in a lance: the first and one raise.
+  /// After that it only accepts, refuses or goes to órdago.
+  static const maxEnvites = 2;
 
   /// Every way of discarding is tried on [screenDeals] deals; the best
   /// [finalists] are tried again on [finalDeals] more before choosing.
@@ -71,15 +76,19 @@ final class StrategicBot implements Bot {
   }
 
   Move _answer(SeatView view, Lance lance, double chance, Envite envite) {
-    final read = (chance - betSignal).clamp(0.0, 1.0);
+    final envites = _envitesInLance(view);
+    final team = teamOf(view.seat);
+    final theirs = envites.where((seat) => teamOf(seat) != team).length;
+    final ours = envites.length - theirs;
+    final read = (chance - betSignal * theirs).clamp(0.0, 1.0);
     if (envite.ordago) {
       return read > _continuing(view, give: envite.noQuieroPoints)
           ? const Quiero()
           : const NoQuiero();
     }
     final boldness = personality.boldness;
-    final canRaise = view.legal.contains(MoveKind.envido);
-    if (canRaise && read >= 0.9 && boldness > 0.6) {
+    final canRaise = view.legal.contains(MoveKind.envido) && ours < maxEnvites;
+    if (view.legal.contains(MoveKind.ordago) && read >= 0.9 && boldness > 0.6) {
       return const Ordago();
     }
     if (canRaise && read >= 0.78 - boldness * 0.08) {
@@ -98,6 +107,15 @@ final class StrategicBot implements Bot {
         ? max(breakEven, 0.5) - boldness * 0.1
         : breakEven - boldness * 0.08;
     return read > needed ? const Quiero() : const NoQuiero();
+  }
+
+  /// Who said each envite of the lance being played, in order.
+  List<int> _envitesInLance(SeatView view) {
+    final start = view.log.lastIndexWhere((event) => event is LanceStarted);
+    return [
+      for (final event in view.log.skip(start + 1))
+        if (event case EnvidoSaid(:final seat)) seat,
+    ];
   }
 
   /// A rough chance of winning the match by carrying on after giving the

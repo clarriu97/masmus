@@ -54,6 +54,14 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Envites have an end (#75).** In the owner's first real
+  match the bots raised each other to 40 in the first hand: `StrategicBot`
+  answered every raise with the same read of its hand, so two strong hands
+  raised by 2 forever. Now every envite of the rivals in the lance lowers
+  its read by 0.12, and a team says at most two envites in a lance (the
+  envite and one raise); after that it accepts, refuses or goes to órdago.
+  Simulated matches check it after every move; the arena is unchanged
+  (63.4 % against `HeuristicBot`).
 - **2026-09-28 · Identity (#21).** The app is called «Más Mus» on the home
   screen of both platforms and in the task switcher. Its icon is two cream
   cards on the felt, an oros in front and a copas behind, drawn with the

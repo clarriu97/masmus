@@ -181,4 +181,107 @@ void main() {
     expect(view.partnerOf(1), isFalse);
     expect(view.partnerOf(0), isFalse);
   });
+
+  group('while the table catches up with a move', () {
+    final match = _match(
+      moves: [
+        (0, const NoHayMus()),
+        for (final seat in [0, 1, 2, 3, 0, 1, 2, 3]) (seat, const Paso()),
+      ],
+    );
+    final log = match.hand.log;
+    final closed = log.indexWhere(
+      (event) => event is LanceClosed && event.outcome.lance == Lance.chica,
+    );
+    TableView at(int shown) => TableView.of(match, you: 0, shown: shown);
+
+    test(
+      'the last paso shows alone, in the chica, and nobody has the turn',
+      () {
+        final view = at(closed);
+        expect(view.steps[2].state, StepProgress.current);
+        expect(view.said[3], const PasoSaid(3));
+        expect(view.turn, isNull);
+        expect(view.yourTurn, isFalse);
+      },
+    );
+
+    test('then the chica closes, en paso, with its words still in view', () {
+      final view = at(closed + 1);
+      expect(view.steps[2].outcome, isA<EnPaso>());
+      expect(view.steps[3].state, StepProgress.pending);
+      expect(view.said.values, everyElement(isA<PasoSaid>()));
+    });
+
+    test('then each player says whether they have pares, one after another, '
+        'in a new step', () {
+      for (var i = 1; i <= 4; i++) {
+        final view = at(closed + 1 + i);
+        expect(view.steps[3].state, StepProgress.current);
+        expect(view.said, hasLength(i));
+        expect(view.said.values, everyElement(isA<Declared>()));
+      }
+      expect(at(closed + 5).said, TableView.of(match, you: 0).said);
+    });
+
+    test('once all is shown it is your turn again', () {
+      expect(at(log.length).turn, 0);
+      expect(TableView.of(match, you: 0).turn, 0);
+    });
+  });
+
+  test('nobody with pares: they still say so one by one before the juego', () {
+    final match = _match(
+      hands: const {0: 'R 6 5 4', 1: 'S 7 6 1', 2: '4 5 6 7', 3: '4 5 1 7'},
+      moves: [
+        (0, const NoHayMus()),
+        for (final seat in [0, 1, 2, 3, 0, 1, 2, 3]) (seat, const Paso()),
+      ],
+    );
+    final log = match.hand.log;
+    final first = log.indexWhere((event) => event is Declared);
+    final second = TableView.of(match, you: 0, shown: first + 2);
+    expect(second.said, {
+      0: const Declared(0, lance: Lance.pares, has: false),
+      1: const Declared(1, lance: Lance.pares, has: false),
+    });
+    expect(second.steps[3].state, StepProgress.current);
+    final beforePunto = log.indexWhere(
+      (event) => event is LanceStarted && event.lance == Lance.punto,
+    );
+    final declaringJuego = TableView.of(match, you: 0, shown: beforePunto);
+    expect(declaringJuego.steps.last.step, TableStep.juego);
+    expect(declaringJuego.steps.last.state, StepProgress.current);
+    expect(declaringJuego.said.values.last, isA<Declared>());
+  });
+
+  test('the points of a «no quiero» count once its close is shown', () {
+    final match = _match(
+      moves: [
+        (0, const NoHayMus()),
+        (0, const Envido(2)),
+        (1, const NoQuiero()),
+        (3, const NoQuiero()),
+      ],
+    );
+    final noQuiero = match.hand.log.indexWhere(
+      (event) => event is NoQuieroSaid && event.seat == 3,
+    );
+    final said = TableView.of(match, you: 0, shown: noQuiero + 1);
+    expect(said.us, 0);
+    expect(said.bet?.stake, 2);
+    expect(said.stake, isNull, reason: 'nothing to answer while showing');
+    expect(TableView.of(match, you: 0, shown: noQuiero + 2).us, 1);
+  });
+
+  test('during mus corrido the mano moves only when the table shows it', () {
+    final match = _match(
+      musCorrido: true,
+      moves: [(0, const Mus()), (1, const NoHayMus())],
+    );
+    final moved = match.hand.log.indexWhere((event) => event is ManoMoved);
+    expect(TableView.of(match, you: 0, shown: moved).mano, 0);
+    expect(TableView.of(match, you: 0, shown: moved + 1).mano, 1);
+    expect(TableView.of(match, you: 0).mano, 1);
+  });
 }

@@ -21,8 +21,20 @@ const tableBots = {
   3: Personality.temeraria,
 };
 
+final _schedulers = Expando<ManualScheduler>();
+
+/// Moves the clock of a [tableController] until the table has been shown
+/// everything the last move brought, stopping before any bot moves.
+void catchUp(MatchController controller) {
+  final scheduler = _schedulers[controller]!;
+  while (controller.catchingUp) {
+    scheduler.advance(const Duration(milliseconds: 100));
+  }
+}
+
 /// A controller for a match dealt from [hands] and played up to [moves].
-/// Its bots never move by themselves: nobody advances the scheduler.
+/// Its bots never move by themselves: nobody advances the scheduler but
+/// [catchUp].
 MatchController tableController({
   required Map<int, String> hands,
   int mano = 0,
@@ -44,13 +56,18 @@ MatchController tableController({
   while (finish && match.hand.phase is! HandOver) {
     match = match.play(match.hand.turn!, const Paso());
   }
-  return MatchController(
+  final clock = scheduler ?? ManualScheduler();
+  final controller = MatchController(
     match: match,
     bots: {for (final seat in tableBots.keys) seat: RandomBot(Random(seat))},
     seats: tableBots,
-    scheduler: scheduler ?? ManualScheduler(),
+    scheduler: clock,
     store: MatchStore.inMemory(),
   );
+  if (clock is ManualScheduler) {
+    _schedulers[controller] = clock;
+  }
+  return controller;
 }
 
 Widget tableScreen(

@@ -32,7 +32,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | M2 · Producto y diseño | ✅ done | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| **M3 · Mesa jugable** | **in progress** (#22 → #30 done; #31 is the owner's playtest) | #22 … #31 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| **M3 · Mesa jugable** | **in progress** (#22 → #30 done; the owner's first playtest, #31, asked for #77 #78 #79) | #22 … #31, #77 … #79 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | in progress (#32 #33 #34 done) | #32 … #37 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
 | M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
@@ -44,16 +44,36 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** #31: the owner plays the new table on his iPhone, with Mus
-players if he can; his points on the prototype table (comments in #24, #25
-and #20) are what to check first. Meanwhile the rest of M4 (#35 → #37)
-and M5. Work one issue per branch and PR, following AGENTS.md → Workflow.
+**Next step:** the owner's first playtest of the new table (#31) asked for
+a table that can be followed: #77 (one thing at a time, slower bots), #78
+(who speaks, what you said, what happened in the hand) and #79 (the deck
+by the mano and the deal). Then he plays again, and the rest of M4
+(#35 → #37) and M5. Work one issue per branch and PR, following
+AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
 or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · The table tells the hand one thing at a time (#77).**
+  Playing the new table, the owner still couldn't follow who speaks, who
+  cut the mus or what happened before his turn, and the bots were too fast
+  to follow even paying attention. One move can bring many things (the last
+  paso closes the chica, everyone declares pares, pares close sin disputa,
+  everyone declares juego…) and the table drew them all at once. Now
+  `MatchController` shows the table one event of the log at a time
+  (`shown`): the move at once, then each thing it brought after the one
+  before has been held long enough to read it: 1 s a word or a
+  declaration, 1.8 s the close of a lance or of the hand, 0.7 s the start
+  of a lance. Nobody moves and nothing can be tapped meanwhile, and the
+  count and the end of the match wait for it. `TableView.of(…, shown:)`
+  reads the table at that point of the log: the steps, what each one said,
+  what is bet, the score and who is mano. Declarations of pares and juego
+  start a step of their own, so they show one by one as a conversation,
+  also when everyone or nobody has. The bots think longer: 3.2 s slow,
+  2.2 s normal, 1.2 s fast, and the holds scale with the pace (×1.4, ×1,
+  ×0.6).
 - **2026-09-29 · Envites have an end (#75).** In the owner's first real
   match the bots raised each other to 40 in the first hand: `StrategicBot`
   answered every raise with the same read of its hand, so two strong hands

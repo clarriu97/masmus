@@ -84,8 +84,7 @@ void tableFlows() {
       }
     }
     expect(controller.match.count, isNotNull);
-    await tester.pump();
-    expect(find.text('Recuento'), findsOneWidget);
+    await waitFor(tester, find.text('Recuento'));
     await tester.tap(find.text('Siguiente mano'));
     await tester.pump();
     expect(controller.match.hand.phase, isA<MusTurn>());

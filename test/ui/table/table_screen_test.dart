@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/event.dart';
@@ -9,6 +10,7 @@ import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/count_view.dart';
 import 'package:masmus/ui/table/hand_history.dart';
 import 'package:masmus/ui/table/seat.dart';
+import 'package:masmus/ui/theme/app_theme.dart';
 import 'package:masmus/ui/widgets/lance_chip.dart';
 import 'package:masmus/ui/widgets/speech_bubble.dart';
 import 'package:masmus/ui/widgets/table_chip.dart';
@@ -280,5 +282,77 @@ void main() {
     catchUp(controller);
     await tester.pump();
     expect(find.text('GRANDE'), findsOneWidget);
+  });
+
+  testWidgets('whoever has the floor stands out: the others step back and '
+      'the arrow in the middle points at them', (tester) async {
+    testDevices[2].apply(tester);
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    await tester.pumpAndSettle();
+    expect(_seat(tester, 'El Calculador').dimmed, isFalse);
+    expect(_seat(tester, 'El Prudente').dimmed, isTrue);
+    expect(_seat(tester, 'La Temeraria').dimmed, isTrue);
+    final arrow = tester.widget<AnimatedRotation>(
+      find.ancestor(
+        of: find.byIcon(Icons.arrow_upward),
+        matching: find.byType(AnimatedRotation),
+      ),
+    );
+    expect(arrow.turns, 0, reason: 'your partner, across the table');
+  });
+
+  testWidgets('while a word is shown, it is its speaker who has the floor', (
+    tester,
+  ) async {
+    testDevices[2].apply(tester);
+    final controller = tableMoments['mus']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    controller.play(const NoHayMus());
+    await tester.pumpAndSettle();
+    for (final name in ['El Prudente', 'El Calculador', 'La Temeraria']) {
+      expect(_seat(tester, name).dimmed, isTrue, reason: name);
+    }
+    final arrow = tester.widget<AnimatedRotation>(
+      find.byType(AnimatedRotation),
+    );
+    expect(arrow.turns, 0.5, reason: 'you, just below');
+  });
+
+  testWidgets('your turn frames your cards in brass and the phone vibrates', (
+    tester,
+  ) async {
+    final haptics = <String>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'HapticFeedback.vibrate') {
+          haptics.add(call.arguments as String);
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final controller = tableMoments['mus']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    expect(haptics, ['HapticFeedbackType.mediumImpact']);
+    bool framed() => tester
+        .widgetList<AnimatedContainer>(find.byType(AnimatedContainer))
+        .any(
+          (box) =>
+              (box.decoration as BoxDecoration?)?.border ==
+              Border.all(color: AppColors.turn, width: 2),
+        );
+    expect(framed(), isTrue);
+    controller.play(const Mus());
+    await tester.pump();
+    expect(framed(), isFalse);
+    expect(haptics, hasLength(1), reason: 'only when your turn comes');
   });
 }

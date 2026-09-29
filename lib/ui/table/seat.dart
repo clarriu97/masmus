@@ -22,8 +22,12 @@ class Seat extends StatelessWidget {
     this.deck,
     this.cardsKey,
     this.deckKey,
+    this.dimmed = false,
     super.key,
   });
+
+  /// Someone else has the floor: this seat steps back.
+  final bool dimmed;
 
   /// How many cards it holds on the table: fewer while it discards or
   /// while they are dealt.
@@ -65,59 +69,88 @@ class Seat extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DecoratedBox(
-              decoration: ShapeDecoration(
-                shape: CircleBorder(
-                  side: thinking != null
-                      ? const BorderSide(color: AppColors.turn, width: 3)
-                      : BorderSide.none,
-                ),
-                color: AppColors.avatar,
-              ),
-              child: SizedBox.square(
-                dimension: 46,
-                child: Center(
-                  child: Text(
-                    name.split(' ').last.characters.first,
-                    style: text.headlineSmall?.copyWith(
-                      color: AppColors.onAvatar,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(name, style: text.titleSmall, textAlign: TextAlign.center),
-            Text(role, style: text.labelSmall, textAlign: TextAlign.center),
-            if (asked case final asked?)
-              Text(asked, style: text.labelSmall, textAlign: TextAlign.center),
-            const SizedBox(height: AppSpacing.xs),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
+            AnimatedOpacity(
+              opacity: dimmed ? 0.4 : 1,
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : AppMotion.short,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
-                spacing: AppSpacing.xs,
                 children: [
-                  _Deck(shown: deck == AxisDirection.left, deckKey: deckKey),
-                  Row(
-                    key: cardsKey,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (var i = 0; i < 4; i++)
-                        Align(
-                          widthFactor: i == 3 ? 1 : 0.55,
-                          child: Visibility.maintain(
-                            visible: i < cards,
-                            child: const PlayingCardView(
-                              _back,
-                              width: DeckView.cardWidth,
-                              faceUp: false,
-                            ),
+                  DecoratedBox(
+                    decoration: ShapeDecoration(
+                      shape: CircleBorder(
+                        side: thinking != null
+                            ? const BorderSide(color: AppColors.turn, width: 3)
+                            : BorderSide.none,
+                      ),
+                      color: AppColors.avatar,
+                    ),
+                    child: SizedBox.square(
+                      dimension: 46,
+                      child: Center(
+                        child: Text(
+                          name.split(' ').last.characters.first,
+                          style: text.headlineSmall?.copyWith(
+                            color: AppColors.onAvatar,
                           ),
                         ),
-                    ],
+                      ),
+                    ),
                   ),
-                  _Deck(shown: deck == AxisDirection.right, deckKey: deckKey),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    name,
+                    style: text.titleSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    role,
+                    style: text.labelSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  if (asked case final asked?)
+                    Text(
+                      asked,
+                      style: text.labelSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                  const SizedBox(height: AppSpacing.xs),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.xs,
+                      children: [
+                        _Deck(
+                          shown: deck == AxisDirection.left,
+                          deckKey: deckKey,
+                        ),
+                        Row(
+                          key: cardsKey,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (var i = 0; i < 4; i++)
+                              Align(
+                                widthFactor: i == 3 ? 1 : 0.55,
+                                child: Visibility.maintain(
+                                  visible: i < cards,
+                                  child: const PlayingCardView(
+                                    _back,
+                                    width: DeckView.cardWidth,
+                                    faceUp: false,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        _Deck(
+                          shown: deck == AxisDirection.right,
+                          deckKey: deckKey,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -56,6 +56,14 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Who has the floor, from across the room (#86).** In his
+  second playtest the owner still couldn't tell who speaks, who starts
+  after the deal or when his turn comes. Now whoever has the floor (whose
+  turn it is or, while the table shows what just happened, whoever just
+  said it) stands out: every other seat steps back to 40 % (their bubbles
+  don't, so what was said stays readable), and a brass arrow in the middle
+  of the table points at them. On your turn your cards are framed in brass
+  and the phone gives a medium haptic tap, once, when it comes.
 - **2026-09-29 · An accepted órdago scores the whole game (#84).** The
   owner lost a match to an órdago and the end said «Nosotros 0 · Ellos 0»:
   the órdago decided the match without scoring anything. Now its lance

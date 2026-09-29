@@ -94,12 +94,23 @@ final class Knowledge {
       (declared[(other, Lance.juego)] ?? value.hasJuego) == value.hasJuego;
 
   /// How often this seat's team wins [lance] with [mine], over [samples]
-  /// deals of the other hands. Only players who can play the lance count.
-  double winChance(Lance lance, Random random, {int samples = 60}) {
+  /// deals of the other hands. Only players who can play the lance count;
+  /// the [partner]'s hand only when it still counts.
+  double winChance(
+    Lance lance,
+    Random random, {
+    int samples = 60,
+    bool partner = true,
+  }) {
     final hand = HandValue(cards, rules);
+    final partnerSeat = (seat + 2) % 4;
     var wins = 0;
     for (var i = 0; i < samples; i++) {
-      if (bestTeam(lance, _table(random, hand), mano) == team) {
+      final table = _table(random, hand);
+      if (!partner) {
+        table.remove(partnerSeat);
+      }
+      if (bestTeam(lance, table, mano) == team) {
         wins++;
       }
     }
@@ -159,12 +170,16 @@ bool worthCutting(HandValue value) =>
     value.points == 31 ||
     (value.hasPares && value.hasJuego);
 
-/// The team with the best hand for [lance] among the seats that can play it,
-/// ties going to whoever speaks first (R-LAN-7); null when nobody can.
+/// The team with the best hand for [lance] among the seats at the [table]
+/// that can play it, ties going to whoever speaks first (R-LAN-7); null
+/// when nobody can.
 int? bestTeam(Lance lance, Map<int, HandValue> table, int mano) {
   int? best;
   for (final seat in speakingOrder(mano)) {
-    final value = table[seat]!;
+    final value = table[seat];
+    if (value == null) {
+      continue;
+    }
     final plays = switch (lance) {
       Lance.pares => value.hasPares,
       Lance.juego => value.hasJuego,

@@ -61,7 +61,12 @@ final class StrategicBot implements Bot {
       return Discard(_bestDiscard(knowledge));
     }
     final lance = view.lance!;
-    final chance = knowledge.winChance(lance, _random, samples: 80);
+    final chance = knowledge.winChance(
+      lance,
+      _random,
+      samples: 80,
+      partner: !_partnerRefused(view),
+    );
     final envite = view.envite;
     return envite == null
         ? _open(view, lance, chance)
@@ -135,6 +140,19 @@ final class StrategicBot implements Bot {
         raisedOverUs &&
         _random.nextDouble() < personality.bluffing * 0.15;
     return bluffsAgain ? const Envido(minEnvido) : const NoQuiero();
+  }
+
+  /// The partner said «no quiero» to the bet on the table and left the
+  /// answer to this seat: its hand is no help in this lance.
+  bool _partnerRefused(SeatView view) {
+    final start = view.log.lastIndexWhere(
+      (event) => event is EnvidoSaid || event is OrdagoSaid,
+    );
+    final partner = (view.seat + 2) % 4;
+    return view.envite != null &&
+        view.log
+            .skip(start + 1)
+            .any((event) => event is NoQuieroSaid && event.seat == partner);
   }
 
   /// Who said each envite of the lance being played, in order.

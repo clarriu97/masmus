@@ -646,22 +646,28 @@ class _YourHand extends StatelessWidget {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.xs,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: AppSpacing.sm,
-                  children: [
-                    if (view.mano == view.you) DeckView(key: deckKey),
-                    if (view.yourTurn)
-                      PopIn(
-                        child: TableChip(l10n.tableYourTurn, highlighted: true),
-                      )
-                    else if (view.said[view.you] case final said?)
-                      PopIn(
-                        key: ValueKey(view.saidAt[view.you]),
-                        child: SpeechBubble(l10n.said(said, view)),
-                      ),
-                    if (view.mano == view.you) TableChip(l10n.tableMano),
-                  ],
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: AppSpacing.sm,
+                    children: [
+                      if (view.mano == view.you) DeckView(key: deckKey),
+                      if (view.yourTurn)
+                        PopIn(
+                          child: TableChip(
+                            l10n.tableYourTurn,
+                            highlighted: true,
+                          ),
+                        )
+                      else if (view.said[view.you] case final said?)
+                        PopIn(
+                          key: ValueKey(view.saidAt[view.you]),
+                          child: SpeechBubble(l10n.said(said, view)),
+                        ),
+                      if (view.mano == view.you) TableChip(l10n.tableMano),
+                    ],
+                  ),
                 ),
                 if (help)
                   FittedBox(

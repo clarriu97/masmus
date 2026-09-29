@@ -56,6 +56,21 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · The mano carries a token; the deck sits in the corner
+  (#87).** The deck beside a bot didn't say whether that bot or the next
+  was mano, and «mano» in small print wasn't enough.
+  - **Token**: the mano now carries a token, a cream disc with an «M» in
+    the colours of the deck (`ManoToken`), like a dealer's button at
+    poker. It sits on the avatar of a bot mano, or by your cards, doesn't
+    step back with its seat, and moves with the mano. The word «mano»
+    left the seats.
+  - **Deck**: it sits on the table itself, in the corner between the
+    postre, who deals, and the mano; the deal flies from there.
+  - **Mus corrido**: during the mus of the first hand a strip under the
+    row of the hand says «Mus corrido: quien corte será mano». The middle
+    of the table says who deals while dealing («REPARTE · La
+    Temeraria»), and who becomes mano when it moves («MANO · El
+    Prudente»), held 1.8 s like a cut.
 - **2026-09-29 · Who has the floor, from across the room (#86).** In his
   second playtest the owner still couldn't tell who speaks, who starts
   after the deal or when his turn comes. Now whoever has the floor (whose

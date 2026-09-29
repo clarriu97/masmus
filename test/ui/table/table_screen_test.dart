@@ -12,6 +12,7 @@ import 'package:masmus/ui/table/hand_history.dart';
 import 'package:masmus/ui/table/seat.dart';
 import 'package:masmus/ui/theme/app_theme.dart';
 import 'package:masmus/ui/widgets/lance_chip.dart';
+import 'package:masmus/ui/widgets/mano_token.dart';
 import 'package:masmus/ui/widgets/speech_bubble.dart';
 import 'package:masmus/ui/widgets/table_chip.dart';
 
@@ -32,6 +33,7 @@ void main() {
     expect(_seat(tester, 'El Calculador').role, 'compañero');
     expect(_seat(tester, 'El Prudente').role, 'rival');
     expect(_seat(tester, 'La Temeraria').role, 'rival · postre');
+    expect(find.byType(ManoToken), findsOneWidget);
     final cards = tester.widgetList<PlayingCardView>(
       find.byWidgetPredicate(
         (widget) =>
@@ -56,7 +58,7 @@ void main() {
       expect(find.widgetWithText(LanceChip, step), findsOneWidget);
     }
     expect(find.widgetWithText(LanceChip, 'corrido'), findsOneWidget);
-    expect(find.text('Mano'), findsOneWidget);
+    expect(find.byType(ManoToken), findsOneWidget);
     expect(find.text('Par de reyes'), findsOneWidget);
     expect(find.text('Punto 26'), findsOneWidget);
     expect(
@@ -141,7 +143,7 @@ void main() {
       buildTestApp(tableScreen(tableMoments['grande_envite']!())),
     );
     expect(
-      find.bySemanticsLabel('El Prudente. rival · mano. Envido 2'),
+      find.bySemanticsLabel('El Prudente. rival. mano. Envido 2'),
       findsOneWidget,
     );
   });
@@ -235,34 +237,51 @@ void main() {
     }
   });
 
-  testWidgets('the deck sits by the mano, on the side of the postre', (
-    tester,
-  ) async {
-    Iterable<Element> shownDecks() => find
-        .byType(DeckView)
-        .evaluate()
-        .where(
-          (deck) =>
-              deck.findAncestorWidgetOfExactType<Visibility>()?.visible ?? true,
-        );
-
+  testWidgets('the mano carries its token, and the deck sits on the table '
+      'between the postre and the mano', (tester) async {
+    testDevices[2].apply(tester);
     await tester.pumpWidget(buildTestApp(tableScreen(tableMoments['mus']!())));
-    expect(shownDecks(), hasLength(1));
+    await tester.pump();
+    expect(find.byType(ManoToken), findsOneWidget);
     expect(
-      find.ancestor(
-        of: find.byWidget(shownDecks().single.widget),
-        matching: find.byType(Seat),
-      ),
+      find.ancestor(of: find.byType(ManoToken), matching: find.byType(Seat)),
       findsNothing,
-      reason: 'you are mano: the deck is by your cards',
+      reason: 'you are mano: the token is by your cards',
     );
+    expect(find.text('Mus corrido: quien corte será mano'), findsOneWidget);
 
     await tester.pumpWidget(
       buildTestApp(tableScreen(tableMoments['grande_envite']!())),
     );
-    expect(shownDecks(), hasLength(1));
-    expect(_seat(tester, 'El Prudente').deck, AxisDirection.left);
-    expect(_seat(tester, 'El Calculador').deck, isNull);
+    await tester.pump();
+    expect(_seat(tester, 'El Prudente').mano, isTrue);
+    expect(_seat(tester, 'El Calculador').mano, isFalse);
+    expect(find.byType(ManoToken), findsOneWidget);
+    expect(find.text('Mus corrido: quien corte será mano'), findsNothing);
+    final deck = tester.getCenter(find.byType(DeckView));
+    final mano = tester.getCenter(
+      find
+          .descendant(
+            of: find.ancestor(
+              of: find.text('El Prudente'),
+              matching: find.byType(Seat),
+            ),
+            matching: find.byType(PlayingCardView),
+          )
+          .first,
+    );
+    final yours = tester.getCenter(
+      find
+          .byWidgetPredicate(
+            (widget) => widget is PlayingCardView && widget.faceUp,
+          )
+          .first,
+    );
+    expect(deck.dy, inExclusiveRange(mano.dy, yours.dy));
+    expect(
+      find.bySemanticsLabel(RegExp('^El Prudente. rival. mano')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('who cut the mus says so, and the middle of the table says it '

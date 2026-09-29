@@ -656,14 +656,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get howTurns =>
-      'Se habla por turnos, empezando por la mano; el último en hablar es el postre. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.';
+      'Se habla por turnos, empezando por la mano; el último en hablar es el postre, que es quien reparte. En la mesa, la mano lleva la ficha «M» y el mazo queda entre el postre y la mano. En cada mano nueva, la mano pasa al siguiente. Si dos jugadas empatan, gana la de quien habla antes.';
 
   @override
   String get howMusTitle => 'Mus o no hay mus';
 
   @override
   String get howMus =>
-      'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente.';
+      'Al empezar, cada uno dice «mus» si quiere cambiar cartas o «no hay mus» para jugar con las que tiene. En cuanto alguien corta, empiezan los lances. Si los cuatro piden mus, cada uno descarta de una a cuatro cartas y recibe otras tantas. En la primera mano de la partida hay mus corrido: mientras todos pidan mus, la mano pasa al siguiente, y quien corta pasa a ser mano.';
 
   @override
   String get howLancesTitle => 'Los cuatro lances';
@@ -834,4 +834,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get historyReshuffled => 'Se acaba el mazo: se barajan los descartes';
+
+  @override
+  String get centerDeals => 'Reparte';
+
+  @override
+  String get tableCorrido => 'Mus corrido: quien corte será mano';
 }

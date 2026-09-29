@@ -165,13 +165,46 @@ caballo, `R` rey; el palo solo se escribe cuando importa (`Ro` rey de oros,
   mano siguiente a la última del juego anterior (R-ORD-3) y con mus corrido
   (R-MUS-5).
 
+## 8 bis. Señas
+
+Las señas son la forma reglamentaria en que los compañeros se dicen lo que
+llevan. Las ven solo los compañeros: en la v1 los rivales no las cazan.
+
+- **R-SEN-1.** Lista de señas y su gesto:
+
+  | Seña | Gesto | Se hace con |
+  |---|---|---|
+  | Dos reyes | Morder el labio inferior | Dos reyes (par de reyes) |
+  | Medias de reyes | Llevar la comisura de los labios a un lado | Tres reyes |
+  | Dos ases | Sacar la punta de la lengua | Dos ases (par de ases) |
+  | Medias de ases | Sacar la punta de la lengua hacia un lado | Tres ases |
+  | Medias | Llevar la comisura de los labios a un lado | Medias de cualquier otra carta |
+  | Duples | Levantar las cejas | Duples de cualquier carta |
+  | Treinta y una | Guiñar un ojo | Juego de 31 |
+  | Treinta | Guiñar un ojo | 30 de punto |
+  | Ciego | Cerrar los dos ojos | Ni pares ni juego, ni otra seña |
+
+  Con 8 reyes, los treses cuentan como reyes y los doses como ases (R-BAR-2).
+- **R-SEN-2.** Las señas son verdaderas y completas: solo se hace la seña de
+  lo que se tiene, y se hacen todas las que se tienen. Con duples se hace la
+  de duples, nunca la de cada pareja por separado. La 31 va antes que la de
+  los pares.
+- **R-SEN-3.** Se hacen al ver las cartas: al empezar a hablar de mus y, tras
+  cada descarte, con las cartas nuevas. En la primera mano de cada juego no
+  se hacen señas mientras dura el mus corrido: se hacen al cortarlo, con las
+  cartas con que se juega (R-MUS-5).
+- **R-SEN-4.** La de medias (de otra carta que no sean reyes ni ases) no se
+  hace hasta que se ha cerrado la grande. La de treinta, hasta que todos han
+  dicho que no tienen juego y se juega al punto.
+- **R-SEN-5.** Se juega con señas salvo que se elija jugar sin ellas; la
+  elección vale para las dos parejas.
+
 ## 9. Fuera de la v1
 
 - **31 real** (la 31 con tres sietes y una sota, o con figuras según la zona):
   no vale en ASESMUS, Madrid, Navarra, Aragón ni Galicia.
 - **Deje** (tantos extra al rechazar un reenvite, en Madrid): regional.
-- **Señas**: tendrán su apartado aquí con la lista reglamentaria cuando se
-  aborden (#35). Nunca durante el mus corrido.
+- **Cazar señas**: los rivales no ven las señas de la otra pareja.
 - **Mus visto** (una carta vista al repartir): no puede pasar en la app.
 
 ## 10. Glosario
@@ -268,4 +301,6 @@ Cada uno queda cubierto por un test de la regla que incumple:
 [Barcelona Mus Club](https://barcelonamus.com/club/reglamento),
 [Asociación Navarra de Mus](https://musnavarra.com/reglamento/reglamento-de-juego/),
 [Bizkaia](https://www.asesmus.com/wp-content/uploads/2022/06/RegMusBIZKAIA.pdf),
-[pagat.com](https://www.pagat.com/vying/mus.html).
+[pagat.com](https://www.pagat.com/vying/mus.html). Señas:
+[normas generales de mus](https://elmusesmas.blogspot.com/p/normas-generales-de-mus.html),
+[Don Naipe](https://donnaipe.com/blog/2019/11/19/te-ensenamos-las-reglas-del-mus/).

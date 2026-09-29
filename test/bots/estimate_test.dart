@@ -3,10 +3,14 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/bot.dart';
 import 'package:masmus/bots/estimate.dart';
+import 'package:masmus/game/deck.dart';
+import 'package:masmus/game/game_random.dart';
+import 'package:masmus/game/hand_state.dart';
 import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/match.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/game/rules.dart';
+import 'package:masmus/game/table.dart';
 
 import '../game/scenario.dart';
 
@@ -159,5 +163,84 @@ void main() {
         isFalse,
       );
     });
+  });
+
+  group('the partner\'s señas', () {
+    const hands = {0: 'C 6 5 4', 1: '4 5 6 7', 2: 'R R 7 S', 3: '4 5 6 1'};
+
+    test('its hand is dealt among those that make the same señas', () {
+      final knowledge = _knowledge(hands);
+      final random = Random(2);
+      for (var i = 0; i < 200; i++) {
+        final partner = HandValue(
+          knowledge.sampleOthers(random)[2]!,
+          const Rules(),
+        );
+        expect(partner.ranks.where((rank) => rank == 12), hasLength(2));
+      }
+    });
+
+    test('it wins the grande more often with a partner who told dos reyes', () {
+      final reading = _knowledge(
+        hands,
+      ).winChance(Lance.grande, Random(0), samples: 400);
+      final blind = Knowledge.of(
+        SeatView.of(
+          MatchState(
+            rules: const Rules(),
+            score: const [0, 0],
+            handNumber: 1,
+            hand: dealt(hands),
+          ),
+          0,
+        ),
+        senas: false,
+      ).winChance(Lance.grande, Random(0), samples: 400);
+      expect(reading, greaterThan(blind + 0.15), reason: '$reading vs $blind');
+    });
+  });
+
+  test('reading the partner\'s señas makes the estimates measurably closer '
+      'to what happens, at grande and chica', () {
+    for (final lance in [Lance.grande, Lance.chica]) {
+      var reading = 0.0;
+      var blind = 0.0;
+      for (var seed = 0; seed < 300; seed++) {
+        final (deck, random) = shuffledDeck(GameRandom(seed));
+        final hand = HandState.deal(
+          rules: const Rules(),
+          mano: 0,
+          deck: deck,
+          random: random,
+        );
+        final view = SeatView.of(
+          MatchState(
+            rules: const Rules(),
+            score: const [0, 0],
+            handNumber: 2,
+            hand: hand,
+          ),
+          0,
+        );
+        final won =
+            bestTeam(lance, {
+                  for (final seat in seats) seat: hand.valueOf(seat),
+                }, 0) ==
+                0
+            ? 1.0
+            : 0.0;
+        double error(Knowledge knowledge) => pow(
+          knowledge.winChance(lance, Random(seed), samples: 120) - won,
+          2,
+        ).toDouble();
+        reading += error(Knowledge.of(view));
+        blind += error(Knowledge.of(view, senas: false));
+      }
+      expect(
+        reading,
+        lessThan(blind * 0.9),
+        reason: '$lance: $reading vs $blind',
+      );
+    }
   });
 }

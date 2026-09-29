@@ -56,6 +56,27 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Señas, the rules and the bots (#35, part 1).**
+  - **Rules**: R-SEN-1 to R-SEN-5 in `docs/RULES.md`, from the published
+    rulebooks: dos reyes, medias de reyes, dos ases, medias de ases,
+    medias, duples, treinta y una, treinta and ciego. They are true and
+    complete, made on seeing the cards and never during mus corrido;
+    medias wait for the grande to close and treinta for the punto. A
+    match can be played without them (`Rules.senas`, on by default, for
+    both pairs).
+  - **Engine**: `senasOf(hand, seat)` is a pure function of the cards and
+    of how far the hand is. Since señas can't be false or partial,
+    nobody chooses them: the partners make them.
+  - **Bots**: they deal their partner, when estimating, only hands that
+    make the same señas. The estimates get measurably closer to what
+    happens: the squared error of the chance of winning drops from 0.22
+    to 0.18 at grande and from 0.21 to 0.16 at chica over 600 deals.
+    Readers against bots that ignore señas win 49–50 % over 1000–3000
+    matches: the decisions don't cash in the better estimates yet.
+    Against `HeuristicBot`, 67.0 % (62.8–71.0).
+  - **Discards**: they don't read the señas; the partner is about to
+    change its cards too.
+  - **Next**: the table shows the señas (part 2).
 - **2026-09-29 · A partner's «no quiero» counts (#99).** The owner, mano,
   cut and bet 4 at the punto, and a bot accepted with 17. Reproduced: a
   rival refused and left it to his partner, who then estimated as if the

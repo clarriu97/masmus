@@ -59,8 +59,9 @@ or right after; business model; languages at launch; license.
 - **2026-09-29 · Señas at the table (#35, part 2).**
   - **Your partner's** show on its seat, in bold under its role («Seña:
     Ciego»), as they are made.
-  - **Yours** show by your cards («Tu seña: Duples»), with or without the
-    hand help, so you know what you told.
+  - **Yours** show by your cards («Tu seña: Duples»), beside «Te toca», so
+    you know what you told. It never shrinks the hand help: on the
+    smallest phones that made the help unreadable.
   - **Rivals' señas** are never shown.
   - **«Cómo se juega»** has a section on señas with the cheat sheet: each
     seña and its gesture.

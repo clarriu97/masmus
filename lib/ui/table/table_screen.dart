@@ -791,22 +791,21 @@ class _YourHand extends StatelessWidget {
                           key: ValueKey(view.saidAt[view.you]),
                           child: SpeechBubble(l10n.said(said, view)),
                         ),
+                      if (view.yourSenas.isNotEmpty)
+                        TableChip(
+                          l10n.tableYourSenas(l10n.senasText(view.yourSenas)),
+                        ),
                     ],
                   ),
                 ),
-                if (help || view.yourSenas.isNotEmpty)
+                if (help)
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Row(
                       spacing: AppSpacing.sm,
                       children: [
-                        if (view.yourSenas.isNotEmpty)
-                          TableChip(
-                            l10n.tableYourSenas(l10n.senasText(view.yourSenas)),
-                          ),
-                        if (help)
-                          for (final line in l10n.handHelp(view.value))
-                            TableChip(line),
+                        for (final line in l10n.handHelp(view.value))
+                          TableChip(line),
                       ],
                     ),
                   ),

@@ -56,6 +56,18 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · The deck by the mano, and the deal (#79).** As at a real
+  table, the deck sits by the mano, on the side of the postre who deals:
+  left of your cards when you are mano, and beside the cards of a bot
+  mano. Cards are dealt from it, one after another from the mano on: all
+  sixteen at the start of every hand (`Deal.hand`) and, after the
+  discards, the ones each player asked for. Each card flies 350 ms, 110 ms
+  after the one before (about 2 s for a whole hand). The timing lives in
+  `MatchController` (`dealing`): nobody moves, and it is nobody's turn,
+  until they land. While the discards go on, each player holds only the
+  cards it kept. A saved match resumes with its cards already dealt. With
+  reduced motion the cards are there at once. The fade of new cards is
+  gone: the deal replaces it.
 - **2026-09-29 · Who speaks and what happened, at a glance (#78).**
   - The bot whose turn it is is edged in brass, and its bubble is three
     dots lighting up in turn (still with reduced motion); screen readers

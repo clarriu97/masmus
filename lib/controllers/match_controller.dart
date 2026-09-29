@@ -7,6 +7,7 @@ import '../bots/heuristic_bot.dart';
 import '../game/event.dart';
 import '../game/match.dart';
 import '../game/move.dart';
+import '../game/table.dart';
 import '../services/match_store.dart';
 import '../services/scheduler.dart';
 
@@ -32,6 +33,25 @@ enum Pace {
   };
 }
 
+/// Cards dealt from the deck one after another: who gets each, from the
+/// mano on. The table draws them flying; nobody moves until they land.
+final class Deal {
+  Deal(this.seats);
+
+  /// The four cards of each player, at the start of a hand.
+  factory Deal.hand(int mano) => Deal([
+    for (var round = 0; round < 4; round++)
+      for (final seat in speakingOrder(mano)) seat,
+  ]);
+
+  final List<int> seats;
+
+  static const between = Duration(milliseconds: 110);
+  static const flight = Duration(milliseconds: 350);
+
+  Duration get duration => between * (seats.length - 1) + flight;
+}
+
 /// Runs a match against bots: takes the human's moves, makes the bots move
 /// one at a time after their thinking pause, and saves after every move.
 /// A move can bring many things at once (the last paso closes the chica,
@@ -49,12 +69,17 @@ final class MatchController extends ChangeNotifier {
     required Scheduler scheduler,
     required MatchStore store,
     this.pace = Pace.normal,
+    bool deal = false,
   }) : assert(bots.length >= 3),
        _match = match,
        _shown = match.hand.log.length,
        _scheduler = scheduler,
        _store = store {
-    _scheduleBot();
+    if (deal) {
+      _deal(Deal.hand(match.hand.mano));
+    } else {
+      _scheduleBot();
+    }
   }
 
   final Map<int, Bot> bots;
@@ -65,15 +90,20 @@ final class MatchController extends ChangeNotifier {
   final MatchStore _store;
   MatchState _match;
   int _shown;
+  Deal? _dealing;
   void Function()? _cancel;
 
   MatchState get match => _match;
 
+  /// The cards being dealt right now, if any.
+  Deal? get dealing => _dealing;
+
   /// How many events of the hand's log the table shows by now.
   int get shown => _shown;
 
-  /// The table is still being shown what the last move brought.
-  bool get catchingUp => _shown < _match.hand.log.length;
+  /// The table is still being shown what the last move brought, or the
+  /// cards are being dealt.
+  bool get catchingUp => _dealing != null || _shown < _match.hand.log.length;
 
   /// The seat no bot plays, if any.
   int? get humanSeat =>
@@ -103,34 +133,64 @@ final class MatchController extends ChangeNotifier {
     }
     _match = _match.nextHand();
     _shown = 0;
-    _changed();
+    _save();
+    _deal(Deal.hand(_match.hand.mano));
   }
 
   /// The move is shown at once; what it brought, one thing at a time.
   void _apply(int seat, Move move) {
     _shown = _match.hand.log.length + 1;
     _match = _match.play(seat, move);
-    _changed();
+    _save();
+    _shownOne();
   }
 
   /// Saves after every move; a match that is over is no longer resumed.
-  void _changed() {
-    unawaited(
-      _match.isOver
-          ? _store.clear()
-          : _store.save(SavedMatch(match: _match, bots: seats)),
-    );
+  void _save() => unawaited(
+    _match.isOver
+        ? _store.clear()
+        : _store.save(SavedMatch(match: _match, bots: seats)),
+  );
+
+  /// The table shows one more event. The last discard of a round comes
+  /// with the cards each player asked for.
+  void _shownOne() {
+    final log = _match.hand.log;
+    final at = _shown - 1;
+    if (log[at] is Discarded) {
+      final start = log.lastIndexWhere((event) => event is! Discarded, at) + 1;
+      final round = log.sublist(start, at + 1).cast<Discarded>();
+      if (round.length == 4) {
+        _deal(
+          Deal([
+            for (final discard in round)
+              for (var i = 0; i < discard.count; i++) discard.seat,
+          ]),
+        );
+        return;
+      }
+    }
     notifyListeners();
     _next();
   }
 
+  void _deal(Deal deal) {
+    _dealing = deal;
+    notifyListeners();
+    _cancel = _scheduler.after(deal.duration, () {
+      _cancel = null;
+      _dealing = null;
+      notifyListeners();
+      _next();
+    });
+  }
+
   void _next() {
-    if (catchingUp) {
+    if (_shown < _match.hand.log.length) {
       _cancel = _scheduler.after(pace.hold(_match.hand.log[_shown - 1]), () {
         _cancel = null;
         _shown++;
-        notifyListeners();
-        _next();
+        _shownOne();
       });
     } else {
       _scheduleBot();

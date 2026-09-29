@@ -53,9 +53,15 @@ final class StepView {
 /// engine's state and its log: the score, who is mano and postre, whose
 /// turn it is, where the hand is, what each player just said and what is
 /// on the table. With [shown], as it was once the first [shown] events of
-/// the log had happened: while the table catches up, nobody's turn yet.
+/// the log had happened: while the table catches up, or while the cards
+/// are [dealing], it is nobody's turn yet.
 final class TableView {
-  factory TableView.of(MatchState match, {required int you, int? shown}) {
+  factory TableView.of(
+    MatchState match, {
+    required int you,
+    int? shown,
+    bool dealing = false,
+  }) {
     final hand = match.hand;
     final log = shown == null ? hand.log : hand.log.sublist(0, shown);
     final live = log.length == hand.log.length;
@@ -78,7 +84,7 @@ final class TableView {
       them: score[1 - us],
       target: match.rules.target,
       mano: _manoAt(hand, log),
-      turn: live ? hand.turn : null,
+      turn: live && !dealing ? hand.turn : null,
       steps: _steps(hand, log),
       said: {
         for (final MapEntry(:key, :value) in _said(log).entries)
@@ -88,13 +94,20 @@ final class TableView {
       asked: {
         for (final event in log.whereType<Discarded>()) event.seat: event.count,
       },
+      thrown: _thrown(log),
       bet: _bet(log),
       latest: live ? null : log.lastOrNull,
       stake: switch (hand.phase) {
         LanceTurn(:final envite?) when live => envite,
         _ => null,
       },
-      cards: hand.hands[you],
+      cards: switch (hand.phase) {
+        DiscardTurn(:final chosen) when chosen[you] != null => [
+          for (final card in hand.hands[you])
+            if (!chosen[you]!.contains(card)) card,
+        ],
+        _ => hand.hands[you],
+      },
       value: HandValue(hand.hands[you], match.rules),
     );
   }
@@ -110,6 +123,7 @@ final class TableView {
     required this.said,
     required this.saidAt,
     required this.asked,
+    required this.thrown,
     required this.bet,
     required this.latest,
     required this.stake,
@@ -143,6 +157,10 @@ final class TableView {
 
   /// How many cards each seat asked for in the last discards of the hand.
   final Map<int, int> asked;
+
+  /// How many cards each seat has thrown away in the discards going on,
+  /// before the new ones are dealt.
+  final Map<int, int> thrown;
 
   /// Whether it is your turn to throw cards away.
   bool get youDiscard => yourTurn && _discarding;
@@ -229,6 +247,14 @@ Bet? _bet(List<GameEvent> log) {
     };
   }
   return bet;
+}
+
+Map<int, int> _thrown(List<GameEvent> log) {
+  final start = log.lastIndexWhere((event) => event is! Discarded) + 1;
+  final round = log.sublist(start).whereType<Discarded>().toList();
+  return round.length == 4
+      ? const {}
+      : {for (final discard in round) discard.seat: discard.count};
 }
 
 /// Everyone asked for mus and not all of them have thrown their cards yet.

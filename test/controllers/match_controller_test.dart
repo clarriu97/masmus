@@ -13,6 +13,7 @@ import 'package:masmus/game/outcome.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
 
+import '../game/scenario.dart';
 import '../helpers/table.dart';
 
 const _seats = {
@@ -133,6 +134,77 @@ void main() {
       greaterThanOrEqualTo(const Duration(seconds: 1)),
       reason: 'even fast, a move can be followed',
     );
+  });
+
+  test('a new match starts by dealing four cards to each, from the mano on, '
+      'and nobody plays until they have landed', () {
+    final scheduler = ManualScheduler();
+    final controller = MatchController(
+      match: MatchState.start(seed: 3, mano: 0),
+      bots: {
+        for (final seat in [1, 2, 3]) seat: RandomBot(Random(seat)),
+      },
+      seats: _seats,
+      scheduler: scheduler,
+      store: MatchStore.inMemory(),
+      deal: true,
+    );
+    addTearDown(controller.dispose);
+    final deal = controller.dealing!;
+    expect(deal.seats, [
+      for (var i = 0; i < 4; i++) ...[0, 1, 2, 3],
+    ]);
+    expect(deal.duration, Deal.between * 15 + Deal.flight);
+    expect(controller.humanMoves, isEmpty);
+    scheduler.advance(deal.duration - const Duration(milliseconds: 1));
+    expect(controller.isHumanTurn, isFalse);
+    scheduler.advance(const Duration(milliseconds: 1));
+    expect(controller.dealing, isNull);
+    expect(controller.isHumanTurn, isTrue);
+  });
+
+  test('the next hand is dealt from its mano before its first word', () {
+    final scheduler = ManualScheduler();
+    final controller = tableController(
+      hands: const {0: 'R 6 5 4', 1: 'S 7 6 1', 2: '4 5 6 7', 3: '4 5 1 7'},
+      mano: 1,
+      moves: [(1, const NoHayMus()), ...passes(1), ...passes(1), ...passes(1)],
+      scheduler: scheduler,
+    );
+    addTearDown(controller.dispose);
+    controller.nextHand();
+    expect(controller.match.handNumber, 2);
+    expect(controller.dealing!.seats.take(4), [2, 3, 0, 1]);
+    final requested = scheduler.requested.length;
+    scheduler.advance(controller.dealing!.duration);
+    expect(scheduler.requested.length, requested + 1);
+    expect(scheduler.requested.last, Pace.normal.thinking, reason: 'the mano');
+  });
+
+  test('the last discard of a round deals what each asked for, in order', () {
+    const hands = {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'};
+    final dealtHands = dealt(hands, mano: 1).hands;
+    Discard first(int seat, int count) =>
+        Discard(dealtHands[seat].take(count).toList());
+    final scheduler = ManualScheduler();
+    final controller = tableController(
+      hands: hands,
+      mano: 1,
+      moves: [
+        for (final seat in [1, 2, 3, 0]) (seat, const Mus()),
+        (1, first(1, 2)),
+        (2, first(2, 1)),
+        (3, first(3, 3)),
+      ],
+      scheduler: scheduler,
+    );
+    addTearDown(controller.dispose);
+    expect(controller.dealing, isNull);
+    controller.play(first(0, 1));
+    expect(controller.dealing!.seats, [1, 1, 2, 3, 3, 3, 0]);
+    expect(controller.humanMoves, isEmpty);
+    scheduler.advance(controller.dealing!.duration);
+    expect(controller.dealing, isNull);
   });
 
   test('a move of the human out of turn is ignored', () {

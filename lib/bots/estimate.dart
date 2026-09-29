@@ -8,10 +8,16 @@ import '../game/table.dart';
 import 'bot.dart';
 
 /// What a seat can work out about the other hands from what it sees: the
-/// cards that aren't in its hand, and who has said they have pares or juego
-/// this hand. Estimates deal the other hands at random from the unseen cards,
-/// keeping only deals that agree with those declarations.
+/// cards that aren't in its hand, who has said they have pares or juego
+/// this hand, and who cut the mus. Estimates deal the other hands at random
+/// from the unseen cards, keeping only deals that agree with those
+/// declarations and, mostly, giving whoever cut a hand worth cutting with.
 final class Knowledge {
+  /// How often a hand that doesn't look worth cutting is kept for whoever
+  /// cut: a cut can be a bluff. The mano cuts looser, since ties are its.
+  static const cutBluff = 0.25;
+  static const manoCutBluff = 0.5;
+
   Knowledge.of(SeatView view)
     : seat = view.seat,
       mano = view.mano,
@@ -24,7 +30,8 @@ final class Knowledge {
       declared = {
         for (final event in view.log.whereType<Declared>())
           (event.seat, event.lance): event.has,
-      };
+      },
+      cutter = view.log.whereType<NoHayMusSaid>().firstOrNull?.seat;
 
   final int seat;
   final int mano;
@@ -33,7 +40,13 @@ final class Knowledge {
   final List<PlayingCard> unseen;
   final Map<(int, Lance), bool> declared;
 
+  /// Who said «no hay mus» this hand, if anyone has.
+  final int? cutter;
+
   int get team => teamOf(seat);
+
+  /// A rival cut the mus: they are pleased with their cards.
+  bool get rivalCut => cutter != null && teamOf(cutter!) != team;
 
   /// Hands for the three other seats from the unseen cards, each dealt again
   /// until it agrees with that seat's declarations (after [tries] deals it is
@@ -54,7 +67,12 @@ final class Knowledge {
   ) {
     for (var attempt = 0; attempt < tries; attempt++) {
       left.shuffle(random);
-      if (_agrees(other, HandValue(left.sublist(0, 4), rules))) {
+      final value = HandValue(left.sublist(0, 4), rules);
+      if (_agrees(other, value) &&
+          (other != cutter ||
+              worthCutting(value) ||
+              random.nextDouble() <
+                  (other == mano ? manoCutBluff : cutBluff))) {
         break;
       }
     }
@@ -130,6 +148,16 @@ final class Knowledge {
     return points[team] - points[1 - team];
   }
 }
+
+/// Whether [value] is a hand players cut the mus with: medias or duples,
+/// a pair of kings or of aces, la 31, or pares and juego together.
+bool worthCutting(HandValue value) =>
+    value.pares == ParesKind.medias ||
+    value.pares == ParesKind.duples ||
+    (value.pares == ParesKind.par &&
+        (value.paresRanks.first == 12 || value.paresRanks.first == 1)) ||
+    value.points == 31 ||
+    (value.hasPares && value.hasJuego);
 
 /// The team with the best hand for [lance] among the seats that can play it,
 /// ties going to whoever speaks first (R-LAN-7); null when nobody can.

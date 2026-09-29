@@ -56,6 +56,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · The bots read the cut (#97).** Asked by the owner. Whoever
+  says «no hay mus» is usually pleased with their cards.
+  - **Estimates**: `Knowledge` deals whoever cut, mostly, a hand
+    `worthCutting`: medias or duples, a pair of kings or of aces, la 31,
+    or pares and juego together. A hand that isn't is kept 25 % of the
+    time (a cut can be a bluff), or 50 % if the cutter is mano, who cuts
+    looser.
+  - **So**: a rival's cut lowers a bot's chances in every envite and
+    answer, and a partner's cut raises them.
+  - **Bluffs** against rivals who cut are cut by (1 − bluffing) × 0.7: El
+    Prudente bluffs 37 % as often, El Calculador 51 %, La Temeraria 86 %,
+    El Farolero 97 %.
+  - **Measured**: head to head against the previous bot, 51.0 %
+    (Calculador) and 51.6 % (Farolero) over 800 matches, so it doesn't
+    play worse and plays more like people. Still unused: how many cards
+    each asked for in the discards.
 - **2026-09-29 · Who cut the mus, all hand long (#95).** «No se ve quién
   corta, y es información básica». Whoever cut keeps a pair of scissors
   on a cream disc (`CutBadge`) beside their avatar, opposite the mano's

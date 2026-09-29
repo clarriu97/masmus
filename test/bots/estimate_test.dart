@@ -13,12 +13,13 @@ import '../game/scenario.dart';
 Knowledge _knowledge(
   Map<int, String> hands, {
   List<(int, Move)> moves = const [],
+  int mano = 0,
 }) {
   var match = MatchState(
     rules: const Rules(),
     score: const [0, 0],
     handNumber: 1,
-    hand: dealt(hands),
+    hand: dealt(hands, mano: mano),
   );
   for (final (seat, move) in moves) {
     match = match.play(seat, move);
@@ -95,4 +96,68 @@ void main() {
       expect(advantage('4 5 6 7'), lessThan(0));
     },
   );
+
+  group('whoever cut the mus', () {
+    const hands = {0: 'R C 6 5', 1: '4 5 6 7', 2: '4 5 6 1', 3: 'S 7 6 4'};
+
+    double worthCuttingRate(Knowledge knowledge, int seat) {
+      final random = Random(1);
+      var worth = 0;
+      for (var i = 0; i < 400; i++) {
+        final hand = knowledge.sampleOthers(random)[seat]!;
+        if (worthCutting(HandValue(hand, const Rules()))) {
+          worth++;
+        }
+      }
+      return worth / 400;
+    }
+
+    test('is dealt a hand worth cutting with far more often than someone '
+        'who asked for mus', () {
+      final cut = _knowledge(
+        hands,
+        moves: [(0, const Mus()), (1, const NoHayMus())],
+      );
+      expect(cut.cutter, 1);
+      expect(cut.rivalCut, isTrue);
+      final cutter = worthCuttingRate(cut, 1);
+      final other = worthCuttingRate(cut, 3);
+      expect(cutter, greaterThan(other + 0.3), reason: '$cutter vs $other');
+    });
+
+    test('the mano cuts looser, so its cut says less', () {
+      final byMano = _knowledge(hands, mano: 1, moves: [(1, const NoHayMus())]);
+      final bySecond = _knowledge(
+        hands,
+        moves: [(0, const Mus()), (1, const NoHayMus())],
+      );
+      expect(
+        worthCuttingRate(byMano, 1),
+        lessThan(worthCuttingRate(bySecond, 1)),
+      );
+    });
+
+    test('a rival who cut makes the grande harder to win; a partner who cut '
+        'makes it easier', () {
+      double grande(List<(int, Move)> moves) => _knowledge(
+        hands,
+        moves: moves,
+      ).winChance(Lance.grande, Random(0), samples: 400);
+      final rival = grande([(0, const Mus()), (1, const NoHayMus())]);
+      final partner = grande([
+        (0, const Mus()),
+        (1, const Mus()),
+        (2, const NoHayMus()),
+      ]);
+      final nobody = _knowledge(
+        hands,
+      ).winChance(Lance.grande, Random(0), samples: 400);
+      expect(rival, lessThan(nobody));
+      expect(partner, greaterThan(rival));
+      expect(
+        _knowledge(hands, moves: [(0, const NoHayMus())]).rivalCut,
+        isFalse,
+      );
+    });
+  });
 }

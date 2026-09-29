@@ -238,6 +238,56 @@ void main() {
     }
   });
 
+  test('against rivals who cut the mus, the careful bluff far less and the '
+      'bluffers about the same', () {
+    int bluffs(Personality personality, {required bool rivalCut}) {
+      final match = _playAll(
+        _match({
+          0: '4 5 6 7',
+          1: 'S C 6 5',
+          2: '4 5 6 1',
+          3: 'R R C 1',
+        }, mano: 3),
+        [
+          if (rivalCut)
+            (3, const NoHayMus())
+          else ...[
+            (3, const Mus()),
+            (0, const NoHayMus()),
+          ],
+          (3, const Paso()),
+        ],
+      );
+      expect(match.hand.turn, 0);
+      var count = 0;
+      for (var seed = 0; seed < 400; seed++) {
+        final move = StrategicBot(
+          personality,
+          Random(seed),
+        ).choose(SeatView.of(match, 0));
+        if (move is Envido) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    final careful = bluffs(Personality.calculador, rivalCut: true);
+    final carefulFree = bluffs(Personality.calculador, rivalCut: false);
+    expect(
+      careful,
+      lessThan(carefulFree * 0.7),
+      reason: '$careful vs $carefulFree',
+    );
+    final bluffer = bluffs(Personality.farolero, rivalCut: true);
+    final blufferFree = bluffs(Personality.farolero, rivalCut: false);
+    expect(
+      bluffer,
+      greaterThan(blufferFree * 0.8),
+      reason: '$bluffer vs $blufferFree',
+    );
+  });
+
   test('plays whole matches with only legal moves', () {
     for (var seed = 0; seed < 12; seed++) {
       final bots = [

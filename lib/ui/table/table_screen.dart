@@ -424,26 +424,40 @@ class _YourHand extends StatelessWidget {
           if (onTap != null)
             Text(l10n.discardHint, style: text.bodySmall)
           else
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                spacing: AppSpacing.sm,
-                children: [
-                  if (view.yourTurn)
-                    PopIn(
-                      child: TableChip(l10n.tableYourTurn, highlighted: true),
-                    )
-                  else if (view.said[view.you] case final said?)
-                    PopIn(
-                      key: ValueKey(view.saidAt[view.you]),
-                      child: SpeechBubble(l10n.said(said, view)),
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    if (view.yourTurn)
+                      PopIn(
+                        child: TableChip(l10n.tableYourTurn, highlighted: true),
+                      )
+                    else if (view.said[view.you] case final said?)
+                      PopIn(
+                        key: ValueKey(view.saidAt[view.you]),
+                        child: SpeechBubble(l10n.said(said, view)),
+                      ),
+                    if (view.mano == view.you) TableChip(l10n.tableMano),
+                  ],
+                ),
+                if (help)
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      spacing: AppSpacing.sm,
+                      children: [
+                        for (final line in l10n.handHelp(view.value))
+                          TableChip(line),
+                      ],
                     ),
-                  if (view.mano == view.you) TableChip(l10n.tableMano),
-                  if (help)
-                    for (final line in l10n.handHelp(view.value))
-                      TableChip(line),
-                ],
-              ),
+                  ),
+              ],
             ),
           LayoutBuilder(
             builder: (context, constraints) {

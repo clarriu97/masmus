@@ -34,6 +34,10 @@ class TableActions extends StatefulWidget {
 
   final ValueChanged<Move> onMove;
 
+  /// Below this height, who bet what is only read at their seat and in
+  /// the middle, not again above the answers.
+  static const roomForBettor = 600.0;
+
   @override
   State<TableActions> createState() => _TableActionsState();
 }
@@ -109,7 +113,12 @@ class _TableActionsState extends State<TableActions> {
       return Column(
         spacing: AppSpacing.sm,
         children: [
-          _EnviteSaid(envite: envite, bettor: widget.bettor, view: widget.view),
+          if (MediaQuery.sizeOf(context).height >= TableActions.roomForBettor)
+            _EnviteSaid(
+              envite: envite,
+              bettor: widget.bettor,
+              view: widget.view,
+            ),
           row([
             ActionButton(
               label: l10n.actionNoQuiero,

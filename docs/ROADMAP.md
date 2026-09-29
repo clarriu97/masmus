@@ -56,6 +56,16 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Señas at the table (#35, part 2).**
+  - **Your partner's** show on its seat, in bold under its role («Seña:
+    Ciego»), as they are made.
+  - **Yours** show by your cards («Tu seña: Duples»), beside «Te toca», so
+    you know what you told. It never shrinks the hand help: on the
+    smallest phones that made the help unreadable.
+  - **Rivals' señas** are never shown.
+  - **«Cómo se juega»** has a section on señas with the cheat sheet: each
+    seña and its gesture.
+  - **«Señas» (con/sin)** in Nueva partida and in Ajustes.
 - **2026-09-29 · Señas, the rules and the bots (#35, part 1).**
   - **Rules**: R-SEN-1 to R-SEN-5 in `docs/RULES.md`, from the published
     rulebooks: dos reyes, medias de reyes, dos ases, medias de ases,
@@ -76,7 +86,6 @@ or right after; business model; languages at launch; license.
     Against `HeuristicBot`, 67.0 % (62.8–71.0).
   - **Discards**: they don't read the señas; the partner is about to
     change its cards too.
-  - **Next**: the table shows the señas (part 2).
 - **2026-09-29 · A partner's «no quiero» counts (#99).** The owner, mano,
   cut and bet 4 at the punto, and a bot accepted with 17. Reproduced: a
   rival refused and left it to his partner, who then estimated as if the

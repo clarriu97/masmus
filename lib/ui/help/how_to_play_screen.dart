@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../game/senas.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 
-/// The rules of docs/RULES.md told for playing, with examples; why the deal
+/// The rules of docs/RULES.md told for playing, with examples and the
+/// señas' cheat sheet; why the deal
 /// is fair; and a glossary.
 class HowToPlayScreen extends StatelessWidget {
   const HowToPlayScreen({super.key});
@@ -23,6 +25,17 @@ class HowToPlayScreen extends StatelessWidget {
         [l10n.howGrande, l10n.howChica, l10n.howPares, l10n.howJuego],
       ),
       (l10n.howBetsTitle, [l10n.howBets]),
+      (
+        l10n.howSenasTitle,
+        [
+          l10n.howSenas,
+          for (final sena in Sena.values)
+            l10n.howSenaLine(
+              l10n.senaName(sena.name),
+              l10n.senaGesture(sena.name),
+            ),
+        ],
+      ),
       (l10n.howCountTitle, [l10n.howCount]),
       (l10n.howFairTitle, [l10n.howFair]),
     ];

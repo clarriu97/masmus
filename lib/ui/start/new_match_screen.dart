@@ -131,6 +131,27 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                           ),
                         ),
                       ),
+                      const Divider(height: AppSpacing.xl),
+                      SettingRow(
+                        label: l10n.newMatchSenas,
+                        control: SegmentedButton<bool>(
+                          showSelectedIcon: false,
+                          segments: [
+                            ButtonSegment(
+                              value: true,
+                              label: Text(l10n.senasOn),
+                            ),
+                            ButtonSegment(
+                              value: false,
+                              label: Text(l10n.senasOff),
+                            ),
+                          ],
+                          selected: {_rules.senas},
+                          onSelectionChanged: (senas) => setState(
+                            () => _rules = _rules.copyWith(senas: senas.single),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: AppSpacing.xl),
                     ],
                   ),

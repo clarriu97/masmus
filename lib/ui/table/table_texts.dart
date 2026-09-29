@@ -1,6 +1,7 @@
 import '../../game/event.dart';
 import '../../game/hand_value.dart';
 import '../../game/outcome.dart';
+import '../../game/senas.dart';
 import '../../game/table.dart';
 import '../../l10n/app_localizations.dart';
 import 'table_view.dart';
@@ -108,6 +109,11 @@ extension TableTexts on AppLocalizations {
     OrdagoSaid() => saidOrdago,
     _ => throw ArgumentError.value(event, 'event', 'Nobody says it'),
   };
+
+  /// Señas in words, in the order they are made: «Treinta y una · Dos
+  /// reyes».
+  String senasText(List<Sena> senas) =>
+      [for (final sena in senas) senaName(sena.name)].join(' · ');
 
   /// Your pares, if any, and your juego or punto.
   List<String> handHelp(HandValue value) {

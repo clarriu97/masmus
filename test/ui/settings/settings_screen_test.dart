@@ -19,6 +19,8 @@ void main() {
     await tester.tap(find.text('4 reyes'));
     await tester.tap(find.text('A 30'));
     await tester.tap(find.text('De 5'));
+    await tester.ensureVisible(find.text('Sin señas'));
+    await tester.tap(find.text('Sin señas'));
     await tester.tap(find.text('Rápido'));
     await tester.pump();
     await tester.tap(find.byType(Switch));
@@ -28,6 +30,7 @@ void main() {
     expect(chosen.rules.kings, Kings.four);
     expect(chosen.rules.target, 30);
     expect(chosen.rules.games, 5);
+    expect(chosen.rules.senas, isFalse);
     expect(
       chosen.rules.kings,
       Kings.four,

@@ -4,6 +4,7 @@ import '../../game/hand_state.dart';
 import '../../game/hand_value.dart';
 import '../../game/match.dart';
 import '../../game/outcome.dart';
+import '../../game/senas.dart';
 import '../../game/table.dart';
 
 /// The steps of a hand, in the row at the top of the table. [juego] becomes
@@ -100,6 +101,8 @@ final class TableView {
       },
       thrown: _thrown(log),
       cutter: log.whereType<NoHayMusSaid>().firstOrNull?.seat,
+      partnerSenas: senasOf(hand, (you + 2) % 4),
+      yourSenas: senasOf(hand, you),
       bet: _bet(log),
       latest: live ? null : log.lastOrNull,
       stake: switch (hand.phase) {
@@ -132,6 +135,8 @@ final class TableView {
     required this.asked,
     required this.thrown,
     required this.cutter,
+    required this.partnerSenas,
+    required this.yourSenas,
     required this.bet,
     required this.latest,
     required this.stake,
@@ -160,6 +165,10 @@ final class TableView {
 
   /// Who cut the mus this hand, once the table has shown it.
   final int? cutter;
+
+  /// The señas your partner made to you, and yours to it.
+  final List<Sena> partnerSenas;
+  final List<Sena> yourSenas;
 
   /// Who has the floor: whose turn it is or, while the table shows what
   /// just happened, whoever just said it. Nobody while cards are dealt or

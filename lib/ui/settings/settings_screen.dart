@@ -127,6 +127,30 @@ class SettingsScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                          SettingRow(
+                            label: l10n.newMatchSenas,
+                            control: SegmentedButton<bool>(
+                              showSelectedIcon: false,
+                              segments: [
+                                ButtonSegment(
+                                  value: true,
+                                  label: Text(l10n.senasOn),
+                                ),
+                                ButtonSegment(
+                                  value: false,
+                                  label: Text(l10n.senasOff),
+                                ),
+                              ],
+                              selected: {rules.senas},
+                              onSelectionChanged: (senas) => change(
+                                (now) => now.copyWith(
+                                  rules: now.rules.copyWith(
+                                    senas: senas.single,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           heading(l10n.settingsPace),
                           SegmentedButton<Pace>(
                             showSelectedIcon: false,

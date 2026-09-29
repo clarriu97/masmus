@@ -1245,6 +1245,66 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cortaste el mus'**
   String get tableYouCut;
+
+  /// A seña partners make to each other (docs/RULES.md, R-SEN-1).
+  ///
+  /// In es, this message translates to:
+  /// **'{sena, select, treintaYUna{Treinta y una} duples{Duples} dosReyes{Dos reyes} mediasReyes{Medias de reyes} dosAses{Dos ases} mediasAses{Medias de ases} medias{Medias} treinta{Treinta} other{Ciego}}'**
+  String senaName(String sena);
+
+  /// How a seña is made, as the rulebooks say.
+  ///
+  /// In es, this message translates to:
+  /// **'{sena, select, treintaYUna{guiña un ojo} duples{levanta las cejas} dosReyes{se muerde el labio inferior} mediasReyes{lleva la comisura de los labios a un lado} dosAses{saca la punta de la lengua} mediasAses{saca la punta de la lengua hacia un lado} medias{lleva la comisura de los labios a un lado} treinta{guiña un ojo} other{cierra los dos ojos}}'**
+  String senaGesture(String sena);
+
+  /// Under your partner at the table: the señas it made to you.
+  ///
+  /// In es, this message translates to:
+  /// **'Seña: {senas}'**
+  String tablePartnerSenas(String senas);
+
+  /// By your cards: the señas you make to your partner.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu seña: {senas}'**
+  String tableYourSenas(String senas);
+
+  /// Whether partners make señas in the match.
+  ///
+  /// In es, this message translates to:
+  /// **'Señas'**
+  String get newMatchSenas;
+
+  /// The match is played with señas.
+  ///
+  /// In es, this message translates to:
+  /// **'Con señas'**
+  String get senasOn;
+
+  /// The match is played without señas.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin señas'**
+  String get senasOff;
+
+  /// Title of the section on señas in how to play.
+  ///
+  /// In es, this message translates to:
+  /// **'Señas'**
+  String get howSenasTitle;
+
+  /// How señas work at this table.
+  ///
+  /// In es, this message translates to:
+  /// **'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus; la de medias espera a que se cierre la grande, y la de treinta, a que se juegue al punto. Puedes jugar sin señas desde Nueva partida o Ajustes.'**
+  String get howSenas;
+
+  /// A line of the señas' cheat sheet: the seña and how it is made.
+  ///
+  /// In es, this message translates to:
+  /// **'{name}: {gesture}'**
+  String howSenaLine(String name, String gesture);
 }
 
 class _AppLocalizationsDelegate

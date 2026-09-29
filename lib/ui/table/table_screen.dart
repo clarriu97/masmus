@@ -564,6 +564,9 @@ class _Seats extends StatelessWidget {
       cardsKey: cardsKeys[seat],
       mano: seat == view.mano,
       cut: seat == view.cutter,
+      senas: seat == (view.you + 2) % 4 && view.partnerSenas.isNotEmpty
+          ? l10n.tablePartnerSenas(l10n.senasText(view.partnerSenas))
+          : null,
     );
     final you = view.you;
     return LayoutBuilder(
@@ -787,6 +790,10 @@ class _YourHand extends StatelessWidget {
                         PopIn(
                           key: ValueKey(view.saidAt[view.you]),
                           child: SpeechBubble(l10n.said(said, view)),
+                        ),
+                      if (view.yourSenas.isNotEmpty)
+                        TableChip(
+                          l10n.tableYourSenas(l10n.senasText(view.yourSenas)),
                         ),
                     ],
                   ),

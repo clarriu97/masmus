@@ -34,6 +34,7 @@ void main() {
     expect(started?.$2.kings, Kings.eight);
     expect(started?.$2.target, 40);
     expect(started?.$2.games, 1, reason: 'one juego');
+    expect(started?.$2.senas, isTrue, reason: 'with señas');
   });
 
   testWidgets('each partner says how it plays', (tester) async {
@@ -55,6 +56,8 @@ void main() {
     await tester.tap(find.text('A 30'));
     await tester.ensureVisible(find.text('De 3'));
     await tester.tap(find.text('De 3'));
+    await tester.ensureVisible(find.text('Sin señas'));
+    await tester.tap(find.text('Sin señas'));
     await tester.pump();
     expect(tile(tester, 'La Temeraria').selected, isTrue);
     expect(tile(tester, 'El Calculador').selected, isFalse);
@@ -64,6 +67,7 @@ void main() {
     expect(started?.$2.kings, Kings.four);
     expect(started?.$2.target, 30);
     expect(started?.$2.games, 3);
+    expect(started?.$2.senas, isFalse);
   });
 
   testWidgets('screen readers hear which partner is chosen', (tester) async {

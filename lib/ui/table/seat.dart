@@ -23,6 +23,7 @@ class Seat extends StatelessWidget {
     this.cards = 4,
     this.mano = false,
     this.cut = false,
+    this.senas,
     this.cardsKey,
     this.dimmed = false,
     super.key,
@@ -40,6 +41,9 @@ class Seat extends StatelessWidget {
 
   /// It cut the mus this hand: it keeps the [CutBadge].
   final bool cut;
+
+  /// The señas it made to you, in words, if it is your partner.
+  final String? senas;
 
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
@@ -70,6 +74,7 @@ class Seat extends StatelessWidget {
         role,
         if (mano) l10n.tableMano.toLowerCase(),
         if (cut) l10n.seatCut,
+        ?senas,
         ?asked,
         ?thinking ?? said,
       ].join('. '),
@@ -128,6 +133,18 @@ class Seat extends StatelessWidget {
                           l10n.seatCut,
                           style: text.labelSmall,
                           textAlign: TextAlign.center,
+                        ),
+                      if (senas case final senas?)
+                        PopIn(
+                          key: ValueKey(senas),
+                          child: Text(
+                            senas,
+                            style: text.labelMedium?.copyWith(
+                              color: AppColors.ink,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       if (asked case final asked?)
                         Text(

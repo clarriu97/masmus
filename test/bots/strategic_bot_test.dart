@@ -6,7 +6,9 @@ import 'package:masmus/bots/bot.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/bots/strategic_bot.dart';
 import 'package:masmus/game/cards.dart';
+import 'package:masmus/game/deck.dart';
 import 'package:masmus/game/event.dart';
+import 'package:masmus/game/game_random.dart';
 import 'package:masmus/game/hand_state.dart';
 import 'package:masmus/game/hand_value.dart';
 import 'package:masmus/game/match.dart';
@@ -286,6 +288,47 @@ void main() {
       greaterThan(blufferFree * 0.8),
       reason: '$bluffer vs $blufferFree',
     );
+  });
+
+  test('when the partner refused, a bot answers with its own hand alone: '
+      'nobody accepts an envite at the punto with 18 or less (a playtest '
+      'saw a 17 accept one)', () {
+    var answered = 0;
+    for (var seed = 0; seed < 700; seed++) {
+      final (deck, random) = shuffledDeck(GameRandom(seed));
+      var match = MatchState(
+        rules: const Rules(),
+        score: const [0, 0],
+        handNumber: 2,
+        hand: HandState.deal(
+          rules: const Rules(),
+          mano: 0,
+          deck: deck,
+          random: random,
+        ),
+      );
+      if (seats.any((seat) => match.hand.valueOf(seat).hasJuego)) {
+        continue;
+      }
+      match = match.play(0, const NoHayMus());
+      while (!_playing(match, Lance.punto)) {
+        match = match.play(match.hand.turn!, const Paso());
+      }
+      match = _playAll(match, [(0, const Envido(4)), (1, const NoQuiero())]);
+      final seat = match.hand.turn;
+      if (seat != 3 || match.hand.valueOf(3).points > 18) {
+        continue;
+      }
+      for (final personality in Personality.values) {
+        answered++;
+        expect(
+          StrategicBot(personality, Random(seed)).choose(SeatView.of(match, 3)),
+          isNot(isA<Quiero>()),
+          reason: '$personality, seed $seed',
+        );
+      }
+    }
+    expect(answered, greaterThan(40));
   });
 
   test('plays whole matches with only legal moves', () {

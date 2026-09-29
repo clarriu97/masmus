@@ -56,6 +56,15 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · A partner's «no quiero» counts (#99).** The owner, mano,
+  cut and bet 4 at the punto, and a bot accepted with 17. Reproduced: a
+  rival refused and left it to his partner, who then estimated as if the
+  hand of the one who had just refused could still win the lance. Now,
+  once the partner has refused the bet on the table, a bot estimates
+  with its own hand alone (`winChance(partner: false)`). Over 1014 deals
+  with nobody at juego, nobody accepts an envite at the punto with 18 or
+  less, and 27–29 still accept four times in five. Arena: 65.6 %
+  (61.3–69.6) against `HeuristicBot`.
 - **2026-09-29 · The bots read the cut (#97).** Asked by the owner. Whoever
   says «no hay mus» is usually pleased with their cards.
   - **Estimates**: `Knowledge` deals whoever cut, mostly, a hand

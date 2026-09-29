@@ -47,4 +47,19 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(HowToPlayScreen), findsNothing);
   });
+
+  testWidgets('the señas\' cheat sheet: each seña with its gesture', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildTestApp(const HowToPlayScreen()));
+    expect(find.text('Señas'), findsWidgets);
+    for (final line in [
+      'Dos reyes: se muerde el labio inferior',
+      'Duples: levanta las cejas',
+      'Treinta y una: guiña un ojo',
+      'Ciego: cierra los dos ojos',
+    ]) {
+      expect(find.text(line), findsOneWidget, reason: line);
+    }
+  });
 }

@@ -564,6 +564,9 @@ class _Seats extends StatelessWidget {
       cardsKey: cardsKeys[seat],
       mano: seat == view.mano,
       cut: seat == view.cutter,
+      senas: seat == (view.you + 2) % 4 && view.partnerSenas.isNotEmpty
+          ? l10n.tablePartnerSenas(l10n.senasText(view.partnerSenas))
+          : null,
     );
     final you = view.you;
     return LayoutBuilder(
@@ -791,14 +794,19 @@ class _YourHand extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (help)
+                if (help || view.yourSenas.isNotEmpty)
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Row(
                       spacing: AppSpacing.sm,
                       children: [
-                        for (final line in l10n.handHelp(view.value))
-                          TableChip(line),
+                        if (view.yourSenas.isNotEmpty)
+                          TableChip(
+                            l10n.tableYourSenas(l10n.senasText(view.yourSenas)),
+                          ),
+                        if (help)
+                          for (final line in l10n.handHelp(view.value))
+                            TableChip(line),
                       ],
                     ),
                   ),

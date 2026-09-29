@@ -882,4 +882,67 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tableYouCut => 'Cortaste el mus';
+
+  @override
+  String senaName(String sena) {
+    String _temp0 = intl.Intl.selectLogic(sena, {
+      'treintaYUna': 'Treinta y una',
+      'duples': 'Duples',
+      'dosReyes': 'Dos reyes',
+      'mediasReyes': 'Medias de reyes',
+      'dosAses': 'Dos ases',
+      'mediasAses': 'Medias de ases',
+      'medias': 'Medias',
+      'treinta': 'Treinta',
+      'other': 'Ciego',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String senaGesture(String sena) {
+    String _temp0 = intl.Intl.selectLogic(sena, {
+      'treintaYUna': 'guiña un ojo',
+      'duples': 'levanta las cejas',
+      'dosReyes': 'se muerde el labio inferior',
+      'mediasReyes': 'lleva la comisura de los labios a un lado',
+      'dosAses': 'saca la punta de la lengua',
+      'mediasAses': 'saca la punta de la lengua hacia un lado',
+      'medias': 'lleva la comisura de los labios a un lado',
+      'treinta': 'guiña un ojo',
+      'other': 'cierra los dos ojos',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String tablePartnerSenas(String senas) {
+    return 'Seña: $senas';
+  }
+
+  @override
+  String tableYourSenas(String senas) {
+    return 'Tu seña: $senas';
+  }
+
+  @override
+  String get newMatchSenas => 'Señas';
+
+  @override
+  String get senasOn => 'Con señas';
+
+  @override
+  String get senasOff => 'Sin señas';
+
+  @override
+  String get howSenasTitle => 'Señas';
+
+  @override
+  String get howSenas =>
+      'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus; la de medias espera a que se cierre la grande, y la de treinta, a que se juegue al punto. Puedes jugar sin señas desde Nueva partida o Ajustes.';
+
+  @override
+  String howSenaLine(String name, String gesture) {
+    return '$name: $gesture';
+  }
 }

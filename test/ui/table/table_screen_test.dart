@@ -166,7 +166,7 @@ void main() {
     );
     expect(find.byType(ThinkingBubble), findsOneWidget);
     expect(
-      find.bySemanticsLabel('El Calculador. compañero. pensando'),
+      find.bySemanticsLabel('El Calculador. compañero. Seña: Ciego. pensando'),
       findsOneWidget,
     );
   });
@@ -400,5 +400,19 @@ void main() {
     await tester.pump();
     expect(find.byType(CutBadge), findsOneWidget);
     expect(find.bySemanticsLabel('Cortaste el mus'), findsOneWidget);
+  });
+
+  testWidgets('your partner\'s señas show on its seat, and yours by your '
+      'cards; none during mus corrido', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    expect(_seat(tester, 'El Calculador').senas, 'Seña: Ciego');
+    expect(_seat(tester, 'El Prudente').senas, isNull, reason: 'a rival');
+    expect(find.text('Tu seña: Duples'), findsOneWidget);
+
+    await tester.pumpWidget(buildTestApp(tableScreen(tableMoments['mus']!())));
+    expect(_seat(tester, 'El Calculador').senas, isNull);
+    expect(find.textContaining('Tu seña'), findsNothing);
   });
 }

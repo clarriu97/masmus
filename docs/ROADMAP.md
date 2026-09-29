@@ -56,6 +56,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · A match of one juego, or the best of three or five
+  (#88).** The owner asked for it after his second playtest; vacas left
+  the list of things out of v1.
+  - **Rule**: R-FIN-5. Each juego starts from zero, with the mano after
+    the last one and mus corrido.
+  - **Where it is chosen**: «Juegos» (Uno, De 3, De 5) in Nueva partida
+    and in Ajustes, one by default.
+  - **Engine**: `Rules.games`. `MatchState` is one juego: `isOver` and
+    `winner` are the juego's, `games` the juegos won before it,
+    `matchWinner` who has won enough, and `nextGame()` deals the next
+    one.
+  - **At the table**: the juegos under the target («juegos 1–0»).
+  - **End of a juego**: whoever won it, how the match stands, and
+    «Siguiente juego» until the match is won. Only then «Revancha».
+  - **Saving**: a match between juegos is kept, and one saved before
+    juegos existed reads as one juego.
 - **2026-09-29 · The mano carries a token; the deck sits in the corner
   (#87).** The deck beside a bot didn't say whether that bot or the next
   was mano, and «mano» in small print wasn't enough.

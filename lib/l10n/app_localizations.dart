@@ -1197,6 +1197,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Mus corrido: quien corte será mano'**
   String get tableCorrido;
+
+  /// How many juegos the match is played to: one, or the best of three or five.
+  ///
+  /// In es, this message translates to:
+  /// **'Juegos'**
+  String get newMatchGames;
+
+  /// A choice of «Juegos»: one juego, or the best of three or five.
+  ///
+  /// In es, this message translates to:
+  /// **'{games, plural, =1{Uno} other{De {games}}}'**
+  String gamesCount(int games);
+
+  /// Under the target at the table, in a match of several juegos: juegos won by each team, yours first.
+  ///
+  /// In es, this message translates to:
+  /// **'juegos {us}–{them}'**
+  String tableGames(int us, int them);
+
+  /// Title at the end of a juego when the match goes on.
+  ///
+  /// In es, this message translates to:
+  /// **'{team, select, us{Juego para vosotros} other{Juego para ellos}}'**
+  String endGameWon(String team);
+
+  /// How the match of several juegos stands.
+  ///
+  /// In es, this message translates to:
+  /// **'Juegos: Nosotros {us} · Ellos {them} · al mejor de {games}'**
+  String endGames(int us, int them, int games);
+
+  /// Starts the next juego of the match.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente juego'**
+  String get endNextGame;
 }
 
 class _AppLocalizationsDelegate

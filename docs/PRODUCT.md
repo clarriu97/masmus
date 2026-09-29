@@ -84,10 +84,12 @@ The spec the engine implements is `docs/RULES.md` (#11).
   resume, settings (defaults, pace, hints), how to play, the fair-deal note.
 - Bots (M4): sensible mus, discards and bets; a partner who plays with you;
   señas between partners; consulting the partner; four personalities.
+- A match of one juego or the best of three or five (the owner asked for
+  it after his playtest, #88).
 - Quality (M5): accessibility, motion and sound that can be turned off,
   release configuration, end-to-end tests on simulators and emulators.
 
-**Out** (backlog in #46): online and friends, catching señas, vacas, 31 real
+**Out** (backlog in #46): online and friends, catching señas, 31 real
 and other regional variants, statistics, an interactive tutorial, difficulty
 levels, other languages, alternative tables and decks.
 

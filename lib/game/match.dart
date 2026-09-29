@@ -20,14 +20,17 @@ enum MatchEnd {
   ordago,
 }
 
-/// A match to [Rules.target] points: the score, the hand being played and,
-/// once it ends, the winner. Immutable and serializable like [HandState].
+/// A juego to [Rules.target] points within a match of [Rules.games]
+/// juegos: the juegos won so far, the score, the hand being played and,
+/// once the juego ends, its winner. Immutable and serializable like
+/// [HandState].
 final class MatchState {
   const MatchState({
     required this.rules,
     required this.score,
     required this.handNumber,
     required this.hand,
+    this.games = const [0, 0],
     this.winner,
     this.end,
   });
@@ -66,6 +69,9 @@ final class MatchState {
     score: List.unmodifiable((json['score']! as List<Object?>).cast<int>()),
     handNumber: json['handNumber']! as int,
     hand: HandState.fromJson(json['hand']! as Map<String, Object?>),
+    games: List.unmodifiable(
+      (json['games'] as List<Object?>? ?? const [0, 0]).cast<int>(),
+    ),
     winner: json['winner'] as int?,
     end: switch (json['end']) {
       final String end => MatchEnd.values.byName(end),
@@ -80,10 +86,27 @@ final class MatchState {
 
   final int handNumber;
   final HandState hand;
+
+  /// Juegos each team won before this one.
+  final List<int> games;
+
+  /// Who won this juego, once it is over.
   final int? winner;
   final MatchEnd? end;
 
+  /// This juego is over: nothing more is played in it.
   bool get isOver => winner != null;
+
+  /// Juegos each team has won, this one included once it is over.
+  List<int> get gamesNow => [
+    for (final team in [0, 1]) games[team] + (winner == team ? 1 : 0),
+  ];
+
+  /// The team that has won the match: enough juegos (R-FIN-5).
+  int? get matchWinner =>
+      [0, 1].where((team) => gamesNow[team] >= rules.gamesToWin).firstOrNull;
+
+  bool get isMatchOver => matchWinner != null;
 
   /// The hand is counted and the match goes on: waiting for [nextHand].
   bool get isCounted => hand.phase is HandOver && !isOver;
@@ -109,12 +132,13 @@ final class MatchState {
 
   MatchState play(int seat, Move move) {
     if (isOver) {
-      throw StateError('The match is over');
+      throw StateError('The juego is over');
     }
     final next = MatchState(
       rules: rules,
       score: score,
       handNumber: handNumber,
+      games: games,
       hand: hands.play(hand, seat, move),
     );
     final now = next._withPointsNow;
@@ -142,6 +166,7 @@ final class MatchState {
       rules: rules,
       score: List.unmodifiable(scoreNow),
       handNumber: handNumber + 1,
+      games: games,
       hand: HandState.deal(
         rules: rules,
         mano: nextSeat(hand.mano),
@@ -151,11 +176,34 @@ final class MatchState {
     );
   }
 
+  /// The next juego once this one is over and the match isn't: from zero,
+  /// with the next mano and mus corrido (R-FIN-5, R-ORD-3, R-MUS-5).
+  MatchState nextGame() {
+    if (!isOver || isMatchOver) {
+      throw StateError('No juego to play next');
+    }
+    final (deck, random) = shuffledDeck(hand.random);
+    return MatchState(
+      rules: rules,
+      score: const [0, 0],
+      handNumber: 1,
+      games: List.unmodifiable(gamesNow),
+      hand: HandState.deal(
+        rules: rules,
+        mano: nextSeat(hand.mano),
+        deck: deck,
+        random: random,
+        musCorrido: true,
+      ),
+    );
+  }
+
   MatchState _won(int team, MatchEnd end) => MatchState(
     rules: rules,
     score: score,
     handNumber: handNumber,
     hand: hand,
+    games: games,
     winner: team,
     end: end,
   );
@@ -165,6 +213,7 @@ final class MatchState {
     'score': score,
     'handNumber': handNumber,
     'hand': hand.toJson(),
+    'games': games,
     'winner': winner,
     'end': end?.name,
   };

@@ -90,10 +90,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                           ],
                           selected: {_rules.kings},
                           onSelectionChanged: (kings) => setState(
-                            () => _rules = Rules(
-                              kings: kings.single,
-                              target: _rules.target,
-                            ),
+                            () => _rules = _rules.copyWith(kings: kings.single),
                           ),
                         ),
                       ),
@@ -111,10 +108,26 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                           ],
                           selected: {_rules.target},
                           onSelectionChanged: (target) => setState(
-                            () => _rules = Rules(
-                              kings: _rules.kings,
-                              target: target.single,
-                            ),
+                            () =>
+                                _rules = _rules.copyWith(target: target.single),
+                          ),
+                        ),
+                      ),
+                      const Divider(height: AppSpacing.xl),
+                      SettingRow(
+                        label: l10n.newMatchGames,
+                        control: SegmentedButton<int>(
+                          showSelectedIcon: false,
+                          segments: [
+                            for (final games in const [1, 3, 5])
+                              ButtonSegment(
+                                value: games,
+                                label: Text(l10n.gamesCount(games)),
+                              ),
+                          ],
+                          selected: {_rules.games},
+                          onSelectionChanged: (games) => setState(
+                            () => _rules = _rules.copyWith(games: games.single),
                           ),
                         ),
                       ),

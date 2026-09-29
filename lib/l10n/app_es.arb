@@ -1027,5 +1027,58 @@
   "tableCorrido": "Mus corrido: quien corte será mano",
   "@tableCorrido": {
     "description": "Under the row of the hand during the first hand's mus, which goes round until someone cuts it."
+  },
+  "newMatchGames": "Juegos",
+  "@newMatchGames": {
+    "description": "How many juegos the match is played to: one, or the best of three or five."
+  },
+  "gamesCount": "{games, plural, =1{Uno} other{De {games}}}",
+  "@gamesCount": {
+    "description": "A choice of «Juegos»: one juego, or the best of three or five.",
+    "placeholders": {
+      "games": {
+        "type": "int"
+      }
+    }
+  },
+  "tableGames": "juegos {us}–{them}",
+  "@tableGames": {
+    "description": "Under the target at the table, in a match of several juegos: juegos won by each team, yours first.",
+    "placeholders": {
+      "us": {
+        "type": "int"
+      },
+      "them": {
+        "type": "int"
+      }
+    }
+  },
+  "endGameWon": "{team, select, us{Juego para vosotros} other{Juego para ellos}}",
+  "@endGameWon": {
+    "description": "Title at the end of a juego when the match goes on.",
+    "placeholders": {
+      "team": {
+        "type": "String"
+      }
+    }
+  },
+  "endGames": "Juegos: Nosotros {us} · Ellos {them} · al mejor de {games}",
+  "@endGames": {
+    "description": "How the match of several juegos stands.",
+    "placeholders": {
+      "us": {
+        "type": "int"
+      },
+      "them": {
+        "type": "int"
+      },
+      "games": {
+        "type": "int"
+      }
+    }
+  },
+  "endNextGame": "Siguiente juego",
+  "@endNextGame": {
+    "description": "Starts the next juego of the match."
   }
 }

@@ -33,6 +33,7 @@ void main() {
     expect(started?.$1, Personality.calculador);
     expect(started?.$2.kings, Kings.eight);
     expect(started?.$2.target, 40);
+    expect(started?.$2.games, 1, reason: 'one juego');
   });
 
   testWidgets('each partner says how it plays', (tester) async {
@@ -52,6 +53,8 @@ void main() {
     await tester.tap(find.text('La Temeraria'));
     await tester.tap(find.text('4 reyes'));
     await tester.tap(find.text('A 30'));
+    await tester.ensureVisible(find.text('De 3'));
+    await tester.tap(find.text('De 3'));
     await tester.pump();
     expect(tile(tester, 'La Temeraria').selected, isTrue);
     expect(tile(tester, 'El Calculador').selected, isFalse);
@@ -60,6 +63,7 @@ void main() {
     expect(started?.$1, Personality.temeraria);
     expect(started?.$2.kings, Kings.four);
     expect(started?.$2.target, 30);
+    expect(started?.$2.games, 3);
   });
 
   testWidgets('screen readers hear which partner is chosen', (tester) async {

@@ -229,6 +229,10 @@ class _TableScreenState extends State<TableScreen>
           you: you,
           onRematch: widget.onRematch,
           onHome: widget.onExit,
+          onNextGame: () {
+            _counted = false;
+            controller.nextGame();
+          },
         );
       }
       if (caughtUp && match.hand.phase is HandOver) {
@@ -450,9 +454,19 @@ class _TopBar extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            l10n.tableTarget(view.target),
-            style: Theme.of(context).textTheme.labelSmall,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.tableTarget(view.target),
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+              if (view.games case (final us, final them)?)
+                Text(
+                  l10n.tableGames(us, them),
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+            ],
           ),
           IconButton(
             tooltip: l10n.historyTitle,

@@ -140,6 +140,18 @@ final class MatchController extends ChangeNotifier {
     _deal(Deal.hand(_match.hand.mano));
   }
 
+  /// Deals the next juego once one is over and the match isn't. Ignored
+  /// otherwise.
+  void nextGame() {
+    if (!_match.isOver || _match.isMatchOver || catchingUp) {
+      return;
+    }
+    _match = _match.nextGame();
+    _shown = 0;
+    _save();
+    _deal(Deal.hand(_match.hand.mano));
+  }
+
   /// The move is shown at once; what it brought, one thing at a time.
   void _apply(int seat, Move move) {
     _shown = _match.hand.log.length + 1;
@@ -150,7 +162,7 @@ final class MatchController extends ChangeNotifier {
 
   /// Saves after every move; a match that is over is no longer resumed.
   void _save() => unawaited(
-    _match.isOver
+    _match.isMatchOver
         ? _store.clear()
         : _store.save(SavedMatch(match: _match, bots: seats)),
   );

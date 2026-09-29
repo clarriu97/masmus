@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'hand_state.dart';
 import 'hand_value.dart';
 import 'outcome.dart';
@@ -70,20 +72,31 @@ final class HandCount {
 
 /// Counts a finished [hand] starting from the score [before], stopping at the
 /// first team to reach [target] (R-REC-6). An accepted órdago decides the
-/// match on its own (R-FIN-3).
+/// match on its own and its winner scores the whole game (R-FIN-3).
 HandCount countHand(HandState hand, List<int> before, int target) {
   assert(hand.phase is HandOver);
   final lances = [for (final outcome in hand.outcomes) _count(hand, outcome)];
   final ordago = lances.where((c) => c.outcome is OrdagoQuerido).firstOrNull;
   if (ordago != null) {
+    final team = ordago.team!;
+    final game = max(0, target - before[team]);
     return HandCount(
       lances: [
         for (final lance in lances)
-          lance == ordago ? lance : lance.notCounted(),
+          lance == ordago
+              ? LanceCount(
+                  lance.outcome,
+                  team: team,
+                  seat: lance.seat,
+                  stake: game,
+                )
+              : lance.notCounted(),
       ],
       before: before,
-      after: before,
-      winner: ordago.team,
+      after: [
+        for (final side in [0, 1]) before[side] + (side == team ? game : 0),
+      ],
+      winner: team,
     );
   }
   final after = [...before];

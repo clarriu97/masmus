@@ -206,6 +206,14 @@ void _checkState({
         count.after[team] - count.before[team] == added,
         'the count of team $team does not add up',
       );
+      if (count.lances.any(
+        (lance) => lance.outcome is OrdagoQuerido && lance.team == team,
+      )) {
+        check(
+          count.after[team] >= after.rules.target,
+          'an accepted órdago did not score the whole game',
+        );
+      }
     }
   }
 

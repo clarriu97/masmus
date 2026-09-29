@@ -876,4 +876,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get endNextGame => 'Siguiente juego';
+
+  @override
+  String get seatCut => 'cortó el mus';
+
+  @override
+  String get tableYouCut => 'Cortaste el mus';
 }

@@ -56,6 +56,11 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-09-29 · Who cut the mus, all hand long (#95).** «No se ve quién
+  corta, y es información básica». Whoever cut keeps a pair of scissors
+  on a cream disc (`CutBadge`) beside their avatar, opposite the mano's
+  token, and «cortó el mus» under their name for the rest of the hand, or
+  the scissors by your cards if you cut. Screen readers hear it.
 - **2026-09-29 · Nobody pays to see (#93).** The owner saw El Farolero bet
   at grande with nothing and then accept his raise. Answering, a bot now
   discounts its read by 0.1 more when the rivals raised over its own

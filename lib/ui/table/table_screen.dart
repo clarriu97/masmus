@@ -16,6 +16,7 @@ import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../help/how_to_play_screen.dart';
 import '../theme/app_theme.dart';
+import '../widgets/cut_badge.dart';
 import '../widgets/felt.dart';
 import '../widgets/lance_chip.dart';
 import '../widgets/mano_token.dart';
@@ -562,6 +563,7 @@ class _Seats extends StatelessWidget {
       dimmed: view.speaker != null && view.speaker != seat,
       cardsKey: cardsKeys[seat],
       mano: seat == view.mano,
+      cut: seat == view.cutter,
     );
     final you = view.you;
     return LayoutBuilder(
@@ -750,6 +752,7 @@ class _YourHand extends StatelessWidget {
               spacing: AppSpacing.sm,
               children: [
                 if (view.mano == view.you) const ManoToken(),
+                if (view.cutter == view.you) const CutBadge(),
                 Flexible(child: Text(l10n.discardHint, style: text.bodySmall)),
               ],
             )
@@ -768,6 +771,11 @@ class _YourHand extends StatelessWidget {
                     children: [
                       if (view.mano == view.you)
                         const PopIn(child: ManoToken()),
+                      if (view.cutter == view.you)
+                        Semantics(
+                          label: l10n.tableYouCut,
+                          child: const PopIn(child: CutBadge()),
+                        ),
                       if (view.yourTurn)
                         PopIn(
                           child: TableChip(

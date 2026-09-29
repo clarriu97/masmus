@@ -1233,6 +1233,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Siguiente juego'**
   String get endNextGame;
+
+  /// Under the name of whoever cut the mus this hand.
+  ///
+  /// In es, this message translates to:
+  /// **'cortó el mus'**
+  String get seatCut;
+
+  /// For screen readers, by your cards when you cut the mus.
+  ///
+  /// In es, this message translates to:
+  /// **'Cortaste el mus'**
+  String get tableYouCut;
 }
 
 class _AppLocalizationsDelegate

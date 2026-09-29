@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../theme/app_theme.dart';
+import '../widgets/cut_badge.dart';
 import '../widgets/mano_token.dart';
 import '../widgets/speech_bubble.dart';
 
@@ -21,6 +22,7 @@ class Seat extends StatelessWidget {
     this.asked,
     this.cards = 4,
     this.mano = false,
+    this.cut = false,
     this.cardsKey,
     this.dimmed = false,
     super.key,
@@ -35,6 +37,9 @@ class Seat extends StatelessWidget {
 
   /// It speaks first: it carries the [ManoToken].
   final bool mano;
+
+  /// It cut the mus this hand: it keeps the [CutBadge].
+  final bool cut;
 
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
@@ -64,6 +69,7 @@ class Seat extends StatelessWidget {
         name,
         role,
         if (mano) l10n.tableMano.toLowerCase(),
+        if (cut) l10n.seatCut,
         ?asked,
         ?thinking ?? said,
       ].join('. '),
@@ -117,6 +123,12 @@ class Seat extends StatelessWidget {
                         style: text.labelSmall,
                         textAlign: TextAlign.center,
                       ),
+                      if (cut)
+                        Text(
+                          l10n.seatCut,
+                          style: text.labelSmall,
+                          textAlign: TextAlign.center,
+                        ),
                       if (asked case final asked?)
                         Text(
                           asked,
@@ -145,6 +157,11 @@ class Seat extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (cut)
+                  Transform.translate(
+                    offset: const Offset(-26, 22),
+                    child: const PopIn(child: CutBadge()),
+                  ),
                 if (mano)
                   Transform.translate(
                     offset: const Offset(26, 22),

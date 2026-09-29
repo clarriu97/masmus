@@ -68,6 +68,11 @@ final class StrategicBot implements Bot {
         : _answer(view, lance, chance, envite);
   }
 
+  /// Bluffing into rivals who cut the mus rarely works: they like their
+  /// cards. The careful personalities hold back the most.
+  double _againstACut(SeatView view) =>
+      Knowledge.of(view).rivalCut ? 1 - (1 - personality.bluffing) * 0.7 : 1;
+
   /// Nobody has bet yet in this lance.
   Move _open(SeatView view, Lance lance, double chance) {
     final boldness = personality.boldness;
@@ -81,7 +86,8 @@ final class StrategicBot implements Bot {
       return const Envido(minEnvido);
     }
     final bluffs =
-        chance < 0.35 && _random.nextDouble() < personality.bluffing * 0.22;
+        chance < 0.35 &&
+        _random.nextDouble() < personality.bluffing * 0.22 * _againstACut(view);
     return bluffs ? const Envido(minEnvido) : const Paso();
   }
 

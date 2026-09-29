@@ -143,6 +143,16 @@ final class TableView {
   final int? turn;
   bool get yourTurn => turn == you;
 
+  /// Who has the floor: whose turn it is or, while the table shows what
+  /// just happened, whoever just said it. Nobody while cards are dealt or
+  /// a lance closes.
+  int? get speaker =>
+      turn ??
+      switch (latest) {
+        final GameEvent event? when _spoken(event) => _seatOf(event),
+        _ => null,
+      };
+
   final List<StepView> steps;
 
   /// The last thing each seat said in the step being played, or in the one

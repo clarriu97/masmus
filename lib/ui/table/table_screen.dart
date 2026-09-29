@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../bots/heuristic_bot.dart';
 import '../../controllers/match_controller.dart';
@@ -85,19 +87,27 @@ class _TableScreenState extends State<TableScreen>
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(_dealIfDealing);
-    _dealIfDealing();
+    widget.controller.addListener(_followController);
+    _followController();
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_dealIfDealing);
+    widget.controller.removeListener(_followController);
     _dealt.dispose();
     super.dispose();
   }
 
-  void _dealIfDealing() {
-    final deal = widget.controller.dealing;
+  var _wasYourTurn = false;
+
+  void _followController() {
+    final controller = widget.controller;
+    final yourTurn = controller.isHumanTurn;
+    if (yourTurn && !_wasYourTurn) {
+      unawaited(HapticFeedback.mediumImpact());
+    }
+    _wasYourTurn = yourTurn;
+    final deal = controller.dealing;
     if (deal == _deal) {
       return;
     }
@@ -495,6 +505,7 @@ class _Seats extends StatelessWidget {
       },
       saidAt: view.saidAt[seat],
       cards: onTable[seat]!,
+      dimmed: view.speaker != null && view.speaker != seat,
       cardsKey: cardsKeys[seat],
       deckKey: deckKey,
       deck: seat != view.mano
@@ -577,6 +588,7 @@ class _Center extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            _Pointer(view: view),
             Text(
               l10n.center(view).toUpperCase(),
               style: text.labelSmall,
@@ -593,6 +605,37 @@ class _Center extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// An arrow in the middle of the table pointing at whoever has the floor,
+/// or its room while nobody does.
+class _Pointer extends StatelessWidget {
+  const _Pointer({required this.view});
+
+  static const size = 32.0;
+
+  final TableView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final speaker = view.speaker;
+    if (speaker == null) {
+      return const SizedBox.square(dimension: size);
+    }
+    return AnimatedRotation(
+      turns: switch ((speaker - view.you) % 4) {
+        2 => 0,
+        1 => 0.25,
+        0 => 0.5,
+        _ => 0.75,
+      },
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : AppMotion.medium,
+      curve: AppMotion.curve,
+      child: const Icon(Icons.arrow_upward, size: size, color: AppColors.turn),
     );
   }
 }
@@ -627,8 +670,22 @@ class _YourHand extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final onTap = this.onTap;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+    return AnimatedContainer(
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : AppMotion.short,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: view.yourTurn ? AppColors.turn : AppColors.turn.withAlpha(0),
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(AppRadii.lg),
+      ),
       child: Column(
         spacing: AppSpacing.sm,
         children: [

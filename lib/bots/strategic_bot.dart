@@ -25,6 +25,16 @@ final class StrategicBot implements Bot {
   /// is discounted by this much for every envite of theirs in the lance.
   static const betSignal = 0.12;
 
+  /// A raise over our own envite says more than an envite: the rival heard
+  /// ours and went further. Its read is discounted by this much more.
+  static const raiseSignal = 0.1;
+
+  /// Whatever the odds, nobody pays to see with less than this read: an
+  /// envite with this at the most, and a raise over our own envite with
+  /// [raisedFloor]. Below it, refuse, or a bluffer may raise again.
+  static const callFloor = 0.3;
+  static const raisedFloor = 0.4;
+
   /// Envites a team says at most in a lance: the first and one raise.
   /// After that it only accepts, refuses or goes to órdago.
   static const maxEnvites = 2;
@@ -80,7 +90,12 @@ final class StrategicBot implements Bot {
     final team = teamOf(view.seat);
     final theirs = envites.where((seat) => teamOf(seat) != team).length;
     final ours = envites.length - theirs;
-    final read = (chance - betSignal * theirs).clamp(0.0, 1.0);
+    final raisedOverUs = ours > 0 && theirs > 0;
+    final read =
+        (chance - betSignal * theirs - (raisedOverUs ? raiseSignal : 0)).clamp(
+          0.0,
+          1.0,
+        );
     if (envite.ordago) {
       return read > _continuing(view, give: envite.noQuieroPoints)
           ? const Quiero()
@@ -106,7 +121,14 @@ final class StrategicBot implements Bot {
     final needed = partnerAnswers
         ? max(breakEven, 0.5) - boldness * 0.1
         : breakEven - boldness * 0.08;
-    return read > needed ? const Quiero() : const NoQuiero();
+    if (read > needed && read >= (raisedOverUs ? raisedFloor : callFloor)) {
+      return const Quiero();
+    }
+    final bluffsAgain =
+        canRaise &&
+        raisedOverUs &&
+        _random.nextDouble() < personality.bluffing * 0.15;
+    return bluffsAgain ? const Envido(minEnvido) : const NoQuiero();
   }
 
   /// Who said each envite of the lance being played, in order.

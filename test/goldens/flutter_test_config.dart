@@ -13,9 +13,11 @@ import 'package:flutter_test/flutter_test.dart';
 /// this for almost every pixel.
 const _channelTolerance = 32;
 
-/// Fraction of changed pixels allowed (0.01 %). Machine noise measured in 1RM
-/// at most 0.003 %; changing one letter of a title is about 0.1 %.
-const _pixelTolerance = 0.0001;
+/// Fraction of changed pixels allowed (0.03 %). Machine noise measured in 1RM
+/// at most 0.003 %, here up to 0.0105 % on the densest text (how to play on
+/// the iPhone SE, local Mac against the runner); changing one letter of a
+/// title is about 0.1 %.
+const _pixelTolerance = 0.0003;
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();

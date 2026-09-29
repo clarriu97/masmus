@@ -10,6 +10,7 @@ import '../../game/hand_state.dart';
 import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
+import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../help/how_to_play_screen.dart';
 import '../theme/app_theme.dart';
@@ -60,9 +61,104 @@ class TableScreen extends StatefulWidget {
   State<TableScreen> createState() => _TableScreenState();
 }
 
-class _TableScreenState extends State<TableScreen> {
+class _TableScreenState extends State<TableScreen>
+    with SingleTickerProviderStateMixin {
+  static const _back = PlayingCard(Suit.oros, 1);
+
   /// The cards you have marked to throw away.
   final _marked = <PlayingCard>{};
+
+  /// The deal being drawn, and how far it has gone.
+  Deal? _deal;
+  late final _dealt = AnimationController(vsync: this);
+
+  final _layer = GlobalKey();
+  final _deck = GlobalKey();
+  final _cards = [for (var seat = 0; seat < 4; seat++) GlobalKey()];
+
+  /// Where the deck and each seat's cards were at the last frame.
+  Rect? _deckRect;
+  final _rows = <int, Rect>{};
+
+  bool get _reducedMotion => MediaQuery.disableAnimationsOf(context);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_dealIfDealing);
+    _dealIfDealing();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_dealIfDealing);
+    _dealt.dispose();
+    super.dispose();
+  }
+
+  void _dealIfDealing() {
+    final deal = widget.controller.dealing;
+    if (deal == _deal) {
+      return;
+    }
+    _deal = deal;
+    if (deal != null) {
+      _dealt
+        ..duration = deal.duration
+        ..forward(from: 0);
+    }
+  }
+
+  /// How far the [k]th card of the deal has flown: 0 in the deck, 1 landed.
+  double _flight(int k) {
+    final deal = _deal;
+    if (deal == null || _reducedMotion) {
+      return 1;
+    }
+    final elapsed = deal.duration * _dealt.value;
+    return ((elapsed - Deal.between * k).inMicroseconds /
+            Deal.flight.inMicroseconds)
+        .clamp(0, 1);
+  }
+
+  /// How many of [seat]'s [cards] have landed by now.
+  int _landed(int seat, int cards) {
+    final deal = _deal;
+    if (deal == null) {
+      return cards;
+    }
+    var flying = 0;
+    for (final (k, dealt) in deal.seats.indexed) {
+      if (dealt == seat && _flight(k) < 1) {
+        flying++;
+      }
+    }
+    return cards - flying;
+  }
+
+  void _measure() {
+    final layer = _layer.currentContext?.findRenderObject();
+    if (layer is! RenderBox || !layer.hasSize) {
+      return;
+    }
+    Rect? rectOf(GlobalKey key) {
+      final box = key.currentContext?.findRenderObject();
+      if (box is! RenderBox || !box.hasSize || !box.attached) {
+        return null;
+      }
+      return MatrixUtils.transformRect(
+        box.getTransformTo(layer),
+        Offset.zero & box.size,
+      );
+    }
+
+    _deckRect = rectOf(_deck);
+    for (final (seat, key) in _cards.indexed) {
+      if (rectOf(key) case final rect?) {
+        _rows[seat] = rect;
+      }
+    }
+  }
 
   /// The last count has been seen: the end of the match comes next.
   var _counted = false;
@@ -78,7 +174,7 @@ class _TableScreenState extends State<TableScreen> {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: widget.controller,
+    listenable: Listenable.merge([widget.controller, _dealt]),
     builder: (context, _) {
       final l10n = AppLocalizations.of(context);
       final controller = widget.controller;
@@ -108,68 +204,98 @@ class _TableScreenState extends State<TableScreen> {
               : controller.nextHand,
         );
       }
-      final view = TableView.of(match, you: you, shown: controller.shown);
+      final view = TableView.of(
+        match,
+        you: you,
+        shown: controller.shown,
+        dealing: controller.dealing != null,
+      );
       if (!view.youDiscard) {
         _marked.clear();
       }
+      if (_deal != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+      }
+      final onTable = {
+        for (final seat in [0, 1, 2, 3])
+          seat: _landed(
+            seat,
+            seat == you ? view.cards.length : 4 - (view.thrown[seat] ?? 0),
+          ),
+      };
       return MediaQuery.withClampedTextScaling(
         maxScaleFactor: TableScreen.maxTextScale,
         child: Scaffold(
           body: Felt(
             child: SafeArea(
-              child: Column(
+              child: Stack(
+                key: _layer,
                 children: [
-                  _TopBar(
-                    view: view,
-                    onExit: widget.onExit,
-                    onHistory: () => showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => HandHistory(
-                        log: match.hand.log.sublist(0, controller.shown),
+                  Column(
+                    children: [
+                      _TopBar(
                         view: view,
-                        names: {
-                          you: l10n.countYou,
-                          for (final MapEntry(key: seat, value: bot)
-                              in bots.entries)
-                            seat: l10n.personalityName(bot),
-                        },
-                      ),
-                    ),
-                  ),
-                  _Steps(view: view),
-                  Expanded(
-                    child: _Seats(view: view, bots: bots),
-                  ),
-                  _YourHand(
-                    view: view,
-                    help: widget.handHelp,
-                    marked: _marked,
-                    onTap: view.youDiscard ? _toggle : null,
-                  ),
-                  _Status(view: view, bots: bots),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                    ),
-                    child: view.yourTurn && controller.humanMoves.isNotEmpty
-                        ? TableActions(
-                            key: ValueKey(controller.match.hand.phase),
-                            moves: controller.humanMoves,
+                        onExit: widget.onExit,
+                        onHistory: () => showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => HandHistory(
+                            log: match.hand.log.sublist(0, controller.shown),
                             view: view,
-                            bettor: switch (view.stake?.bettor) {
-                              final bettor? when bots.containsKey(bettor) =>
-                                l10n.personalityName(bots[bettor]!),
-                              _ => null,
+                            names: {
+                              you: l10n.countYou,
+                              for (final MapEntry(key: seat, value: bot)
+                                  in bots.entries)
+                                seat: l10n.personalityName(bot),
                             },
-                            marked: _marked.toList(),
-                            onMove: _play,
-                          )
-                        : _TurnBar(view: view, bots: bots),
+                          ),
+                        ),
+                      ),
+                      _Steps(view: view),
+                      Expanded(
+                        child: _Seats(
+                          view: view,
+                          bots: bots,
+                          onTable: onTable,
+                          cardsKeys: _cards,
+                          deckKey: _deck,
+                        ),
+                      ),
+                      _YourHand(
+                        view: view,
+                        help: widget.handHelp,
+                        marked: _marked,
+                        onTap: view.youDiscard ? _toggle : null,
+                        onTable: onTable[you]!,
+                        cardsKey: _cards[you],
+                        deckKey: _deck,
+                      ),
+                      _Status(view: view, bots: bots),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                        ),
+                        child: view.yourTurn && controller.humanMoves.isNotEmpty
+                            ? TableActions(
+                                key: ValueKey(controller.match.hand.phase),
+                                moves: controller.humanMoves,
+                                view: view,
+                                bettor: switch (view.stake?.bettor) {
+                                  final bettor? when bots.containsKey(bettor) =>
+                                    l10n.personalityName(bots[bettor]!),
+                                  _ => null,
+                                },
+                                marked: _marked.toList(),
+                                onMove: _play,
+                              )
+                            : _TurnBar(view: view, bots: bots),
+                      ),
+                    ],
                   ),
+                  ..._flying(you),
                 ],
               ),
             ),
@@ -177,6 +303,63 @@ class _TableScreenState extends State<TableScreen> {
         ),
       );
     },
+  );
+
+  /// The cards in the air, from the deck to whoever gets each.
+  List<Widget> _flying(int you) {
+    final deal = _deal;
+    final deck = _deckRect;
+    if (deal == null || deck == null || _reducedMotion) {
+      return const [];
+    }
+    final yours = deal.seats.where((seat) => seat == you).length;
+    var slot = 4 - yours;
+    final flying = <Widget>[];
+    for (final (k, seat) in deal.seats.indexed) {
+      final t = _flight(k);
+      final row = _rows[seat];
+      if (t > 0 && t < 1 && row != null) {
+        flying.add(
+          _flyingCard(
+            from: deck.center,
+            to: seat == you ? _slotCenter(row, slot) : row.center,
+            t: t,
+            width: seat == you
+                ? DeckView.cardWidth +
+                      (_slotWidth(row) - DeckView.cardWidth) * t
+                : DeckView.cardWidth,
+          ),
+        );
+      }
+      if (seat == you) {
+        slot++;
+      }
+    }
+    return flying;
+  }
+
+  Widget _flyingCard({
+    required Offset from,
+    required Offset to,
+    required double t,
+    required double width,
+  }) {
+    final at = Offset.lerp(from, to, Curves.easeOutCubic.transform(t))!;
+    final height = width / PlayingCardView.aspectRatio;
+    return Positioned(
+      left: at.dx - width / 2,
+      top: at.dy - height / 2,
+      child: IgnorePointer(
+        child: PlayingCardView(_back, width: width, faceUp: false),
+      ),
+    );
+  }
+
+  static double _slotWidth(Rect row) => (row.width - 3 * AppSpacing.sm) / 4;
+
+  static Offset _slotCenter(Rect row, int slot) => Offset(
+    row.left + slot * (_slotWidth(row) + AppSpacing.sm) + _slotWidth(row) / 2,
+    row.center.dy,
   );
 }
 
@@ -276,12 +459,24 @@ class _Steps extends StatelessWidget {
 /// in the middle. On a short screen the three sit in a row, and the bet is
 /// read in the row of the hand; scaled down if it still doesn't fit.
 class _Seats extends StatelessWidget {
-  const _Seats({required this.view, required this.bots});
+  const _Seats({
+    required this.view,
+    required this.bots,
+    required this.onTable,
+    required this.cardsKeys,
+    required this.deckKey,
+  });
 
   static const compactBelow = 260.0;
 
   final TableView view;
   final Map<int, Personality> bots;
+
+  /// How many cards each seat holds on the table by now.
+  final Map<int, int> onTable;
+
+  final List<Key> cardsKeys;
+  final Key deckKey;
 
   @override
   Widget build(BuildContext context) {
@@ -299,6 +494,14 @@ class _Seats extends StatelessWidget {
         null => null,
       },
       saidAt: view.saidAt[seat],
+      cards: onTable[seat]!,
+      cardsKey: cardsKeys[seat],
+      deckKey: deckKey,
+      deck: seat != view.mano
+          ? null
+          : (seat - view.you) % 4 == 1
+          ? AxisDirection.left
+          : AxisDirection.right,
     );
     final you = view.you;
     return LayoutBuilder(
@@ -401,6 +604,9 @@ class _YourHand extends StatelessWidget {
     required this.help,
     required this.marked,
     required this.onTap,
+    required this.onTable,
+    required this.cardsKey,
+    required this.deckKey,
   });
 
   final TableView view;
@@ -408,21 +614,31 @@ class _YourHand extends StatelessWidget {
   final Set<PlayingCard> marked;
   final ValueChanged<PlayingCard>? onTap;
 
+  /// How many of your cards have been dealt to you by now.
+  final int onTable;
+
+  final Key cardsKey;
+  final Key deckKey;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final onTap = this.onTap;
-    final motion = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : AppMotion.medium;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Column(
         spacing: AppSpacing.sm,
         children: [
           if (onTap != null)
-            Text(l10n.discardHint, style: text.bodySmall)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: AppSpacing.sm,
+              children: [
+                if (view.mano == view.you) DeckView(key: deckKey),
+                Flexible(child: Text(l10n.discardHint, style: text.bodySmall)),
+              ],
+            )
           else
             Wrap(
               alignment: WrapAlignment.center,
@@ -434,6 +650,7 @@ class _YourHand extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   spacing: AppSpacing.sm,
                   children: [
+                    if (view.mano == view.you) DeckView(key: deckKey),
                     if (view.yourTurn)
                       PopIn(
                         child: TableChip(l10n.tableYourTurn, highlighted: true),
@@ -479,22 +696,14 @@ class _YourHand extends StatelessWidget {
                             PlayingCardView.lift,
                 ),
                 child: Row(
+                  key: cardsKey,
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: AppSpacing.sm,
                   children: [
-                    for (final card in view.cards)
-                      TweenAnimationBuilder<double>(
+                    for (final (i, card) in view.cards.indexed)
+                      Visibility.maintain(
                         key: ValueKey(card),
-                        tween: Tween(begin: 0, end: 1),
-                        duration: motion,
-                        curve: AppMotion.curve,
-                        builder: (context, shown, child) => Opacity(
-                          opacity: shown,
-                          child: Transform.translate(
-                            offset: Offset(0, (1 - shown) * 24),
-                            child: child,
-                          ),
-                        ),
+                        visible: i < onTable,
                         child: PlayingCardView(
                           card,
                           width: width,

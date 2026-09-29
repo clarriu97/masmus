@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/event.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/services/scheduler.dart';
+import 'package:masmus/ui/cards/deck_view.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/count_view.dart';
 import 'package:masmus/ui/table/hand_history.dart';
@@ -29,7 +31,17 @@ void main() {
     expect(_seat(tester, 'El Prudente').role, 'rival');
     expect(_seat(tester, 'La Temeraria').role, 'rival · postre');
     final cards = tester.widgetList<PlayingCardView>(
-      find.byType(PlayingCardView),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is PlayingCardView &&
+            find
+                .ancestor(
+                  of: find.byWidget(widget),
+                  matching: find.byType(DeckView),
+                )
+                .evaluate()
+                .isEmpty,
+      ),
     );
     expect(cards.where((card) => card.faceUp), hasLength(4));
     expect(cards.where((card) => !card.faceUp), hasLength(12));
@@ -219,5 +231,35 @@ void main() {
     for (final step in ['Mus', 'Grande', 'Chica']) {
       expect(find.descendant(of: sheet, matching: find.text(step)), findsOne);
     }
+  });
+
+  testWidgets('the deck sits by the mano, on the side of the postre', (
+    tester,
+  ) async {
+    Iterable<Element> shownDecks() => find
+        .byType(DeckView)
+        .evaluate()
+        .where(
+          (deck) =>
+              deck.findAncestorWidgetOfExactType<Visibility>()?.visible ?? true,
+        );
+
+    await tester.pumpWidget(buildTestApp(tableScreen(tableMoments['mus']!())));
+    expect(shownDecks(), hasLength(1));
+    expect(
+      find.ancestor(
+        of: find.byWidget(shownDecks().single.widget),
+        matching: find.byType(Seat),
+      ),
+      findsNothing,
+      reason: 'you are mano: the deck is by your cards',
+    );
+
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    expect(shownDecks(), hasLength(1));
+    expect(_seat(tester, 'El Prudente').deck, AxisDirection.left);
+    expect(_seat(tester, 'El Calculador').deck, isNull);
   });
 }

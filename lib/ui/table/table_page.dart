@@ -69,7 +69,7 @@ class _TablePageState extends State<TablePage> {
     final saved = widget.saved;
     if (saved != null) {
       _bots = saved.bots;
-      _controller = _play(saved.match);
+      _controller = _play(saved.match, deal: false);
       return;
     }
     final partner = widget.partner!;
@@ -81,17 +81,21 @@ class _TablePageState extends State<TablePage> {
     _controller = _play(MatchState.start(seed: _seed, rules: widget.rules!));
   }
 
-  MatchController _play(MatchState match) => MatchController(
-    match: match,
-    bots: {
-      for (final MapEntry(key: seat, value: personality) in _bots.entries)
-        seat: StrategicBot(personality, Random(_seed + seat)),
-    },
-    seats: _bots,
-    scheduler: widget.scheduler ?? Scheduler(),
-    store: widget.store ?? MatchStore.inMemory(),
-    pace: widget.pace,
-  );
+  /// A new match starts with its deal on the table; a saved one resumes
+  /// with the cards already dealt.
+  MatchController _play(MatchState match, {bool deal = true}) =>
+      MatchController(
+        match: match,
+        bots: {
+          for (final MapEntry(key: seat, value: personality) in _bots.entries)
+            seat: StrategicBot(personality, Random(_seed + seat)),
+        },
+        seats: _bots,
+        scheduler: widget.scheduler ?? Scheduler(),
+        store: widget.store ?? MatchStore.inMemory(),
+        pace: widget.pace,
+        deal: deal,
+      );
 
   /// Another match: the same bots in the same seats and the same rules,
   /// a new deal.

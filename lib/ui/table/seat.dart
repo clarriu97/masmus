@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../game/cards.dart';
 import '../../l10n/app_localizations.dart';
+import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../theme/app_theme.dart';
 import '../widgets/speech_bubble.dart';
@@ -17,8 +18,25 @@ class Seat extends StatelessWidget {
     this.said,
     this.saidAt,
     this.asked,
+    this.cards = 4,
+    this.deck,
+    this.cardsKey,
+    this.deckKey,
     super.key,
   });
+
+  /// How many cards it holds on the table: fewer while it discards or
+  /// while they are dealt.
+  final int cards;
+
+  /// It is mano: the deck sits on this side of its cards.
+  final AxisDirection? deck;
+
+  /// Where its cards are, for the deal to fly to.
+  final Key? cardsKey;
+
+  /// Where the deck is, for the deal to fly from.
+  final Key? deckKey;
 
   final String name;
   final String role;
@@ -74,19 +92,34 @@ class Seat extends StatelessWidget {
             if (asked case final asked?)
               Text(asked, style: text.labelSmall, textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.xs),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < 4; i++)
-                  Align(
-                    widthFactor: i == 3 ? 1 : 0.55,
-                    child: const PlayingCardView(
-                      _back,
-                      width: 22,
-                      faceUp: false,
-                    ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: AppSpacing.xs,
+                children: [
+                  _Deck(shown: deck == AxisDirection.left, deckKey: deckKey),
+                  Row(
+                    key: cardsKey,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < 4; i++)
+                        Align(
+                          widthFactor: i == 3 ? 1 : 0.55,
+                          child: Visibility.maintain(
+                            visible: i < cards,
+                            child: const PlayingCardView(
+                              _back,
+                              width: DeckView.cardWidth,
+                              faceUp: false,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
+                  _Deck(shown: deck == AxisDirection.right, deckKey: deckKey),
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.sm),
             if (thinking != null)
@@ -104,4 +137,19 @@ class Seat extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The deck on one side of the cards, or the room it takes on the other,
+/// so the cards stay centered.
+class _Deck extends StatelessWidget {
+  const _Deck({required this.shown, required this.deckKey});
+
+  final bool shown;
+  final Key? deckKey;
+
+  @override
+  Widget build(BuildContext context) => Visibility.maintain(
+    visible: shown,
+    child: DeckView(key: shown ? deckKey : null),
+  );
 }

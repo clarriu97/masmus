@@ -101,24 +101,58 @@ void main() {
     }
   });
 
-  testWidgets('the new card comes in with a short fade', (tester) async {
-    await discardAll(tester, ManualScheduler());
-    final newCard = find.ancestor(
-      of: find.byType(PlayingCardView),
-      matching: find.byWidgetPredicate(
-        (widget) => widget is Opacity && widget.opacity < 1,
-      ),
+  List<PlayingCardView> yourCards(WidgetTester tester) => [
+    for (final element in find.byType(PlayingCardView).evaluate())
+      if (element.widget case final PlayingCardView card
+          when card.faceUp &&
+              (element.findAncestorWidgetOfExactType<Visibility>()?.visible ??
+                  true))
+        card,
+  ];
+
+  testWidgets('the cards asked for are dealt from the deck, one after '
+      'another, and only then can anyone play', (tester) async {
+    final scheduler = ManualScheduler();
+    final controller = await discardAll(tester, scheduler);
+    final deal = controller.dealing!;
+    expect(deal.seats, [
+      for (final discard in controller.match.hand.log.whereType<Discarded>())
+        for (var i = 0; i < discard.count; i++) discard.seat,
+    ], reason: 'what each asked for, from the mano on');
+    expect(deal.seats.where((seat) => seat == 0), hasLength(1));
+    expect(
+      yourCards(tester),
+      hasLength(3),
+      reason: 'the new one is on its way',
     );
-    expect(newCard, findsOneWidget);
-    await tester.pumpAndSettle();
-    expect(newCard, findsNothing);
+    expect(controller.humanMoves, isEmpty);
+    expect(find.text('Te toca'), findsNothing, reason: 'nobody, while dealing');
+
+    await tester.pump(Deal.flight ~/ 2);
+    expect(
+      find.ancestor(
+        of: find.byType(PlayingCardView),
+        matching: find.byType(IgnorePointer),
+      ),
+      findsWidgets,
+      reason: 'a card in the air',
+    );
+    await tester.pump(deal.duration);
+    expect(yourCards(tester), hasLength(4));
+    scheduler.advance(deal.duration);
+    await tester.pump();
+    expect(controller.dealing, isNull);
   });
 
-  testWidgets('with reduced motion it is there at once', (tester) async {
+  testWidgets('with reduced motion the cards are there at once', (
+    tester,
+  ) async {
     tester.platformDispatcher.accessibilityFeaturesTestValue =
         const FakeAccessibilityFeatures(disableAnimations: true);
     addTearDown(tester.platformDispatcher.clearAllTestValues);
-    await discardAll(tester, ManualScheduler());
+    final controller = await discardAll(tester, ManualScheduler());
+    expect(controller.dealing, isNotNull);
+    expect(yourCards(tester), hasLength(4));
     expect(
       find.byWidgetPredicate(
         (widget) => widget is Opacity && widget.opacity < 1,

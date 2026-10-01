@@ -535,6 +535,10 @@ class _Seats extends StatelessWidget {
 
   static const compactBelow = 260.0;
 
+  /// From this height on the faces are big enough to read their gestures;
+  /// below it they stay small so names and words keep their size.
+  static const bigFacesFrom = 380.0;
+
   final TableView view;
   final Map<int, Personality> bots;
 
@@ -546,7 +550,8 @@ class _Seats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    Widget seatOf(int seat) => Seat(
+    Widget seatOf(int seat, double faceSize) => Seat(
+      faceSize: faceSize,
       personality: bots[seat]!,
       name: l10n.personalityName(bots[seat]!),
       role: l10n.seatRole(view, seat),
@@ -572,40 +577,43 @@ class _Seats extends StatelessWidget {
     );
     final you = view.you;
     return LayoutBuilder(
-      builder: (context, constraints) => FittedBox(
-        fit: BoxFit.scaleDown,
-        child: SizedBox(
-          width: constraints.maxWidth,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.md,
+      builder: (context, constraints) {
+        final face = constraints.maxHeight >= bigFacesFrom ? 80.0 : 56.0;
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          child: SizedBox(
+            width: constraints.maxWidth,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.md,
+              ),
+              child: constraints.maxHeight < compactBelow
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final seat in [you + 3, you + 2, you + 1])
+                          Expanded(child: seatOf(seat % 4, face)),
+                      ],
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.md,
+                      children: [
+                        seatOf((you + 2) % 4, face),
+                        Row(
+                          children: [
+                            Expanded(child: seatOf((you + 3) % 4, face)),
+                            _Center(view: view, bots: bots),
+                            Expanded(child: seatOf((you + 1) % 4, face)),
+                          ],
+                        ),
+                      ],
+                    ),
             ),
-            child: constraints.maxHeight < compactBelow
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (final seat in [you + 3, you + 2, you + 1])
-                        Expanded(child: seatOf(seat % 4)),
-                    ],
-                  )
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: AppSpacing.md,
-                    children: [
-                      seatOf((you + 2) % 4),
-                      Row(
-                        children: [
-                          Expanded(child: seatOf((you + 3) % 4)),
-                          _Center(view: view, bots: bots),
-                          Expanded(child: seatOf((you + 1) % 4)),
-                        ],
-                      ),
-                    ],
-                  ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

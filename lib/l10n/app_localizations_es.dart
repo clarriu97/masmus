@@ -902,14 +902,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String senaGesture(String sena) {
     String _temp0 = intl.Intl.selectLogic(sena, {
-      'treintaYUna': 'guiña un ojo',
+      'treintaYUna': 'guiña un ojo, al ver las cartas',
       'duples': 'levanta las cejas',
       'dosReyes': 'se muerde el labio inferior',
-      'mediasReyes': 'lleva la comisura de los labios a un lado',
+      'mediasReyes':
+          'lleva la comisura de los labios a un lado, al ver las cartas',
       'dosAses': 'saca la punta de la lengua',
       'mediasAses': 'saca la punta de la lengua hacia un lado',
-      'medias': 'lleva la comisura de los labios a un lado',
-      'treinta': 'guiña un ojo',
+      'medias':
+          'lleva la comisura a un lado como las de reyes, pero solo con la grande ya cerrada',
+      'treinta': 'guiña un ojo como la 31, pero solo cuando se juega al punto',
       'other': 'cierra los dos ojos',
     });
     return '$_temp0';
@@ -939,7 +941,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get howSenas =>
-      'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus; la de medias espera a que se cierre la grande, y la de treinta, a que se juegue al punto. Puedes jugar sin señas desde Nueva partida o Ajustes.';
+      'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus. Dos señas comparten gesto y se distinguen por cuándo se hacen: la comisura a un lado al ver las cartas son medias de reyes, y con la grande ya cerrada, medias de otra carta; el guiño al ver las cartas es la 31, y al punto, treinta. Puedes jugar sin señas desde Nueva partida o Ajustes.';
 
   @override
   String howSenaLine(String name, String gesture) {

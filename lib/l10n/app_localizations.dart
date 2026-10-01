@@ -1255,7 +1255,7 @@ abstract class AppLocalizations {
   /// How a seña is made, as the rulebooks say.
   ///
   /// In es, this message translates to:
-  /// **'{sena, select, treintaYUna{guiña un ojo} duples{levanta las cejas} dosReyes{se muerde el labio inferior} mediasReyes{lleva la comisura de los labios a un lado} dosAses{saca la punta de la lengua} mediasAses{saca la punta de la lengua hacia un lado} medias{lleva la comisura de los labios a un lado} treinta{guiña un ojo} other{cierra los dos ojos}}'**
+  /// **'{sena, select, treintaYUna{guiña un ojo, al ver las cartas} duples{levanta las cejas} dosReyes{se muerde el labio inferior} mediasReyes{lleva la comisura de los labios a un lado, al ver las cartas} dosAses{saca la punta de la lengua} mediasAses{saca la punta de la lengua hacia un lado} medias{lleva la comisura a un lado como las de reyes, pero solo con la grande ya cerrada} treinta{guiña un ojo como la 31, pero solo cuando se juega al punto} other{cierra los dos ojos}}'**
   String senaGesture(String sena);
 
   /// Under your partner at the table: the señas it made to you.
@@ -1297,7 +1297,7 @@ abstract class AppLocalizations {
   /// How señas work at this table.
   ///
   /// In es, this message translates to:
-  /// **'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus; la de medias espera a que se cierre la grande, y la de treinta, a que se juegue al punto. Puedes jugar sin señas desde Nueva partida o Ajustes.'**
+  /// **'Los compañeros se dicen lo que llevan con señas, que los rivales no ven. Son siempre verdaderas y completas: tu compañero te hace las suyas y tú las tuyas, y la mesa las enseña. En la primera mano no hay señas hasta que se corta el mus. Dos señas comparten gesto y se distinguen por cuándo se hacen: la comisura a un lado al ver las cartas son medias de reyes, y con la grande ya cerrada, medias de otra carta; el guiño al ver las cartas es la 31, y al punto, treinta. Puedes jugar sin señas desde Nueva partida o Ajustes.'**
   String get howSenas;
 
   /// A line of the señas' cheat sheet: the seña and how it is made.

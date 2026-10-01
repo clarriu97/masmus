@@ -29,6 +29,7 @@ class Seat extends StatelessWidget {
     this.cut = false,
     this.senas,
     this.senaGestures = const [],
+    this.faceSize = 56,
     this.cardsKey,
     this.dimmed = false,
     super.key,
@@ -52,6 +53,9 @@ class Seat extends StatelessWidget {
 
   /// Those señas, acted out by its face.
   final List<Sena> senaGestures;
+
+  /// Big enough to read its gestures where the table has room.
+  final double faceSize;
 
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
@@ -120,6 +124,7 @@ class Seat extends StatelessWidget {
                             thinking: thinking != null,
                             spoke: saidAt,
                             senas: senaGestures,
+                            size: faceSize,
                           ),
                         ),
                       ),

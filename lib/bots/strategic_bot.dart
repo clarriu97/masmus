@@ -29,8 +29,8 @@ final class StrategicBot implements Bot {
   /// is discounted by this much for every envite of theirs in the lance.
   static const betSignal = 0.12;
 
-  /// A raise over our own envite says more than an envite: the rival heard
-  /// ours and went further. Its read is discounted by this much more.
+  /// A raise over this bot's own envite says more than an envite: the rival
+  /// heard it and went further. Its read is discounted by this much more.
   static const raiseSignal = 0.1;
 
   /// Whatever the odds, nobody pays to see with less than this read: an
@@ -38,6 +38,17 @@ final class StrategicBot implements Bot {
   /// [raisedFloor]. Below it, refuse, or a bluffer may raise again.
   static const callFloor = 0.3;
   static const raisedFloor = 0.4;
+
+  /// A partner's envite in the lance says its hand is good: the read goes up
+  /// by this much for each.
+  static const partnerSignal = 0.1;
+
+  /// With the partner still to answer, a bot accepts only when it is clear,
+  /// and otherwise leaves the decision to it: [clearAccept] for an envite,
+  /// a read [clearOrdago] above the chance of winning the match by refusing
+  /// for an órdago.
+  static const clearAccept = 0.6;
+  static const clearOrdago = 0.1;
 
   /// Envites a team says at most in a lance: the first and one raise.
   /// After that it only accepts, refuses or goes to órdago.
@@ -105,14 +116,19 @@ final class StrategicBot implements Bot {
     final team = teamOf(view.seat);
     final theirs = envites.where((seat) => teamOf(seat) != team).length;
     final ours = envites.length - theirs;
-    final raisedOverUs = ours > 0 && theirs > 0;
+    final mine = envites.where((seat) => seat == view.seat).length;
+    final raisedOverUs = mine > 0 && theirs > 0;
+    final partnerBets = envites.where((seat) => seat == (view.seat + 2) % 4);
     final read =
-        (chance - betSignal * theirs - (raisedOverUs ? raiseSignal : 0)).clamp(
-          0.0,
-          1.0,
-        );
+        (chance -
+                betSignal * theirs -
+                (raisedOverUs ? raiseSignal : 0) +
+                partnerSignal * partnerBets.length)
+            .clamp(0.0, 1.0);
+    final partnerAnswers = envite.responders.length > 1;
     if (envite.ordago) {
-      return read > _continuing(view, give: envite.noQuieroPoints)
+      final refusing = _continuing(view, give: envite.noQuieroPoints);
+      return read > refusing + (partnerAnswers ? clearOrdago : 0)
           ? const Quiero()
           : const NoQuiero();
     }
@@ -124,7 +140,6 @@ final class StrategicBot implements Bot {
     if (canRaise && read >= 0.78 - boldness * 0.08) {
       return const Envido(minEnvido);
     }
-    final partnerAnswers = envite.responders.length > 1;
     final stake = envite.stake.toDouble();
     final combinations = switch (lance) {
       Lance.pares => 2.0,
@@ -134,7 +149,7 @@ final class StrategicBot implements Bot {
     final breakEven =
         (stake - envite.noQuieroPoints) / (2 * stake + combinations);
     final needed = partnerAnswers
-        ? max(breakEven, 0.5) - boldness * 0.1
+        ? max(breakEven, clearAccept) - boldness * 0.05
         : breakEven - boldness * 0.08;
     if (read > needed && read >= (raisedOverUs ? raisedFloor : callFloor)) {
       return const Quiero();

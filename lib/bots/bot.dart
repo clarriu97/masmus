@@ -10,10 +10,12 @@ import '../game/senas.dart';
 /// What one seat can see of the match: its own cards and what is public.
 /// Bots decide from this alone; they never get the other hands or the deck.
 final class SeatView {
-  SeatView.of(MatchState match, this.seat)
+  SeatView.of(MatchState match, int seat)
+    : this._(match, seat, legal: match.legalMoves(seat));
+
+  SeatView._(MatchState match, this.seat, {required this.legal})
     : rules = match.rules,
       cards = match.hand.hands[seat],
-      legal = match.legalMoves(seat),
       log = match.hand.log,
       score = match.scoreNow,
       mano = match.hand.mano,
@@ -29,6 +31,11 @@ final class SeatView {
           ? senasOf(match.hand, (seat + 2) % 4)
           : null,
       senaMoment = moment(match.hand);
+
+  /// What [advisor] can see, asked what it would do in its partner's place:
+  /// its own cards and what is public, with the partner's moves.
+  SeatView.advising(MatchState match, int advisor)
+    : this._(match, advisor, legal: match.legalMoves((advisor + 2) % 4));
 
   final int seat;
   final Rules rules;

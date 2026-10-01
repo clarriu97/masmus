@@ -415,4 +415,27 @@ void main() {
     expect(_seat(tester, 'El Calculador').senas, isNull);
     expect(find.textContaining('Tu seña'), findsNothing);
   });
+
+  testWidgets('on your turn you can ask your partner what it would do; it '
+      'answers by its seat until you play', (tester) async {
+    final controller = tableMoments['chica_answer']!();
+    await tester.pumpWidget(buildTestApp(tableScreen(controller)));
+    await tester.tap(find.byTooltip('Consultar al compañero'));
+    await tester.pump();
+    final advice = _seat(tester, 'El Calculador').advice;
+    expect(advice, startsWith('Yo: '));
+    expect(find.byTooltip('Consultar al compañero'), findsNothing);
+    expect(controller.match.hand.log.length, controller.shown);
+
+    await tester.tap(find.text('No quiero'));
+    await tester.pump();
+    expect(_seat(tester, 'El Calculador').advice, isNull);
+  });
+
+  testWidgets('nobody to consult while a bot has the turn', (tester) async {
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['grande_envite']!())),
+    );
+    expect(find.byTooltip('Consultar al compañero'), findsNothing);
+  });
 }

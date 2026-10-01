@@ -75,18 +75,27 @@ void tableFlows() {
         find.widgetWithText(FilledButton, label),
     ];
     bool over() => controller.match.hand.phase is HandOver;
+    var consulted = false;
     while (!over()) {
       await waitUntil(
         tester,
         () => over() || answers.any((answer) => answer.evaluate().isNotEmpty),
       );
       if (!over()) {
+        final consult = find.byTooltip('Consultar al compañero');
+        if (!consulted && consult.evaluate().isNotEmpty) {
+          await tester.tap(consult);
+          await tester.pump();
+          expect(find.textContaining('Yo: '), findsOneWidget);
+          consulted = true;
+        }
         await tester.tap(
           answers.firstWhere((answer) => answer.evaluate().isNotEmpty),
         );
         await tester.pump();
       }
     }
+    expect(consulted, isTrue, reason: 'the partner was consulted once');
     expect(controller.match.count, isNotNull);
     await waitFor(tester, find.text('Recuento'));
     await tester.tap(find.text('Siguiente mano'));

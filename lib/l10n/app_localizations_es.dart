@@ -947,4 +947,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String howSenaLine(String name, String gesture) {
     return '$name: $gesture';
   }
+
+  @override
+  String get adviceAsk => 'Consultar al compañero';
+
+  @override
+  String adviceSays(String move) {
+    return 'Yo: $move';
+  }
 }

@@ -121,6 +121,21 @@ final class MatchController extends ChangeNotifier {
 
   bool get isHumanTurn => humanMoves.isNotEmpty;
 
+  /// What the human's partner would do in their place, from its own cards
+  /// and what is public: asked at the table, never played or logged. None
+  /// outside the human's turn or while they discard, where the partner
+  /// can't judge cards it doesn't see.
+  Move? advice() {
+    final human = humanSeat;
+    if (human == null ||
+        !isHumanTurn ||
+        humanMoves.contains(MoveKind.discard)) {
+      return null;
+    }
+    final partner = (human + 2) % 4;
+    return bots[partner]?.choose(SeatView.advising(_match, partner));
+  }
+
   /// The human's move. Ignored when it isn't their turn (a late tap); an
   /// illegal move on their turn is a bug and throws.
   void play(Move move) {

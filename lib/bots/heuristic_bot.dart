@@ -10,7 +10,7 @@ import 'bot.dart';
 /// these numbers change.
 enum Personality {
   prudente(boldness: 0.2, bluffing: 0.1),
-  temeraria(boldness: 0.9, bluffing: 0.8),
+  temeraria(boldness: 0.9, bluffing: 0.4),
   calculador(boldness: 0.5, bluffing: 0.3),
   farolero(boldness: 0.7, bluffing: 0.95);
 

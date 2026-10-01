@@ -10,8 +10,12 @@ class ChoiceTile extends StatelessWidget {
     required this.subtitle,
     required this.selected,
     required this.onTap,
+    this.leading,
     super.key,
   });
+
+  /// A picture beside the words, such as a bot's face.
+  final Widget? leading;
 
   final String title;
   final String subtitle;
@@ -40,13 +44,21 @@ class ChoiceTile extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: kMinTapTarget),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                spacing: AppSpacing.xs,
+              child: Row(
+                spacing: AppSpacing.sm,
                 children: [
-                  Text(title, style: text.titleMedium),
-                  Text(subtitle, style: text.bodySmall),
+                  ?leading,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.xs,
+                      children: [
+                        Text(title, style: text.titleMedium),
+                        Text(subtitle, style: text.bodySmall),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

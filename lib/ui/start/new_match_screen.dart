@@ -4,14 +4,15 @@ import '../../bots/heuristic_bot.dart';
 import '../../game/rules.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
+import '../faces/face.dart';
 import '../theme/app_theme.dart';
 import '../widgets/action_button.dart';
 import '../widgets/choice_tile.dart';
 import '../widgets/felt.dart';
 import '../widgets/setting_row.dart';
 
-/// Setting up a match: the partner and the rules. Everything starts at its
-/// default, so one tap is enough to play.
+/// Setting up a match: the partner, the rivals and the rules. Everything
+/// starts at its default (rivals at random), so one tap is enough to play.
 class NewMatchScreen extends StatefulWidget {
   const NewMatchScreen({
     required this.onStart,
@@ -19,7 +20,14 @@ class NewMatchScreen extends StatefulWidget {
     super.key,
   });
 
-  final void Function(Personality partner, Rules rules) onStart;
+  /// [rivals] are the two bots across from you, or null for any two of the
+  /// others at random.
+  final void Function(
+    Personality partner,
+    Rules rules,
+    List<Personality>? rivals,
+  )
+  onStart;
 
   /// The rules it starts with: the defaults from Ajustes.
   final Rules rules;
@@ -30,6 +38,7 @@ class NewMatchScreen extends StatefulWidget {
 
 class _NewMatchScreenState extends State<NewMatchScreen> {
   var _partner = Personality.calculador;
+  List<Personality>? _rivals;
   late var _rules = widget.rules;
 
   @override
@@ -70,8 +79,24 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                       const SizedBox(height: AppSpacing.sm),
                       _Partners(
                         selected: _partner,
-                        onSelected: (partner) =>
-                            setState(() => _partner = partner),
+                        onSelected: (partner) => setState(() {
+                          _partner = partner;
+                          if (_rivals?.contains(partner) ?? false) {
+                            _rivals = null;
+                          }
+                        }),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      Text(
+                        l10n.newMatchRivals.toUpperCase(),
+                        style: text.labelMedium,
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      _Rivals(
+                        partner: _partner,
+                        selected: _rivals,
+                        onSelected: (rivals) =>
+                            setState(() => _rivals = rivals),
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       SettingRow(
@@ -167,7 +192,7 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                 child: ActionButton(
                   label: l10n.newMatchStart,
                   kind: ActionKind.primary,
-                  onPressed: () => widget.onStart(_partner, _rules),
+                  onPressed: () => widget.onStart(_partner, _rules, _rivals),
                 ),
               ),
             ],
@@ -191,6 +216,7 @@ class _Partners extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final large = MediaQuery.textScalerOf(context).scale(1) > 1.4;
     Widget tile(Personality personality) => ChoiceTile(
+      leading: Face(personality),
       title: l10n.personalityName(personality),
       subtitle: l10n.personalityStyle(personality),
       selected: personality == selected,
@@ -217,6 +243,63 @@ class _Partners extends StatelessWidget {
                 Expanded(child: tile(bots[i + 1])),
               ],
             ),
+          ),
+      ],
+    );
+  }
+}
+
+/// The two rivals: any two of the other bots at random, or a pair chosen.
+class _Rivals extends StatelessWidget {
+  const _Rivals({
+    required this.partner,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final Personality partner;
+  final List<Personality>? selected;
+  final ValueChanged<List<Personality>?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final others = [
+      for (final bot in Personality.values)
+        if (bot != partner) bot,
+    ];
+    final pairs = [
+      for (var i = 0; i < others.length; i++)
+        for (var j = i + 1; j < others.length; j++) [others[i], others[j]],
+    ];
+    bool chosen(List<Personality> pair) =>
+        selected != null && pair.every(selected!.contains);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
+      children: [
+        ChoiceTile(
+          title: l10n.rivalsRandom,
+          subtitle: l10n.rivalsRandomDetail,
+          selected: selected == null,
+          onTap: () => onSelected(null),
+        ),
+        for (final pair in pairs)
+          ChoiceTile(
+            leading: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [for (final bot in pair) Face(bot)],
+            ),
+            title: l10n.rivalsPair(
+              l10n.personalityName(pair[0]),
+              l10n.personalityName(pair[1]),
+            ),
+            subtitle: l10n.rivalsPairDetail(
+              l10n.personalityStyle(pair[0]),
+              l10n.personalityStyle(pair[1]),
+            ),
+            selected: chosen(pair),
+            onTap: () => onSelected(pair),
           ),
       ],
     );

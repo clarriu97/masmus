@@ -1169,5 +1169,41 @@
         "type": "String"
       }
     }
+  },
+  "newMatchRivals": "Rivales",
+  "@newMatchRivals": {
+    "description": "Heading of the rivals' choice in a new match."
+  },
+  "rivalsRandom": "Al azar",
+  "@rivalsRandom": {
+    "description": "The rivals are any two of the other bots."
+  },
+  "rivalsRandomDetail": "Dos de los otros, distintos cada partida",
+  "@rivalsRandomDetail": {
+    "description": "Under «Al azar»."
+  },
+  "rivalsPair": "{first} y {second}",
+  "@rivalsPair": {
+    "description": "A pair of rivals.",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "rivalsPairDetail": "{first} · {second}",
+  "@rivalsPairDetail": {
+    "description": "How each of a pair of rivals plays.",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
   }
 }

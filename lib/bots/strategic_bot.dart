@@ -25,6 +25,10 @@ final class StrategicBot implements Bot {
   static const cutAt = 0.0;
   static const manoBonus = 0.4;
 
+  /// The bold cut with less, the careful ask for mus with more: the
+  /// advantage moves by this much per unit of boldness from the middle.
+  static const cutDaring = 1.5;
+
   /// How much a rival's envite says about their hand: the chance of winning
   /// is discounted by this much for every envite of theirs in the lance.
   static const betSignal = 0.12;
@@ -68,7 +72,8 @@ final class StrategicBot implements Bot {
     final knowledge = Knowledge.of(view, senas: readsSenas);
     if (view.legal.contains(MoveKind.mus)) {
       final bonus = view.mano == view.seat ? manoBonus : 0;
-      return knowledge.advantage(_random) + bonus >= cutAt
+      final daring = (personality.boldness - 0.5) * cutDaring;
+      return knowledge.advantage(_random) + bonus + daring >= cutAt
           ? const NoHayMus()
           : const Mus();
     }
@@ -98,7 +103,7 @@ final class StrategicBot implements Bot {
     final boldness = personality.boldness;
     final nearTheEnd =
         max(view.score[0], view.score[1]) >= view.rules.target - 10;
-    if ((nearTheEnd && chance >= 0.95 - boldness * 0.05) ||
+    if ((nearTheEnd && chance >= 0.95 - boldness * 0.15) ||
         (_continuing(view, give: 0) < 0.15 && chance >= 0.6)) {
       return const Ordago();
     }
@@ -148,10 +153,12 @@ final class StrategicBot implements Bot {
     };
     final breakEven =
         (stake - envite.noQuieroPoints) / (2 * stake + combinations);
+    final daring = boldness - 0.5;
     final needed = partnerAnswers
-        ? max(breakEven, clearAccept) - boldness * 0.05
-        : breakEven - boldness * 0.08;
-    if (read > needed && read >= (raisedOverUs ? raisedFloor : callFloor)) {
+        ? max(breakEven, clearAccept) - 0.025 - daring * 0.12
+        : breakEven - 0.04 - daring * 0.25;
+    final floor = (raisedOverUs ? raisedFloor : callFloor) - daring * 0.3;
+    if (read > needed && read >= floor) {
       return const Quiero();
     }
     final bluffsAgain =

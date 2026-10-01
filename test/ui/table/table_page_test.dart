@@ -112,4 +112,29 @@ void main() {
       isEmpty,
     );
   });
+
+  testWidgets('chosen rivals sit where they were chosen, right and left', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestApp(
+        TablePage(
+          partner: Personality.farolero,
+          rules: const Rules(),
+          rivals: const [Personality.prudente, Personality.temeraria],
+          seed: 1,
+          scheduler: ManualScheduler(),
+        ),
+      ),
+    );
+    final seats = {
+      for (final seat in tester.widgetList<Seat>(find.byType(Seat)))
+        seat.personality,
+    };
+    expect(seats, {
+      Personality.prudente,
+      Personality.temeraria,
+      Personality.farolero,
+    });
+  });
 }

@@ -56,6 +56,27 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-01 · Four personalities you can tell apart (#37).** They stay
+  numbers of the same bot (boldness and bluffing), never logic on a name.
+  - **La Temeraria** bluffs less (0.4) and is told apart by what she
+    says she is: she accepts almost everything and loves the órdago.
+  - **Boldness** now also moves when a bot cuts the mus (±1.5 points of
+    advantage per unit from the middle), the lowest read it accepts with
+    (±0.3), the break-even it answers at and the órdago near the end.
+  - **The arena** reports how often each team accepts.
+  - **Measured** against El Calculador, 300 matches each:
+
+    | | Envites | Bluffs | Accepts | Cuts | Órdagos |
+    |---|---|---|---|---|---|
+    | Prudente | 1.12 | 13.8 % | 15 % | 0.47 | 0.12 |
+    | Calculador | 1.19 | 16.4 % | 18 % | 0.50 | 0.15 |
+    | Farolero | 1.36 | 23.3 % | 20 % | 0.52 | 0.17 |
+    | Temeraria | 1.26 | 18.6 % | 23 % | 0.54 | 0.18 |
+
+    They win 47–51 % against El Calculador and 77–81 % against random. A
+    test checks these orders and that each beats random.
+  - **New match**: «Rivales», at random by default or any pair of the
+    other bots, each tile with their faces; partners show their face too.
 - **2026-10-01 · A partner who plays with you (#36).**
   - **It leaves you the decision**: answering an envite with you still to
     answer after it, a bot accepts only when it is clear (a read of 0.6,

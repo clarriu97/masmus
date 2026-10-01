@@ -7,13 +7,16 @@ import 'package:masmus/ui/widgets/choice_tile.dart';
 import '../../helpers/test_app.dart';
 
 void main() {
-  late (Personality, Rules)? started;
+  late (Personality, Rules, List<Personality>?)? started;
 
   Future<void> pump(WidgetTester tester) async {
     started = null;
     await tester.pumpWidget(
       buildTestApp(
-        NewMatchScreen(onStart: (partner, rules) => started = (partner, rules)),
+        NewMatchScreen(
+          onStart: (partner, rules, rivals) =>
+              started = (partner, rules, rivals),
+        ),
       ),
     );
   }
@@ -35,6 +38,7 @@ void main() {
     expect(started?.$2.target, 40);
     expect(started?.$2.games, 1, reason: 'one juego');
     expect(started?.$2.senas, isTrue, reason: 'with señas');
+    expect(started?.$3, isNull, reason: 'rivals at random');
   });
 
   testWidgets('each partner says how it plays', (tester) async {
@@ -52,6 +56,7 @@ void main() {
   testWidgets('the partner and the rules can be changed', (tester) async {
     await pump(tester);
     await tester.tap(find.text('La Temeraria'));
+    await tester.ensureVisible(find.text('4 reyes'));
     await tester.tap(find.text('4 reyes'));
     await tester.tap(find.text('A 30'));
     await tester.ensureVisible(find.text('De 3'));
@@ -99,5 +104,34 @@ void main() {
     final temeraria = tester.getTopLeft(find.text('La Temeraria'));
     expect(temeraria.dx, prudente.dx);
     expect(temeraria.dy, greaterThan(prudente.dy));
+  });
+
+  testWidgets('the rivals: at random, or any pair of the other bots; a '
+      'rival chosen as partner sends them back to random', (tester) async {
+    await pump(tester);
+    expect(tile(tester, 'Al azar').selected, isTrue);
+    for (final pair in [
+      'El Prudente y La Temeraria',
+      'El Prudente y El Farolero',
+      'La Temeraria y El Farolero',
+    ]) {
+      expect(find.text(pair), findsOneWidget, reason: pair);
+    }
+    expect(find.text('El Prudente y El Calculador'), findsNothing);
+
+    await tester.ensureVisible(find.text('La Temeraria y El Farolero'));
+    await tester.tap(find.text('La Temeraria y El Farolero'));
+    await tester.pump();
+    expect(tile(tester, 'La Temeraria y El Farolero').selected, isTrue);
+    await tester.ensureVisible(find.text('Empezar partida'));
+    await tester.tap(find.text('Empezar partida'));
+    expect(started?.$3, [Personality.temeraria, Personality.farolero]);
+
+    await tester.ensureVisible(find.text('El Farolero').first);
+    await tester.tap(find.text('El Farolero').first);
+    await tester.pump();
+    expect(tile(tester, 'Al azar').selected, isTrue);
+    expect(find.text('La Temeraria y El Farolero'), findsNothing);
+    expect(find.text('El Prudente y El Calculador'), findsOneWidget);
   });
 }

@@ -1317,6 +1317,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Yo: {move}'**
   String adviceSays(String move);
+
+  /// Heading of the rivals' choice in a new match.
+  ///
+  /// In es, this message translates to:
+  /// **'Rivales'**
+  String get newMatchRivals;
+
+  /// The rivals are any two of the other bots.
+  ///
+  /// In es, this message translates to:
+  /// **'Al azar'**
+  String get rivalsRandom;
+
+  /// Under «Al azar».
+  ///
+  /// In es, this message translates to:
+  /// **'Dos de los otros, distintos cada partida'**
+  String get rivalsRandomDetail;
+
+  /// A pair of rivals.
+  ///
+  /// In es, this message translates to:
+  /// **'{first} y {second}'**
+  String rivalsPair(String first, String second);
+
+  /// How each of a pair of rivals plays.
+  ///
+  /// In es, this message translates to:
+  /// **'{first} · {second}'**
+  String rivalsPairDetail(String first, String second);
 }
 
 class _AppLocalizationsDelegate

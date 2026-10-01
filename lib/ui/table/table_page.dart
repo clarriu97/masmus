@@ -11,13 +11,14 @@ import '../../services/match_store.dart';
 import '../../services/scheduler.dart';
 import 'table_screen.dart';
 
-/// A match against the bots: your [partner] across the table and two rivals
-/// picked at random among the other personalities, or a [saved] one resumed
+/// A match against the bots: your [partner] across the table and two
+/// [rivals], chosen or picked at random among the other personalities, or a [saved] one resumed
 /// where it was left; and a rematch with the same bots when it is over.
 class TablePage extends StatefulWidget {
   const TablePage({
     required Personality this.partner,
     required Rules this.rules,
+    this.rivals,
     this.pace = Pace.normal,
     this.handHelp = true,
     this.seed,
@@ -35,6 +36,7 @@ class TablePage extends StatefulWidget {
     super.key,
   }) : partner = null,
        rules = null,
+       rivals = null,
        seed = null;
 
   /// How long the bots take to move.
@@ -45,6 +47,10 @@ class TablePage extends StatefulWidget {
 
   final Personality? partner;
   final Rules? rules;
+
+  /// The two rivals, right and left of you; random among the others when
+  /// null.
+  final List<Personality>? rivals;
   final SavedMatch? saved;
 
   /// Decides the deal and the rivals; random when null.
@@ -73,10 +79,12 @@ class _TablePageState extends State<TablePage> {
       return;
     }
     final partner = widget.partner!;
-    final rivals = [
-      for (final personality in Personality.values)
-        if (personality != partner) personality,
-    ]..shuffle(Random(_seed));
+    final rivals =
+        widget.rivals ??
+        ([
+          for (final personality in Personality.values)
+            if (personality != partner) personality,
+        ]..shuffle(Random(_seed)));
     _bots = {1: rivals[0], 2: partner, 3: rivals[1]};
     _controller = _play(MatchState.start(seed: _seed, rules: widget.rules!));
   }

@@ -955,4 +955,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String adviceSays(String move) {
     return 'Yo: $move';
   }
+
+  @override
+  String get newMatchRivals => 'Rivales';
+
+  @override
+  String get rivalsRandom => 'Al azar';
+
+  @override
+  String get rivalsRandomDetail => 'Dos de los otros, distintos cada partida';
+
+  @override
+  String rivalsPair(String first, String second) {
+    return '$first y $second';
+  }
+
+  @override
+  String rivalsPairDetail(String first, String second) {
+    return '$first · $second';
+  }
 }

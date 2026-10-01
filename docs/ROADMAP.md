@@ -56,6 +56,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-01 · A partner who plays with you (#36).**
+  - **It leaves you the decision**: answering an envite with you still to
+    answer after it, a bot accepts only when it is clear (a read of 0.6,
+    a little less the bolder it is) and otherwise says «no quiero» and
+    leaves it to you. Against an órdago it wants a read 0.1 above what
+    refusing leaves.
+  - **Your envite counts**: a partner's envite in the lance raises the
+    read by 0.1. The extra discount for being raised over an envite now
+    applies only to the bot that bet itself.
+  - **«Consultar al compañero»**: an icon in the top bar on your turn
+    (not while discarding, where it can't judge cards it doesn't see).
+    Your partner answers by its seat what it would do in your place
+    («Yo: Quiero»), from its own cards, what was said and your señas,
+    until you play. It is never played or logged. On narrow phones
+    «Salir» becomes an icon to make room.
+  - **Measured**: arena 66.2 % (61.9–70.2) against `HeuristicBot`.
 - **2026-10-01 · The bots have faces, and the partner's make the señas
   (#104).** Asked by the owner.
   - **The faces** (`FacePainter`, `lib/ui/faces/`) are drawn in code in

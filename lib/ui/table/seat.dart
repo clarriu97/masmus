@@ -30,6 +30,7 @@ class Seat extends StatelessWidget {
     this.senas,
     this.senaGestures = const [],
     this.faceSize = 56,
+    this.advice,
     this.cardsKey,
     this.dimmed = false,
     super.key,
@@ -56,6 +57,9 @@ class Seat extends StatelessWidget {
 
   /// Big enough to read its gestures where the table has room.
   final double faceSize;
+
+  /// What it would do in your place, once asked.
+  final String? advice;
 
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
@@ -198,7 +202,9 @@ class Seat extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.sm),
-            if (thinking != null)
+            if (advice case final advice?)
+              PopIn(key: ValueKey(advice), child: SpeechBubble(advice))
+            else if (thinking != null)
               const ThinkingBubble()
             else
               Visibility.maintain(

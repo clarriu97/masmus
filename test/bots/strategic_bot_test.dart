@@ -346,6 +346,56 @@ void main() {
     expect(answered, greaterThan(40));
   });
 
+  group('playing as a pair', () {
+    int accepts(MatchState match, int seat) => [
+      for (final personality in Personality.values)
+        for (final seed in _seeds)
+          StrategicBot(
+            personality,
+            Random(seed),
+          ).choose(SeatView.of(match, seat)),
+    ].whereType<Quiero>().length;
+
+    test('with the partner still to answer, a middling hand leaves it the '
+        'decision; answering last, the same hand takes it more often', () {
+      const hands = {0: '4 5 6 1', 1: 'C C 6 5', 2: 'R C 7 6', 3: 'S 7 4 1'};
+      final first = _playAll(
+        _match(hands, mano: 1, rules: const Rules(senas: false)),
+        [(1, const NoHayMus()), (1, const Envido(2))],
+      );
+      expect(first.hand.turn, 2, reason: 'before you');
+      final last = _playAll(
+        _match(hands, mano: 3, rules: const Rules(senas: false)),
+        [(3, const NoHayMus()), (3, const Envido(2)), (0, const NoQuiero())],
+      );
+      expect(last.hand.turn, 2, reason: 'after you refused');
+      expect(accepts(first, 2), lessThan(accepts(last, 2)));
+    });
+
+    test('a partner\'s envite is a sign of strength: raised over it, the '
+        'same hand accepts more often', () {
+      const hands = {0: '4 5 6 1', 1: 'C C 6 5', 2: 'R C 7 6', 3: 'S 7 4 1'};
+      MatchState raised({required bool partnerBet}) =>
+          _playAll(_match(hands, mano: 2, rules: const Rules(senas: false)), [
+            (2, const NoHayMus()),
+            (2, const Paso()),
+            (3, const Paso()),
+            if (partnerBet) ...[
+              (0, const Envido(2)),
+              (1, const Envido(2)),
+            ] else ...[
+              (0, const Paso()),
+              (1, const Envido(4)),
+            ],
+          ]);
+      final withPartner = raised(partnerBet: true);
+      final alone = raised(partnerBet: false);
+      expect(withPartner.hand.turn, 2);
+      expect(alone.hand.turn, 2);
+      expect(accepts(withPartner, 2), greaterThan(accepts(alone, 2)));
+    });
+  });
+
   test('plays whole matches with only legal moves', () {
     for (var seed = 0; seed < 12; seed++) {
       final bots = [

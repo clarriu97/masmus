@@ -1156,5 +1156,18 @@
         "type": "String"
       }
     }
+  },
+  "adviceAsk": "Consultar al compañero",
+  "@adviceAsk": {
+    "description": "On your turn, in the top bar: asks your partner what it would do in your place."
+  },
+  "adviceSays": "Yo: {move}",
+  "@adviceSays": {
+    "description": "Your partner's answer to «¿Qué harías?»: what it would say.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
   }
 }

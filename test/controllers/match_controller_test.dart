@@ -341,4 +341,23 @@ void main() {
     scheduler.advance(const Duration(minutes: 1));
     expect(store.saved, isNull, reason: 'a match that is over is not resumed');
   });
+
+  test('the partner advises one of your moves on your turn, and nothing '
+      'outside it or while you discard', () {
+    final controller = tableMoments['grande_envite']!();
+    addTearDown(controller.dispose);
+    expect(controller.isHumanTurn, isFalse);
+    expect(controller.advice(), isNull);
+
+    final yours = tableMoments['chica_answer']!();
+    addTearDown(yours.dispose);
+    final advice = yours.advice()!;
+    expect(yours.humanMoves, contains(advice.kind));
+    expect(yours.match.hand.log.length, yours.shown, reason: 'not played');
+
+    final discarding = tableMoments['discard']!();
+    addTearDown(discarding.dispose);
+    expect(discarding.isHumanTurn, isTrue);
+    expect(discarding.advice(), isNull);
+  });
 }

@@ -1,5 +1,6 @@
 import '../../game/event.dart';
 import '../../game/hand_value.dart';
+import '../../game/move.dart';
 import '../../game/outcome.dart';
 import '../../game/senas.dart';
 import '../../game/table.dart';
@@ -108,6 +109,21 @@ extension TableTexts on AppLocalizations {
     NoQuieroSaid() => saidNoQuiero,
     OrdagoSaid() => saidOrdago,
     _ => throw ArgumentError.value(event, 'event', 'Nobody says it'),
+  };
+
+  /// A move as it would be said at the table.
+  String move(Move move, TableView view) => switch (move) {
+    Mus() => saidMus,
+    NoHayMus() => saidNoHayMus,
+    Paso() => saidPaso,
+    Envido(:final amount) => saidEnvido(
+      view.stake == null ? 'no' : 'yes',
+      amount,
+    ),
+    Quiero() => saidQuiero,
+    NoQuiero() => saidNoQuiero,
+    Ordago() => saidOrdago,
+    Discard(:final cards) => saidDiscarded(cards.length),
   };
 
   /// Señas in words, in the order they are made: «Treinta y una · Dos

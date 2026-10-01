@@ -1305,6 +1305,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{name}: {gesture}'**
   String howSenaLine(String name, String gesture);
+
+  /// On your turn, in the top bar: asks your partner what it would do in your place.
+  ///
+  /// In es, this message translates to:
+  /// **'Consultar al compañero'**
+  String get adviceAsk;
+
+  /// Your partner's answer to «¿Qué harías?»: what it would say.
+  ///
+  /// In es, this message translates to:
+  /// **'Yo: {move}'**
+  String adviceSays(String move);
 }
 
 class _AppLocalizationsDelegate

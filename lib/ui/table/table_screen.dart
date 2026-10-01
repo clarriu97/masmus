@@ -131,6 +131,9 @@ class _TableScreenState extends State<TableScreen>
       unawaited(HapticFeedback.mediumImpact());
     }
     _wasYourTurn = yourTurn;
+    if (!yourTurn) {
+      _advice = null;
+    }
     final deal = controller.dealing;
     if (deal == _deal) {
       return;
@@ -209,8 +212,21 @@ class _TableScreenState extends State<TableScreen>
     () => _marked.contains(card) ? _marked.remove(card) : _marked.add(card),
   );
 
+  /// What your partner said it would do, until you play.
+  String? _advice;
+
+  void _consult(TableView view) {
+    final move = widget.controller.advice();
+    if (move == null) {
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    setState(() => _advice = l10n.adviceSays(l10n.move(move, view)));
+  }
+
   void _play(Move move) {
     _marked.clear();
+    _advice = null;
     widget.controller.play(move);
   }
 
@@ -280,6 +296,13 @@ class _TableScreenState extends State<TableScreen>
                       _TopBar(
                         view: view,
                         onExit: widget.onExit,
+                        onConsult:
+                            view.yourTurn &&
+                                controller.humanMoves.isNotEmpty &&
+                                !view.youDiscard &&
+                                _advice == null
+                            ? () => _consult(view)
+                            : null,
                         onHistory: () => showModalBottomSheet<void>(
                           context: context,
                           isScrollControlled: true,
@@ -306,6 +329,7 @@ class _TableScreenState extends State<TableScreen>
                         child: _Seats(
                           view: view,
                           bots: bots,
+                          advice: _advice,
                           onTable: onTable,
                           cardsKeys: _cards,
                         ),
@@ -425,11 +449,18 @@ class _TopBar extends StatelessWidget {
     required this.view,
     required this.onExit,
     required this.onHistory,
+    required this.onConsult,
   });
 
   final TableView view;
   final VoidCallback onExit;
   final VoidCallback onHistory;
+
+  /// Asks your partner what it would do; null when it can't be asked now.
+  final VoidCallback? onConsult;
+
+  /// Below this width, «Salir» makes room for consulting as an icon alone.
+  static const roomyBar = 360.0;
 
   @override
   Widget build(BuildContext context) {
@@ -438,11 +469,18 @@ class _TopBar extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.xs),
       child: Row(
         children: [
-          TextButton.icon(
-            onPressed: onExit,
-            icon: const Icon(Icons.close),
-            label: Text(l10n.tableExit),
-          ),
+          if (MediaQuery.sizeOf(context).width < roomyBar && onConsult != null)
+            IconButton(
+              tooltip: l10n.tableExit,
+              onPressed: onExit,
+              icon: const Icon(Icons.close),
+            )
+          else
+            TextButton.icon(
+              onPressed: onExit,
+              icon: const Icon(Icons.close),
+              label: Text(l10n.tableExit),
+            ),
           Expanded(
             child: FittedBox(
               fit: BoxFit.scaleDown,
@@ -469,6 +507,12 @@ class _TopBar extends StatelessWidget {
                 ),
             ],
           ),
+          if (onConsult case final consult?)
+            IconButton(
+              tooltip: l10n.adviceAsk,
+              onPressed: consult,
+              icon: const Icon(Icons.record_voice_over_outlined),
+            ),
           IconButton(
             tooltip: l10n.historyTitle,
             onPressed: onHistory,
@@ -531,6 +575,7 @@ class _Seats extends StatelessWidget {
     required this.bots,
     required this.onTable,
     required this.cardsKeys,
+    required this.advice,
   });
 
   static const compactBelow = 260.0;
@@ -546,6 +591,9 @@ class _Seats extends StatelessWidget {
   final Map<int, int> onTable;
 
   final List<Key> cardsKeys;
+
+  /// What your partner said it would do, once asked.
+  final String? advice;
 
   @override
   Widget build(BuildContext context) {
@@ -574,6 +622,7 @@ class _Seats extends StatelessWidget {
           ? l10n.tablePartnerSenas(l10n.senasText(view.partnerSenas))
           : null,
       senaGestures: seat == (view.you + 2) % 4 ? view.partnerSenas : const [],
+      advice: seat == (view.you + 2) % 4 ? advice : null,
     );
     final you = view.you;
     return LayoutBuilder(

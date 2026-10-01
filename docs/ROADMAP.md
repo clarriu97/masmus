@@ -56,6 +56,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-01 · The bots have faces, and the partner's make the señas
+  (#104).** Asked by the owner.
+  - **The faces** (`FacePainter`, `lib/ui/faces/`) are drawn in code in
+    the flat inks of the deck: El Prudente with a boina and a grey
+    moustache, La Temeraria with a dark bob and gold earrings, El
+    Calculador with round glasses and a tie, El Farolero with sideburns
+    and a cheeky grin.
+  - **Alive** (`BotFace`): they blink and glance around at their own
+    pace, look up while they think and move their mouths when they
+    speak. It runs on timers, not a running animation, so it never keeps
+    a test from settling.
+  - **Señas**: your partner makes each new seña with the gesture of
+    R-SEN-1, 1.5 s each, one after another; its name stays under the
+    seat for whoever doesn't know them yet.
+  - **«Cómo se juega»**: the cheat sheet shows each gesture on a face.
+  - **Reduced motion**: still faces, and the señas are read in words.
 - **2026-09-29 · Señas at the table (#35, part 2).**
   - **Your partner's** show on its seat, in bold under its role («Seña:
     Ciego»), as they are made.

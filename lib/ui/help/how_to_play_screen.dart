@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../bots/heuristic_bot.dart';
 import '../../game/senas.dart';
 import '../../l10n/app_localizations.dart';
+import '../faces/face_painter.dart';
 import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 
@@ -25,17 +27,7 @@ class HowToPlayScreen extends StatelessWidget {
         [l10n.howGrande, l10n.howChica, l10n.howPares, l10n.howJuego],
       ),
       (l10n.howBetsTitle, [l10n.howBets]),
-      (
-        l10n.howSenasTitle,
-        [
-          l10n.howSenas,
-          for (final sena in Sena.values)
-            l10n.howSenaLine(
-              l10n.senaName(sena.name),
-              l10n.senaGesture(sena.name),
-            ),
-        ],
-      ),
+      (l10n.howSenasTitle, [l10n.howSenas]),
       (l10n.howCountTitle, [l10n.howCount]),
       (l10n.howFairTitle, [l10n.howFair]),
     ];
@@ -91,6 +83,34 @@ class HowToPlayScreen extends StatelessWidget {
                         ),
                         for (final paragraph in paragraphs)
                           Text(paragraph, style: text.bodyLarge),
+                        if (title == l10n.howSenasTitle)
+                          for (final sena in Sena.values)
+                            Row(
+                              spacing: AppSpacing.md,
+                              children: [
+                                ClipOval(
+                                  child: ColoredBox(
+                                    color: AppColors.avatar,
+                                    child: CustomPaint(
+                                      size: const Size.square(48),
+                                      painter: FacePainter(
+                                        Personality.calculador,
+                                        FacePose(sena: sena),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    l10n.howSenaLine(
+                                      l10n.senaName(sena.name),
+                                      l10n.senaGesture(sena.name),
+                                    ),
+                                    style: text.bodyLarge,
+                                  ),
+                                ),
+                              ],
+                            ),
                       ],
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.md),

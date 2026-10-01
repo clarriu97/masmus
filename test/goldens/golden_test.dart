@@ -7,10 +7,13 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/cards.dart';
+import 'package:masmus/game/senas.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
+import 'package:masmus/ui/faces/face_painter.dart';
 import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
@@ -201,6 +204,38 @@ Future<void> _capture(
   );
 }
 
+Widget _faces() {
+  final poses = <FacePose>[
+    const FacePose(),
+    const FacePose(blink: 1),
+    const FacePose(gaze: Offset(0.6, -1)),
+    const FacePose(talking: 1),
+    for (final sena in Sena.values) FacePose(sena: sena),
+  ];
+  return Felt(
+    child: Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 6,
+        children: [
+          for (final personality in Personality.values)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 6,
+              children: [
+                for (final pose in poses)
+                  CustomPaint(
+                    size: const Size.square(76),
+                    painter: FacePainter(personality, pose),
+                  ),
+              ],
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
 /// Screens, by the name of their golden.
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(
@@ -255,6 +290,11 @@ void main() {
 
   testWidgets('the deck at the size of the count', (tester) async {
     await _capture(tester, _deck(52), const Size(608, 442), 'deck_compact');
+  });
+
+  testWidgets('the faces of the bots, at rest, blinking, thinking, talking '
+      'and making every seña', (tester) async {
+    await _capture(tester, _faces(), const Size(1080, 440), 'faces');
   });
 
   testWidgets('the states of a card', (tester) async {

@@ -547,6 +547,7 @@ class _Seats extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     Widget seatOf(int seat) => Seat(
+      personality: bots[seat]!,
       name: l10n.personalityName(bots[seat]!),
       role: l10n.seatRole(view, seat),
       thinking: view.turn == seat,
@@ -567,6 +568,7 @@ class _Seats extends StatelessWidget {
       senas: seat == (view.you + 2) % 4 && view.partnerSenas.isNotEmpty
           ? l10n.tablePartnerSenas(l10n.senasText(view.partnerSenas))
           : null,
+      senaGestures: seat == (view.you + 2) % 4 ? view.partnerSenas : const [],
     );
     final you = view.you;
     return LayoutBuilder(

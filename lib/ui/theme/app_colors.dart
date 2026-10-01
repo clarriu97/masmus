@@ -49,6 +49,15 @@ class AppColors {
   static const Color espadasShine = Color(0xFF9FB9D6);
   static const Color bastosShade = Color(0xFF24401B);
 
+  /// The bots' faces, drawn in the inks of the deck.
+  static const Color skin = Color(0xFFE9BE95);
+  static const Color skinShade = Color(0xFFD29C70);
+  static const Color hairDark = Color(0xFF2B211B);
+  static const Color hairBrown = Color(0xFF5B3B24);
+  static const Color hairGrey = Color(0xFFA39A8D);
+  static const Color lip = Color(0xFFA9473B);
+  static const Color tongue = Color(0xFFDE7D78);
+
   static const Color stone = Color(0xFFEFE6CC);
   static const Color stoneShade = Color(0xFFC9BE9F);
   static const Color shadow = Color(0x40000000);

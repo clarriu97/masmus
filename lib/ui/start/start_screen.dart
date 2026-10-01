@@ -30,8 +30,13 @@ class StartScreen extends StatefulWidget {
   final MatchStore store;
   final SettingsController settings;
 
-  /// The table a new match is played on.
-  final Widget Function(Personality partner, Rules rules) table;
+  /// The table a new match is played on; [rivals] null for any two.
+  final Widget Function(
+    Personality partner,
+    Rules rules,
+    List<Personality>? rivals,
+  )
+  table;
 
   /// The table a saved match is resumed on.
   final Widget Function(SavedMatch saved) resume;
@@ -54,7 +59,7 @@ class _StartScreenState extends State<StartScreen> {
     MaterialPageRoute(
       builder: (context) => NewMatchScreen(
         rules: widget.settings.settings.rules,
-        onStart: (partner, rules) async {
+        onStart: (partner, rules, rivals) async {
           final navigator = Navigator.of(context);
           if (widget.store.saved != null && !await _confirmNew(context)) {
             return;
@@ -62,7 +67,7 @@ class _StartScreenState extends State<StartScreen> {
           await widget.store.clear();
           await navigator.pushReplacement(
             MaterialPageRoute<void>(
-              builder: (_) => widget.table(partner, rules),
+              builder: (_) => widget.table(partner, rules, rivals),
             ),
           );
           if (mounted) {

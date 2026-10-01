@@ -33,7 +33,7 @@ void main() {
         StartScreen(
           store: store,
           settings: settings,
-          table: (partner, rules) {
+          table: (partner, rules, rivals) {
             started = (partner, rules);
             return const Text('mesa');
           },

@@ -241,16 +241,16 @@ final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(
     store: MatchStore.inMemory(),
     settings: SettingsController.inMemory(),
-    table: (partner, rules) => const SizedBox(),
+    table: (partner, rules, rivals) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
   'start_saved': () => StartScreen(
     store: MatchStore.inMemory(savedMatch()),
     settings: SettingsController.inMemory(),
-    table: (partner, rules) => const SizedBox(),
+    table: (partner, rules, rivals) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
-  'new_match': () => NewMatchScreen(onStart: (partner, rules) {}),
+  'new_match': () => NewMatchScreen(onStart: (partner, rules, rivals) {}),
   'how_to_play': () => const HowToPlayScreen(),
   'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)

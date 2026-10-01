@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/arena.dart';
 import 'package:masmus/bots/bot.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
+import 'package:masmus/bots/random_bot.dart';
 import 'package:masmus/bots/strategic_bot.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/game/deck.dart';
@@ -430,5 +431,42 @@ void main() {
       pairs: 150,
     );
     expect(result.interval.$1, greaterThan(0.5));
+  });
+
+  test('each personality has its own measurable style, and all of them '
+      'still play with sense', () {
+    final styles = {
+      for (final personality in Personality.values)
+        personality: playArena(
+          a: (random) => StrategicBot(personality, random),
+          b: (random) => StrategicBot(Personality.calculador, random),
+          pairs: 30,
+        ),
+    };
+    double envites(Personality p) => styles[p]!.a.perHand(styles[p]!.a.envites);
+    double bluffs(Personality p) =>
+        styles[p]!.a.bluffs / (styles[p]!.a.envites + styles[p]!.a.ordagos);
+    double accepts(Personality p) => styles[p]!.a.acceptShare;
+    double cuts(Personality p) => styles[p]!.a.perHand(styles[p]!.a.cuts);
+    const prudente = Personality.prudente;
+    const calculador = Personality.calculador;
+    const temeraria = Personality.temeraria;
+    const farolero = Personality.farolero;
+
+    expect(envites(prudente), lessThan(envites(calculador)));
+    expect(envites(calculador), lessThan(envites(farolero)));
+    expect(bluffs(farolero), greaterThan(bluffs(temeraria)));
+    expect(bluffs(prudente), lessThan(bluffs(calculador)));
+    expect(accepts(temeraria), greaterThan(accepts(calculador)));
+    expect(accepts(prudente), lessThan(accepts(calculador)));
+    expect(cuts(temeraria), greaterThan(cuts(prudente)));
+    for (final personality in Personality.values) {
+      final (low, _) = playArena(
+        a: (random) => StrategicBot(personality, random),
+        b: RandomBot.new,
+        pairs: 20,
+      ).interval;
+      expect(low, greaterThan(0.5), reason: '$personality beats random');
+    }
   });
 }

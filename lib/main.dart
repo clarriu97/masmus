@@ -54,9 +54,10 @@ class MasmusApp extends StatelessWidget {
     home: StartScreen(
       store: store,
       settings: settings,
-      table: (partner, rules) => TablePage(
+      table: (partner, rules, rivals) => TablePage(
         partner: partner,
         rules: rules,
+        rivals: rivals,
         pace: settings.settings.pace,
         handHelp: settings.settings.handHelp,
         store: store,

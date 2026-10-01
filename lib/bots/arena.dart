@@ -17,10 +17,16 @@ final class Style {
   var ordagos = 0;
   var cuts = 0;
 
+  /// Answers to the rivals' envites, and how many of them were «quiero».
+  var answers = 0;
+  var quieros = 0;
+
   /// Envites and órdagos without the best hand at the table for that lance.
   var bluffs = 0;
 
   double perHand(int count) => hands == 0 ? 0 : count / hands;
+
+  double get acceptShare => answers == 0 ? 0 : quieros / answers;
 }
 
 final class ArenaResult {
@@ -121,6 +127,11 @@ void _record(Style style, HandState hand, int team) {
         lance = started;
       case NoHayMusSaid(:final seat) when teamOf(seat) == team:
         style.cuts++;
+      case QuieroSaid(:final seat) when teamOf(seat) == team:
+        style.answers++;
+        style.quieros++;
+      case NoQuieroSaid(:final seat) when teamOf(seat) == team:
+        style.answers++;
       case EnvidoSaid(:final seat) when teamOf(seat) == team:
         style.envites++;
         if (!_hasBest(hand, lance!, team)) {

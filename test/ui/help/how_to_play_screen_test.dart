@@ -56,7 +56,8 @@ void main() {
     for (final line in [
       'Dos reyes: se muerde el labio inferior',
       'Duples: levanta las cejas',
-      'Treinta y una: guiña un ojo',
+      'Treinta y una: guiña un ojo, al ver las cartas',
+      'Treinta: guiña un ojo como la 31, pero solo cuando se juega al punto',
       'Ciego: cierra los dos ojos',
     ]) {
       expect(find.text(line), findsOneWidget, reason: line);

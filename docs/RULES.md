@@ -168,7 +168,9 @@ caballo, `R` rey; el palo solo se escribe cuando importa (`Ro` rey de oros,
 ## 8 bis. Señas
 
 Las señas son la forma reglamentaria en que los compañeros se dicen lo que
-llevan. Las ven solo los compañeros: en la v1 los rivales no las cazan.
+llevan. Las ven solo los compañeros: en la v1 los rivales no las cazan. No
+van al registro público de la mano: cada jugador recibe solo las de su
+compañero, que es lo que una partida online tendrá que respetar.
 
 - **R-SEN-1.** Lista de señas y su gesto:
 
@@ -195,7 +197,10 @@ llevan. Las ven solo los compañeros: en la v1 los rivales no las cazan.
   cartas con que se juega (R-MUS-5).
 - **R-SEN-4.** La de medias (de otra carta que no sean reyes ni ases) no se
   hace hasta que se ha cerrado la grande. La de treinta, hasta que todos han
-  dicho que no tienen juego y se juega al punto.
+  dicho que no tienen juego y se juega al punto. Por eso dos parejas de señas
+  comparten gesto sin confundirse: la comisura a un lado al ver las cartas son
+  medias de reyes, y con la grande cerrada, medias de otra carta; el guiño al
+  ver las cartas es la 31, y al punto (donde nadie tiene juego), treinta.
 - **R-SEN-5.** Se juega con señas salvo que se elija jugar sin ellas; la
   elección vale para las dos parejas.
 

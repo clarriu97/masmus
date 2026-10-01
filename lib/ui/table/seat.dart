@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../bots/heuristic_bot.dart';
 import '../../game/cards.dart';
+import '../../game/senas.dart';
 import '../../l10n/app_localizations.dart';
 import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
+import '../faces/bot_face.dart';
 import '../theme/app_theme.dart';
 import '../widgets/cut_badge.dart';
 import '../widgets/mano_token.dart';
@@ -14,6 +17,7 @@ import '../widgets/speech_bubble.dart';
 /// brass and its bubble is three dots.
 class Seat extends StatelessWidget {
   const Seat({
+    required this.personality,
     required this.name,
     required this.role,
     required this.thinking,
@@ -24,6 +28,7 @@ class Seat extends StatelessWidget {
     this.mano = false,
     this.cut = false,
     this.senas,
+    this.senaGestures = const [],
     this.cardsKey,
     this.dimmed = false,
     super.key,
@@ -45,9 +50,13 @@ class Seat extends StatelessWidget {
   /// The señas it made to you, in words, if it is your partner.
   final String? senas;
 
+  /// Those señas, acted out by its face.
+  final List<Sena> senaGestures;
+
   /// Where its cards are, for the deal to fly to.
   final Key? cardsKey;
 
+  final Personality personality;
   final String name;
   final String role;
   final bool thinking;
@@ -105,15 +114,12 @@ class Seat extends StatelessWidget {
                           ),
                           color: AppColors.avatar,
                         ),
-                        child: SizedBox.square(
-                          dimension: 46,
-                          child: Center(
-                            child: Text(
-                              name.split(' ').last.characters.first,
-                              style: text.headlineSmall?.copyWith(
-                                color: AppColors.onAvatar,
-                              ),
-                            ),
+                        child: ClipOval(
+                          child: BotFace(
+                            personality: personality,
+                            thinking: thinking != null,
+                            spoke: saidAt,
+                            senas: senaGestures,
                           ),
                         ),
                       ),

@@ -54,6 +54,11 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · Gradle 9.3.1, AGP 9.1.0, Kotlin 2.4.0 (#40).** Flutter
+  warned it would soon drop Gradle 8.14, AGP 8.11 and Kotlin 2.2. The
+  Android build follows the template of Flutter 3.47: no `kotlin-android`
+  plugin in the app, `kotlin { compilerOptions }` instead of
+  `kotlinOptions`.
 - **2026-10-04 · Release configuration, part 1 (#40).** The owner chose:
   iPhone only on iOS, as 1RM, and `masmus.larri.dev` (with `/privacy/` and
   `/terms/`) and `info.masmus@larri.dev` for the web, privacy and contact

@@ -21,7 +21,9 @@ final class StrategicBot implements Bot {
   final bool readsSenas;
 
   /// The advantage, in points en paso, that makes a hand worth playing as it
-  /// is. The mano, who wins ties, needs a little less.
+  /// is. The mano, who wins ties, needs a little less. The partner's señas
+  /// are not read here: its good cards stay through the mus, so cutting
+  /// depends on what this seat's own cards are worth.
   static const cutAt = 0.0;
   static const manoBonus = 0.4;
 
@@ -44,7 +46,7 @@ final class StrategicBot implements Bot {
   static const raisedFloor = 0.4;
 
   /// A partner's envite in the lance says its hand is good: the read goes up
-  /// by this much for each.
+  /// by this much for each, unless its señas already told.
   static const partnerSignal = 0.1;
 
   /// With the partner still to answer, a bot accepts only when it is clear,
@@ -73,7 +75,8 @@ final class StrategicBot implements Bot {
     if (view.legal.contains(MoveKind.mus)) {
       final bonus = view.mano == view.seat ? manoBonus : 0;
       final daring = (personality.boldness - 0.5) * cutDaring;
-      return knowledge.advantage(_random) + bonus + daring >= cutAt
+      final advantage = Knowledge.of(view, senas: false).advantage(_random);
+      return advantage + bonus + daring >= cutAt
           ? const NoHayMus()
           : const Mus();
     }
@@ -123,7 +126,9 @@ final class StrategicBot implements Bot {
     final ours = envites.length - theirs;
     final mine = envites.where((seat) => seat == view.seat).length;
     final raisedOverUs = mine > 0 && theirs > 0;
-    final partnerBets = envites.where((seat) => seat == (view.seat + 2) % 4);
+    final partnerBets = _readsPartner(view)
+        ? const <int>[]
+        : envites.where((seat) => seat == (view.seat + 2) % 4);
     final read =
         (chance -
                 betSignal * theirs -
@@ -167,6 +172,10 @@ final class StrategicBot implements Bot {
         _random.nextDouble() < personality.bluffing * 0.15;
     return bluffsAgain ? const Envido(minEnvido) : const NoQuiero();
   }
+
+  /// Whether this bot knows its partner's hand from its señas: then the
+  /// partner's envite tells it nothing new.
+  bool _readsPartner(SeatView view) => readsSenas && view.partnerSenas != null;
 
   /// The partner said «no quiero» to the bet on the table and left the
   /// answer to this seat: its hand is no help in this lance.

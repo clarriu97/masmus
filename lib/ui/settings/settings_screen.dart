@@ -201,6 +201,17 @@ class SettingsScreen extends StatelessWidget {
                             onChanged: (on) =>
                                 change((now) => now.copyWith(haptics: on)),
                           ),
+                          heading(l10n.settingsSound),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              l10n.settingsSoundDetail,
+                              style: text.bodyLarge,
+                            ),
+                            value: current.sound,
+                            onChanged: (on) =>
+                                change((now) => now.copyWith(sound: on)),
+                          ),
                         ],
                       ),
                     ),

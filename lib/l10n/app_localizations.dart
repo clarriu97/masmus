@@ -844,6 +844,18 @@ abstract class AppLocalizations {
   /// **'El móvil vibra cuando te toca.'**
   String get settingsHapticsDetail;
 
+  /// Setting: the table's sounds.
+  ///
+  /// In es, this message translates to:
+  /// **'Sonido'**
+  String get settingsSound;
+
+  /// What the sound setting does.
+  ///
+  /// In es, this message translates to:
+  /// **'Barajar, repartir, envites y órdagos. Calla con el móvil en silencio.'**
+  String get settingsSoundDetail;
+
   /// Title of how to play, and the link to it.
   ///
   /// In es, this message translates to:

@@ -54,6 +54,21 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · The table sounds (#39, part 2).** The owner chose
+  Kenney's Casino Audio (CC0) over no sound in v1.
+  - **Four sounds**, each one short, from `assets/sounds/` (AAC, 68 KB in
+    all): a shuffle when a hand is dealt, a card for the deal after the
+    discards, chips for each envite and a handful of chips for an órdago,
+    as the table shows them. Nothing else sounds.
+  - **They never get in the way**: on iOS the audio session is «ambient»
+    (silent with the phone's switch, mixed with the player's music); on
+    Android they take no audio focus, so music goes on.
+  - **«Sonido»** in Ajustes, on by default; settings saved before it read
+    it as on.
+  - **`audioplayers`**: the SDK plays no audio files. `Sounds` is a service
+    with a `RecordedSounds` fake for tests; the table plays them, as it
+    vibrates. Its position updates are off: nothing needs them, and they
+    kept a frame callback alive.
 - **2026-10-04 · Vibration can be turned off (#39, part 1).** «Vibración»
   in Ajustes, on by default: the phone taps once when your turn comes,
   and nothing else vibrates. Settings saved before it existed read it as
@@ -640,6 +655,7 @@ or right after; business model; languages at launch; license.
 | Wireframes of v1 | `docs/design/wireframes/index.html` (source) and one PNG per state, rendered by `tool/render_wireframes.sh`; edit the HTML and re-run, never the PNGs |
 | Deck | `lib/ui/cards/`: suit and figure art (`card_art.dart`), pip layouts, `PlayingCardView`; goldens `deck.png`, `deck_compact.png`, `card_states.png` |
 | Settings | `settings.json` next to the saved match (`SettingsController.open`) |
+| Sounds | `assets/sounds/` (Kenney's Casino Audio, CC0, converted to AAC), played by `lib/services/sounds.dart` |
 | Saved match | `match.json` in the app's support directory (`MatchStore.open`); unreadable ones renamed `match.unreadable-<time>.json` beside it |
 | Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |

@@ -769,6 +769,14 @@
   "@settingsHapticsDetail": {
     "description": "What the vibration setting does."
   },
+  "settingsSound": "Sonido",
+  "@settingsSound": {
+    "description": "Setting: the table's sounds."
+  },
+  "settingsSoundDetail": "Barajar, repartir, envites y órdagos. Calla con el móvil en silencio.",
+  "@settingsSoundDetail": {
+    "description": "What the sound setting does."
+  },
   "howTitle": "Cómo se juega",
   "@howTitle": {
     "description": "Title of how to play, and the link to it."

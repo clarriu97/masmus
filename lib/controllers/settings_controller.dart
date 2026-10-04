@@ -13,6 +13,7 @@ final class Settings {
     this.pace = Pace.normal,
     this.handHelp = true,
     this.haptics = true,
+    this.sound = true,
   });
 
   factory Settings.fromJson(Map<String, Object?> json) => Settings(
@@ -20,6 +21,7 @@ final class Settings {
     pace: Pace.values.byName(json['pace']! as String),
     handHelp: json['handHelp']! as bool,
     haptics: json['haptics'] as bool? ?? true,
+    sound: json['sound'] as bool? ?? true,
   );
 
   /// Version written with the settings. Bump it with every change to the
@@ -39,16 +41,22 @@ final class Settings {
   /// existed, it is on.
   final bool haptics;
 
+  /// Whether the table sounds: the shuffle, the deal, envites and órdagos.
+  /// Saved before it existed, it is on.
+  final bool sound;
+
   Settings copyWith({
     Rules? rules,
     Pace? pace,
     bool? handHelp,
     bool? haptics,
+    bool? sound,
   }) => Settings(
     rules: rules ?? this.rules,
     pace: pace ?? this.pace,
     handHelp: handHelp ?? this.handHelp,
     haptics: haptics ?? this.haptics,
+    sound: sound ?? this.sound,
   );
 
   Map<String, Object?> toJson() => {
@@ -57,6 +65,7 @@ final class Settings {
     'pace': pace.name,
     'handHelp': handHelp,
     'haptics': haptics,
+    'sound': sound,
   };
 }
 

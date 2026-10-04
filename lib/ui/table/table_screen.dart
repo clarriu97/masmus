@@ -13,6 +13,7 @@ import '../../game/hand_state.dart';
 import '../../game/move.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
+import '../../services/sounds.dart';
 import '../cards/deck_view.dart';
 import '../cards/playing_card_view.dart';
 import '../help/how_to_play_screen.dart';
@@ -43,6 +44,7 @@ class TableScreen extends StatefulWidget {
     required this.onRematch,
     this.handHelp = true,
     this.haptics = true,
+    this.sounds,
     super.key,
   });
 
@@ -51,6 +53,9 @@ class TableScreen extends StatefulWidget {
 
   /// Whether the phone vibrates when your turn comes.
   final bool haptics;
+
+  /// What plays the table's sounds; none when they are off.
+  final Sounds? sounds;
 
   final MatchController controller;
 
@@ -116,6 +121,7 @@ class _TableScreenState extends State<TableScreen>
   @override
   void initState() {
     super.initState();
+    _heard = widget.controller.shown;
     widget.controller.addListener(_followController);
     _followController();
   }
@@ -128,6 +134,26 @@ class _TableScreenState extends State<TableScreen>
   }
 
   var _wasYourTurn = false;
+  var _heard = 0;
+
+  /// Chips on the table as each envite or órdago is shown.
+  void _sound(MatchController controller) {
+    final log = controller.match.hand.log;
+    if (controller.shown < _heard) {
+      _heard = 0;
+    }
+    for (final event in log.sublist(_heard, controller.shown)) {
+      switch (event) {
+        case EnvidoSaid():
+          widget.sounds?.play(Sound.envite);
+        case OrdagoSaid():
+          widget.sounds?.play(Sound.ordago);
+        default:
+          break;
+      }
+    }
+    _heard = controller.shown;
+  }
 
   void _followController() {
     final controller = widget.controller;
@@ -139,12 +165,14 @@ class _TableScreenState extends State<TableScreen>
     if (!yourTurn) {
       _advice = null;
     }
+    _sound(controller);
     final deal = controller.dealing;
     if (deal == _deal) {
       return;
     }
     _deal = deal;
     if (deal != null) {
+      widget.sounds?.play(controller.shown == 0 ? Sound.shuffle : Sound.deal);
       _dealt
         ..duration = deal.duration
         ..forward(from: 0);

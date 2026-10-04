@@ -761,6 +761,14 @@
   "@settingsHelpDetail": {
     "description": "What the hand help does."
   },
+  "settingsHaptics": "Vibración",
+  "@settingsHaptics": {
+    "description": "Setting: the phone vibrates when your turn comes."
+  },
+  "settingsHapticsDetail": "El móvil vibra cuando te toca.",
+  "@settingsHapticsDetail": {
+    "description": "What the vibration setting does."
+  },
   "howTitle": "Cómo se juega",
   "@howTitle": {
     "description": "Title of how to play, and the link to it."

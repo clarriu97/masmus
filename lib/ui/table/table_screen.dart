@@ -42,11 +42,15 @@ class TableScreen extends StatefulWidget {
     required this.onExit,
     required this.onRematch,
     this.handHelp = true,
+    this.haptics = true,
     super.key,
   });
 
   /// Whether it says what your hand is worth.
   final bool handHelp;
+
+  /// Whether the phone vibrates when your turn comes.
+  final bool haptics;
 
   final MatchController controller;
 
@@ -128,7 +132,7 @@ class _TableScreenState extends State<TableScreen>
   void _followController() {
     final controller = widget.controller;
     final yourTurn = controller.isHumanTurn;
-    if (yourTurn && !_wasYourTurn) {
+    if (yourTurn && !_wasYourTurn && widget.haptics) {
       unawaited(HapticFeedback.mediumImpact());
     }
     _wasYourTurn = yourTurn;

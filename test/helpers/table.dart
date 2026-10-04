@@ -77,11 +77,13 @@ Widget tableScreen(
   MatchController controller, {
   VoidCallback? onExit,
   VoidCallback? onRematch,
+  bool haptics = true,
 }) => TableScreen(
   controller: controller,
   bots: tableBots,
   onExit: onExit ?? () {},
   onRematch: onRematch ?? () {},
+  haptics: haptics,
 );
 
 const _discardHands = {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'};

@@ -21,6 +21,7 @@ class TablePage extends StatefulWidget {
     this.rivals,
     this.pace = Pace.normal,
     this.handHelp = true,
+    this.haptics = true,
     this.seed,
     this.scheduler,
     this.store,
@@ -31,6 +32,7 @@ class TablePage extends StatefulWidget {
     SavedMatch this.saved, {
     this.pace = Pace.normal,
     this.handHelp = true,
+    this.haptics = true,
     this.scheduler,
     this.store,
     super.key,
@@ -44,6 +46,9 @@ class TablePage extends StatefulWidget {
 
   /// Whether the table says what your hand is worth.
   final bool handHelp;
+
+  /// Whether the phone vibrates when your turn comes.
+  final bool haptics;
 
   final Personality? partner;
   final Rules? rules;
@@ -128,5 +133,6 @@ class _TablePageState extends State<TablePage> {
     onExit: () => Navigator.of(context).maybePop(),
     onRematch: _rematch,
     handHelp: widget.handHelp,
+    haptics: widget.haptics,
   );
 }

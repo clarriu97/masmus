@@ -627,6 +627,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'La mesa te dice qué llevas: pares, juego o punto.';
 
   @override
+  String get settingsHaptics => 'Vibración';
+
+  @override
+  String get settingsHapticsDetail => 'El móvil vibra cuando te toca.';
+
+  @override
   String get howTitle => 'Cómo se juega';
 
   @override

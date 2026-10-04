@@ -832,6 +832,18 @@ abstract class AppLocalizations {
   /// **'La mesa te dice qué llevas: pares, juego o punto.'**
   String get settingsHelpDetail;
 
+  /// Setting: the phone vibrates when your turn comes.
+  ///
+  /// In es, this message translates to:
+  /// **'Vibración'**
+  String get settingsHaptics;
+
+  /// What the vibration setting does.
+  ///
+  /// In es, this message translates to:
+  /// **'El móvil vibra cuando te toca.'**
+  String get settingsHapticsDetail;
+
   /// Title of how to play, and the link to it.
   ///
   /// In es, this message translates to:

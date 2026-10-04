@@ -54,6 +54,13 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · Vibration can be turned off (#39, part 1).** «Vibración»
+  in Ajustes, on by default: the phone taps once when your turn comes,
+  and nothing else vibrates. Settings saved before it existed read it as
+  on, so the format keeps `schemaVersion` 1. Motion was already done:
+  every animation takes its duration and curve from `AppMotion` and has a
+  static fallback with reduced motion. Sound waits for the owner: it needs
+  licensed recordings and an audio plugin.
 - **2026-10-04 · The table, told to screen readers (#38).** An audit of
   what VoiceOver and TalkBack get from every screen found:
   - **The live summary of the table never reached them**: it had no size,

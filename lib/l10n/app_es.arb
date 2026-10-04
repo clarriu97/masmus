@@ -769,6 +769,39 @@
   "@settingsHapticsDetail": {
     "description": "What the vibration setting does."
   },
+  "aboutTitle": "Acerca de",
+  "@aboutTitle": {
+    "description": "Entry in Ajustes to the about screen."
+  },
+  "aboutVersion": "Versión {version} ({build})",
+  "@aboutVersion": {
+    "description": "The app's version and build number.",
+    "placeholders": {
+      "version": {"type": "String"},
+      "build": {"type": "int"}
+    }
+  },
+  "aboutTagline": "Mus contra bots, sin conexión y sin cuentas: tus partidas no salen del móvil.",
+  "@aboutTagline": {
+    "description": "What the app is and that no data leaves the phone."
+  },
+  "aboutWebsite": "Web",
+  "@aboutWebsite": {"description": "Link to the app's website."},
+  "aboutPrivacy": "Privacidad",
+  "@aboutPrivacy": {"description": "Link to the privacy policy."},
+  "aboutTerms": "Condiciones de uso",
+  "@aboutTerms": {"description": "Link to the terms of use."},
+  "aboutContact": "Contacto",
+  "@aboutContact": {"description": "Link to write to the developer."},
+  "aboutLicenses": "Licencias",
+  "@aboutLicenses": {"description": "Opens the licenses of the app's software, fonts and sounds."},
+  "aboutCouldNotOpen": "No se ha podido abrir {what}",
+  "@aboutCouldNotOpen": {
+    "description": "Shown when no app on the phone opens a link.",
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
   "settingsSound": "Sonido",
   "@settingsSound": {
     "description": "Setting: the table's sounds."

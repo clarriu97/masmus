@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/rules.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
@@ -31,6 +32,7 @@ void main() {
     await tester.pumpWidget(
       buildTestApp(
         StartScreen(
+          links: RecordedLinks(),
           store: store,
           settings: settings,
           table: (partner, rules, rivals) {

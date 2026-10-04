@@ -5,7 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/settings_controller.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/ui/about/about_screen.dart';
 import 'package:masmus/ui/help/how_to_play_screen.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 import 'package:masmus/ui/start/new_match_screen.dart';
@@ -18,12 +20,14 @@ import '../helpers/test_app.dart';
 
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(
+    links: RecordedLinks(),
     store: MatchStore.inMemory(),
     settings: SettingsController.inMemory(),
     table: (partner, rules, rivals) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
   'start with a match saved': () => StartScreen(
+    links: RecordedLinks(),
     store: MatchStore.inMemory(savedMatch()),
     settings: SettingsController.inMemory(),
     table: (partner, rules, rivals) => const SizedBox(),
@@ -31,7 +35,11 @@ final Map<String, Widget Function()> _screens = {
   ),
   'new match': () => NewMatchScreen(onStart: (partner, rules, rivals) {}),
   'how to play': () => const HowToPlayScreen(),
-  'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
+  'settings': () => SettingsScreen(
+    settings: SettingsController.inMemory(),
+    links: RecordedLinks(),
+  ),
+  'about': () => AboutScreen(links: RecordedLinks()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table at $moment': () => tableScreen(controller()),
   for (final MapEntry(key: moment, value: controller) in countMoments.entries)

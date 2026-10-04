@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'controllers/settings_controller.dart';
 import 'l10n/app_localizations.dart';
 import 'services/json_file.dart';
+import 'services/links.dart';
 import 'services/match_store.dart';
 import 'services/sounds.dart';
 import 'ui/start/start_screen.dart';
@@ -36,7 +37,14 @@ Future<void> main() async {
   final settings = await SettingsController.open(
     JsonFile.at(File('${directory.path}/settings.json')),
   );
-  runApp(MasmusApp(store: store, settings: settings, sounds: Sounds()));
+  runApp(
+    MasmusApp(
+      store: store,
+      settings: settings,
+      sounds: Sounds(),
+      links: Links(),
+    ),
+  );
 }
 
 class MasmusApp extends StatelessWidget {
@@ -44,12 +52,14 @@ class MasmusApp extends StatelessWidget {
     required this.store,
     required this.settings,
     required this.sounds,
+    required this.links,
     super.key,
   });
 
   final MatchStore store;
   final SettingsController settings;
   final Sounds sounds;
+  final Links links;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -61,6 +71,7 @@ class MasmusApp extends StatelessWidget {
     home: StartScreen(
       store: store,
       settings: settings,
+      links: links,
       table: (partner, rules, rivals) => TablePage(
         partner: partner,
         rules: rules,

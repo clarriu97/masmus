@@ -7,6 +7,7 @@ import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/main.dart';
 import 'package:masmus/services/json_file.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/sounds.dart';
 
@@ -18,6 +19,7 @@ void setUpE2E() {
 Future<void> launchApp(WidgetTester tester, {MatchStore? store}) async {
   await tester.pumpWidget(
     MasmusApp(
+      links: Links(),
       store: store ?? MatchStore.inMemory(),
       settings: SettingsController.inMemory(const Settings(pace: Pace.fast)),
       sounds: Sounds(),

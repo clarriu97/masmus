@@ -54,6 +54,18 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · Release configuration, part 1 (#40).** The owner chose:
+  iPhone only on iOS, as 1RM, and `masmus.larri.dev` (with `/privacy/` and
+  `/terms/`) and `info.masmus@larri.dev` for the web, privacy and contact
+  that «Acerca de» and the stores link to; the site comes with #44.
+  - **iOS**: iPhone only (`TARGETED_DEVICE_FAMILY = 1`), portrait only,
+    `ITSAppUsesNonExemptEncryption = false`, and a privacy manifest
+    (`PrivacyInfo.xcprivacy`): no tracking, no data collected, no
+    required-reason APIs of its own.
+  - **Android**: release builds are shrunk with R8 and signed from
+    `android/key.properties` (out of git) or, without it, with the debug
+    key so they still build locally and in CI. The minified release
+    opens on the emulator.
 - **2026-10-04 · The table sounds (#39, part 2).** The owner chose
   Kenney's Casino Audio (CC0) over no sound in v1.
   - **Four sounds**, each one short, from `assets/sounds/` (AAC, 68 KB in

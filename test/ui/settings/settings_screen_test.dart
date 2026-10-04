@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/rules.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/ui/settings/settings_screen.dart';
 
 import '../../helpers/test_app.dart';
@@ -12,7 +13,9 @@ void main() {
       'the sound '
       'keeps each at once', (tester) async {
     final settings = SettingsController.inMemory();
-    await tester.pumpWidget(buildTestApp(SettingsScreen(settings: settings)));
+    await tester.pumpWidget(
+      buildTestApp(SettingsScreen(settings: settings, links: RecordedLinks())),
+    );
     expect(find.text('Ajustes'), findsOneWidget);
     expect(find.text('REGLAS POR DEFECTO'), findsOneWidget);
     expect(find.text('RITMO DE LOS BOTS'), findsOneWidget);
@@ -51,6 +54,7 @@ void main() {
     await tester.pumpWidget(
       buildTestApp(
         SettingsScreen(
+          links: RecordedLinks(),
           settings: SettingsController.inMemory(
             const Settings(
               pace: Pace.slow,

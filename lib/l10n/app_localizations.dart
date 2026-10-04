@@ -844,6 +844,60 @@ abstract class AppLocalizations {
   /// **'El móvil vibra cuando te toca.'**
   String get settingsHapticsDetail;
 
+  /// Entry in Ajustes to the about screen.
+  ///
+  /// In es, this message translates to:
+  /// **'Acerca de'**
+  String get aboutTitle;
+
+  /// The app's version and build number.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión {version} ({build})'**
+  String aboutVersion(String version, int build);
+
+  /// What the app is and that no data leaves the phone.
+  ///
+  /// In es, this message translates to:
+  /// **'Mus contra bots, sin conexión y sin cuentas: tus partidas no salen del móvil.'**
+  String get aboutTagline;
+
+  /// Link to the app's website.
+  ///
+  /// In es, this message translates to:
+  /// **'Web'**
+  String get aboutWebsite;
+
+  /// Link to the privacy policy.
+  ///
+  /// In es, this message translates to:
+  /// **'Privacidad'**
+  String get aboutPrivacy;
+
+  /// Link to the terms of use.
+  ///
+  /// In es, this message translates to:
+  /// **'Condiciones de uso'**
+  String get aboutTerms;
+
+  /// Link to write to the developer.
+  ///
+  /// In es, this message translates to:
+  /// **'Contacto'**
+  String get aboutContact;
+
+  /// Opens the licenses of the app's software, fonts and sounds.
+  ///
+  /// In es, this message translates to:
+  /// **'Licencias'**
+  String get aboutLicenses;
+
+  /// Shown when no app on the phone opens a link.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido abrir {what}'**
+  String aboutCouldNotOpen(String what);
+
   /// Setting: the table's sounds.
   ///
   /// In es, this message translates to:

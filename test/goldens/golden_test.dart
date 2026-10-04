@@ -11,7 +11,9 @@ import 'package:masmus/bots/heuristic_bot.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/game/cards.dart';
 import 'package:masmus/game/senas.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/ui/about/about_screen.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/faces/face_painter.dart';
 import 'package:masmus/ui/help/how_to_play_screen.dart';
@@ -239,12 +241,14 @@ Widget _faces() {
 /// Screens, by the name of their golden.
 final Map<String, Widget Function()> _screens = {
   'start': () => StartScreen(
+    links: RecordedLinks(),
     store: MatchStore.inMemory(),
     settings: SettingsController.inMemory(),
     table: (partner, rules, rivals) => const SizedBox(),
     resume: (_) => const SizedBox(),
   ),
   'start_saved': () => StartScreen(
+    links: RecordedLinks(),
     store: MatchStore.inMemory(savedMatch()),
     settings: SettingsController.inMemory(),
     table: (partner, rules, rivals) => const SizedBox(),
@@ -252,7 +256,11 @@ final Map<String, Widget Function()> _screens = {
   ),
   'new_match': () => NewMatchScreen(onStart: (partner, rules, rivals) {}),
   'how_to_play': () => const HowToPlayScreen(),
-  'settings': () => SettingsScreen(settings: SettingsController.inMemory()),
+  'settings': () => SettingsScreen(
+    settings: SettingsController.inMemory(),
+    links: RecordedLinks(),
+  ),
+  'about': () => AboutScreen(links: RecordedLinks()),
   for (final MapEntry(key: moment, value: controller) in tableMoments.entries)
     'table_$moment': () => tableScreen(controller()),
   for (final MapEntry(key: moment, value: controller) in countMoments.entries)

@@ -7,6 +7,7 @@ import '../../game/rules.dart';
 import '../../game/table.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/localized_names.dart';
+import '../../services/links.dart';
 import '../../services/match_store.dart';
 import '../cards/playing_card_view.dart';
 import '../help/how_to_play_screen.dart';
@@ -24,11 +25,13 @@ class StartScreen extends StatefulWidget {
     required this.settings,
     required this.table,
     required this.resume,
+    required this.links,
     super.key,
   });
 
   final MatchStore store;
   final SettingsController settings;
+  final Links links;
 
   /// The table a new match is played on; [rivals] null for any two.
   final Widget Function(
@@ -178,8 +181,10 @@ class _StartScreenState extends State<StartScreen> {
                             TextButton(
                               onPressed: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      SettingsScreen(settings: widget.settings),
+                                  builder: (_) => SettingsScreen(
+                                    settings: widget.settings,
+                                    links: widget.links,
+                                  ),
                                 ),
                               ),
                               child: Text(l10n.settingsTitle),

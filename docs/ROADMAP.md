@@ -34,7 +34,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M2 · Producto y diseño | ✅ done | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | in progress (#22 → #30 done; the owner's first playtest, #31, asked for #77 #78 #79) | #22 … #31, #77 … #79 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | ✅ done | #32 … #37, #103 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
-| **M5 · Calidad de lanzamiento** | **in progress** (#38 done) | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
+| **M5 · Calidad de lanzamiento** | **in progress** (#38 #39 #40 done) | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
 | Post-v1 | backlog | #46 | Online with friends, catching señas, vacas and regional variants, statistics, tutorial, languages… |
 
@@ -54,6 +54,16 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · Acerca de (#40, done).** At the end of Ajustes (a third
+  button on the start screen didn't fit at large text): the version, that
+  nothing leaves the phone, and the web, privacy, terms and contact on
+  `masmus.larri.dev`, opened outside the app (`Links`, over
+  `url_launcher`), plus the licenses. A link nothing can open says so.
+  The version shown (`appVersion`, `appBuild`) is checked against
+  `pubspec.yaml` by `test/platform/release_config_test.dart`, which also
+  checks the release configuration of both platforms. **Before release**:
+  the site and its `/privacy/` and `/terms/` pages, and the mailbox, must
+  exist (#44).
 - **2026-10-04 · Gradle 9.3.1, AGP 9.1.0, Kotlin 2.4.0 (#40).** Flutter
   warned it would soon drop Gradle 8.14, AGP 8.11 and Kotlin 2.2. The
   Android build follows the template of Flutter 3.47: no `kotlin-android`
@@ -673,6 +683,7 @@ or right after; business model; languages at launch; license.
 | Deck | `lib/ui/cards/`: suit and figure art (`card_art.dart`), pip layouts, `PlayingCardView`; goldens `deck.png`, `deck_compact.png`, `card_states.png` |
 | Settings | `settings.json` next to the saved match (`SettingsController.open`) |
 | Sounds | `assets/sounds/` (Kenney's Casino Audio, CC0, converted to AAC), played by `lib/services/sounds.dart` |
+| Version and links | `lib/ui/about/about_screen.dart` (`appVersion`, `appBuild`, `masmus.larri.dev`, `info.masmus@larri.dev`); bump the version there and in `pubspec.yaml` together |
 | Saved match | `match.json` in the app's support directory (`MatchStore.open`); unreadable ones renamed `match.unreadable-<time>.json` beside it |
 | Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |

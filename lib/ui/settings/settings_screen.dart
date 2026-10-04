@@ -4,6 +4,8 @@ import '../../controllers/match_controller.dart';
 import '../../controllers/settings_controller.dart';
 import '../../game/rules.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/links.dart';
+import '../about/about_screen.dart';
 import '../theme/app_theme.dart';
 import '../widgets/felt.dart';
 import '../widgets/setting_row.dart';
@@ -11,9 +13,14 @@ import '../widgets/setting_row.dart';
 /// The rules new matches start with, how fast the bots play and whether
 /// the table helps with your hand. Every change is kept at once.
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({required this.settings, super.key});
+  const SettingsScreen({
+    required this.settings,
+    required this.links,
+    super.key,
+  });
 
   final SettingsController settings;
+  final Links links;
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +218,27 @@ class SettingsScreen extends StatelessWidget {
                             value: current.sound,
                             onChanged: (on) =>
                                 change((now) => now.copyWith(sound: on)),
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(
+                              Icons.info_outline,
+                              color: AppColors.ink,
+                            ),
+                            title: Text(
+                              l10n.aboutTitle,
+                              style: text.titleMedium,
+                            ),
+                            trailing: const Icon(
+                              Icons.chevron_right,
+                              color: AppColors.inkSecondary,
+                            ),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => AboutScreen(links: links),
+                              ),
+                            ),
                           ),
                         ],
                       ),

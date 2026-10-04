@@ -633,6 +633,38 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsHapticsDetail => 'El móvil vibra cuando te toca.';
 
   @override
+  String get aboutTitle => 'Acerca de';
+
+  @override
+  String aboutVersion(String version, int build) {
+    return 'Versión $version ($build)';
+  }
+
+  @override
+  String get aboutTagline =>
+      'Mus contra bots, sin conexión y sin cuentas: tus partidas no salen del móvil.';
+
+  @override
+  String get aboutWebsite => 'Web';
+
+  @override
+  String get aboutPrivacy => 'Privacidad';
+
+  @override
+  String get aboutTerms => 'Condiciones de uso';
+
+  @override
+  String get aboutContact => 'Contacto';
+
+  @override
+  String get aboutLicenses => 'Licencias';
+
+  @override
+  String aboutCouldNotOpen(String what) {
+    return 'No se ha podido abrir $what';
+  }
+
+  @override
   String get settingsSound => 'Sonido';
 
   @override

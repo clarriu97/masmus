@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/main.dart';
+import 'package:masmus/services/links.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/sounds.dart';
 
@@ -8,6 +9,7 @@ void main() {
   testWidgets('the app opens on the start screen, in Spanish', (tester) async {
     await tester.pumpWidget(
       MasmusApp(
+        links: RecordedLinks(),
         store: MatchStore.inMemory(),
         settings: SettingsController.inMemory(),
         sounds: RecordedSounds(),

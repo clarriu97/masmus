@@ -633,6 +633,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsHapticsDetail => 'El móvil vibra cuando te toca.';
 
   @override
+  String get settingsSound => 'Sonido';
+
+  @override
+  String get settingsSoundDetail =>
+      'Barajar, repartir, envites y órdagos. Calla con el móvil en silencio.';
+
+  @override
   String get howTitle => 'Cómo se juega';
 
   @override

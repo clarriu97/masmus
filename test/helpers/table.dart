@@ -10,6 +10,7 @@ import 'package:masmus/game/move.dart';
 import 'package:masmus/game/rules.dart';
 import 'package:masmus/services/match_store.dart';
 import 'package:masmus/services/scheduler.dart';
+import 'package:masmus/services/sounds.dart';
 import 'package:masmus/ui/table/table_screen.dart';
 
 import '../game/scenario.dart';
@@ -78,12 +79,15 @@ Widget tableScreen(
   VoidCallback? onExit,
   VoidCallback? onRematch,
   bool haptics = true,
+  Sounds? sounds,
 }) => TableScreen(
+  key: ObjectKey(controller),
   controller: controller,
   bots: tableBots,
   onExit: onExit ?? () {},
   onRematch: onRematch ?? () {},
   haptics: haptics,
+  sounds: sounds,
 );
 
 const _discardHands = {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'};

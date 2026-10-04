@@ -9,6 +9,7 @@ import '../../game/match.dart';
 import '../../game/rules.dart';
 import '../../services/match_store.dart';
 import '../../services/scheduler.dart';
+import '../../services/sounds.dart';
 import 'table_screen.dart';
 
 /// A match against the bots: your [partner] across the table and two
@@ -22,6 +23,7 @@ class TablePage extends StatefulWidget {
     this.pace = Pace.normal,
     this.handHelp = true,
     this.haptics = true,
+    this.sounds,
     this.seed,
     this.scheduler,
     this.store,
@@ -33,6 +35,7 @@ class TablePage extends StatefulWidget {
     this.pace = Pace.normal,
     this.handHelp = true,
     this.haptics = true,
+    this.sounds,
     this.scheduler,
     this.store,
     super.key,
@@ -49,6 +52,9 @@ class TablePage extends StatefulWidget {
 
   /// Whether the phone vibrates when your turn comes.
   final bool haptics;
+
+  /// What plays the table's sounds; none when they are off.
+  final Sounds? sounds;
 
   final Personality? partner;
   final Rules? rules;
@@ -134,5 +140,6 @@ class _TablePageState extends State<TablePage> {
     onRematch: _rematch,
     handHelp: widget.handHelp,
     haptics: widget.haptics,
+    sounds: widget.sounds,
   );
 }

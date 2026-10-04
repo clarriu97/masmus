@@ -8,6 +8,7 @@ import 'package:masmus/controllers/settings_controller.dart';
 import 'package:masmus/main.dart';
 import 'package:masmus/services/json_file.dart';
 import 'package:masmus/services/match_store.dart';
+import 'package:masmus/services/sounds.dart';
 
 void setUpE2E() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ Future<void> launchApp(WidgetTester tester, {MatchStore? store}) async {
     MasmusApp(
       store: store ?? MatchStore.inMemory(),
       settings: SettingsController.inMemory(const Settings(pace: Pace.fast)),
+      sounds: Sounds(),
     ),
   );
   await tester.pumpAndSettle();

@@ -5,6 +5,7 @@ import 'package:masmus/controllers/match_controller.dart';
 import 'package:masmus/game/event.dart';
 import 'package:masmus/game/move.dart';
 import 'package:masmus/services/scheduler.dart';
+import 'package:masmus/services/sounds.dart';
 import 'package:masmus/ui/cards/deck_view.dart';
 import 'package:masmus/ui/cards/playing_card_view.dart';
 import 'package:masmus/ui/table/count_view.dart';
@@ -17,6 +18,7 @@ import 'package:masmus/ui/widgets/mano_token.dart';
 import 'package:masmus/ui/widgets/speech_bubble.dart';
 import 'package:masmus/ui/widgets/table_chip.dart';
 
+import '../../game/helpers.dart';
 import '../../helpers/devices.dart';
 import '../../helpers/table.dart';
 import '../../helpers/test_app.dart';
@@ -481,6 +483,69 @@ void main() {
       );
       expect(tester.getSemantics(live).rect.isEmpty, isFalse);
       handle.dispose();
+    });
+  });
+
+  group('the table sounds', () {
+    Future<(MatchController, RecordedSounds)> open(
+      WidgetTester tester,
+      MatchController controller,
+    ) async {
+      final sounds = RecordedSounds();
+      await tester.pumpWidget(
+        buildTestApp(tableScreen(controller, sounds: sounds)),
+      );
+      return (controller, sounds);
+    }
+
+    testWidgets('chips for an envite and for an órdago as they are shown, '
+        'never again for what was said before the table opened', (
+      tester,
+    ) async {
+      final (_, before) = await open(tester, tableMoments['chica_answer']!());
+      expect(before.played, isEmpty);
+
+      for (final (move, sound) in [
+        (const Envido(2) as Move, Sound.envite),
+        (const Ordago(), Sound.ordago),
+      ]) {
+        final (controller, sounds) = await open(
+          tester,
+          tableMoments['grande_open']!(),
+        );
+        controller.play(move);
+        await tester.pump();
+        expect(sounds.played, [sound]);
+      }
+    });
+
+    testWidgets('a shuffle when a hand is dealt, and a deal for the cards '
+        'after the discards', (tester) async {
+      final (counted, shuffled) = await open(
+        tester,
+        countMoments['count_juego']!(),
+      );
+      counted.nextHand();
+      await tester.pump();
+      expect(shuffled.played, [Sound.shuffle]);
+
+      final scheduler = ManualScheduler();
+      final (controller, sounds) = await open(
+        tester,
+        tableController(
+          hands: const {0: 'R 7 5 4', 1: 'S C 7 6', 2: '4 5 6 1', 3: 'R 5 1 4'},
+          moves: [
+            for (final seat in [0, 1, 2, 3]) (seat, const Mus()),
+          ],
+          scheduler: scheduler,
+        ),
+      );
+      controller.play(Discard(cards('4o')));
+      while (controller.dealing == null) {
+        scheduler.advance(const Duration(milliseconds: 100));
+        await tester.pump();
+      }
+      expect(sounds.played, [Sound.deal]);
     });
   });
 }

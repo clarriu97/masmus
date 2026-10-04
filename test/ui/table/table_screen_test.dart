@@ -372,6 +372,12 @@ void main() {
     await tester.pump();
     expect(framed(), isFalse);
     expect(haptics, hasLength(1), reason: 'only when your turn comes');
+
+    haptics.clear();
+    await tester.pumpWidget(
+      buildTestApp(tableScreen(tableMoments['mus']!(), haptics: false)),
+    );
+    expect(haptics, isEmpty, reason: 'vibration turned off in Ajustes');
   });
 
   testWidgets('who cut the mus keeps the scissors and «cortó el mus» for the '

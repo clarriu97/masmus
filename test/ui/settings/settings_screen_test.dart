@@ -8,8 +8,8 @@ import 'package:masmus/ui/settings/settings_screen.dart';
 import '../../helpers/test_app.dart';
 
 void main() {
-  testWidgets('changing the defaults, the pace and the help keeps each at '
-      'once', (tester) async {
+  testWidgets('changing the defaults, the pace, the help and the vibration '
+      'keeps each at once', (tester) async {
     final settings = SettingsController.inMemory();
     await tester.pumpWidget(buildTestApp(SettingsScreen(settings: settings)));
     expect(find.text('Ajustes'), findsOneWidget);
@@ -23,7 +23,9 @@ void main() {
     await tester.tap(find.text('Sin señas'));
     await tester.tap(find.text('Rápido'));
     await tester.pump();
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.byType(Switch).first);
+    await tester.ensureVisible(find.byType(Switch).last);
+    await tester.tap(find.byType(Switch).last);
     await tester.pump();
 
     final chosen = settings.settings;
@@ -38,6 +40,7 @@ void main() {
     );
     expect(chosen.pace, Pace.fast);
     expect(chosen.handHelp, isFalse);
+    expect(chosen.haptics, isFalse);
   });
 
   testWidgets('it shows what is chosen now', (tester) async {
@@ -45,7 +48,7 @@ void main() {
       buildTestApp(
         SettingsScreen(
           settings: SettingsController.inMemory(
-            const Settings(pace: Pace.slow, handHelp: false),
+            const Settings(pace: Pace.slow, handHelp: false, haptics: false),
           ),
         ),
       ),
@@ -54,6 +57,8 @@ void main() {
       find.byType(SegmentedButton<Pace>),
     );
     expect(pace.selected, {Pace.slow});
-    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+    for (final toggle in tester.widgetList<Switch>(find.byType(Switch))) {
+      expect(toggle.value, isFalse);
+    }
   });
 }

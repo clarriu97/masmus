@@ -12,12 +12,14 @@ final class Settings {
     this.rules = const Rules(),
     this.pace = Pace.normal,
     this.handHelp = true,
+    this.haptics = true,
   });
 
   factory Settings.fromJson(Map<String, Object?> json) => Settings(
     rules: Rules.fromJson(json['rules']! as Map<String, Object?>),
     pace: Pace.values.byName(json['pace']! as String),
     handHelp: json['handHelp']! as bool,
+    haptics: json['haptics'] as bool? ?? true,
   );
 
   /// Version written with the settings. Bump it with every change to the
@@ -33,10 +35,20 @@ final class Settings {
   /// Whether the table says what your hand is worth.
   final bool handHelp;
 
-  Settings copyWith({Rules? rules, Pace? pace, bool? handHelp}) => Settings(
+  /// Whether the phone vibrates when your turn comes. Saved before it
+  /// existed, it is on.
+  final bool haptics;
+
+  Settings copyWith({
+    Rules? rules,
+    Pace? pace,
+    bool? handHelp,
+    bool? haptics,
+  }) => Settings(
     rules: rules ?? this.rules,
     pace: pace ?? this.pace,
     handHelp: handHelp ?? this.handHelp,
+    haptics: haptics ?? this.haptics,
   );
 
   Map<String, Object?> toJson() => {
@@ -44,6 +56,7 @@ final class Settings {
     'rules': rules.toJson(),
     'pace': pace.name,
     'handHelp': handHelp,
+    'haptics': haptics,
   };
 }
 

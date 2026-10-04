@@ -190,6 +190,17 @@ class SettingsScreen extends StatelessWidget {
                             onChanged: (on) =>
                                 change((now) => now.copyWith(handHelp: on)),
                           ),
+                          heading(l10n.settingsHaptics),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              l10n.settingsHapticsDetail,
+                              style: text.bodyLarge,
+                            ),
+                            value: current.haptics,
+                            onChanged: (on) =>
+                                change((now) => now.copyWith(haptics: on)),
+                          ),
                         ],
                       ),
                     ),

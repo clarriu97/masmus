@@ -94,6 +94,7 @@ class Seat extends StatelessWidget {
         ?senas,
         ?asked,
         ?thinking ?? said,
+        ?advice,
       ].join('. '),
       child: ExcludeSemantics(
         child: Column(

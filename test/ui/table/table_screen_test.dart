@@ -62,10 +62,8 @@ void main() {
     expect(find.byType(ManoToken), findsOneWidget);
     expect(find.text('Par de reyes'), findsOneWidget);
     expect(find.text('Punto 26'), findsOneWidget);
-    expect(
-      find.bySemanticsLabel('Mus. Te toca. En la mesa: Nada'),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel('Eres mano'), findsOneWidget);
+    expect(find.bySemanticsLabel('Te toca'), findsWidgets);
   });
 
   testWidgets('a bet shows by its bettor and on the table, and the bot '
@@ -79,7 +77,7 @@ void main() {
     expect(find.text('envite 2'), findsOneWidget);
     expect(find.text('Turno de El Calculador'), findsOneWidget);
     expect(
-      find.bySemanticsLabel('Grande. Turno de El Calculador. En la mesa: 2'),
+      find.bySemanticsLabel('El Prudente: Envido 2. Turno de El Calculador'),
       findsOneWidget,
     );
   });
@@ -424,6 +422,7 @@ void main() {
     await tester.pump();
     final advice = _seat(tester, 'El Calculador').advice;
     expect(advice, startsWith('Yo: '));
+    expect(find.bySemanticsLabel(RegExp('El Calculador: $advice')), findsOne);
     expect(find.byTooltip('Consultar al compañero'), findsNothing);
     expect(controller.match.hand.log.length, controller.shown);
 
@@ -437,5 +436,45 @@ void main() {
       buildTestApp(tableScreen(tableMoments['grande_envite']!())),
     );
     expect(find.byTooltip('Consultar al compañero'), findsNothing);
+  });
+
+  group('screen readers hear the table as it is played', () {
+    Future<MatchController> cut(
+      WidgetTester tester,
+      TargetPlatform platform,
+    ) async {
+      final controller = tableMoments['mus']!();
+      await tester.pumpWidget(
+        buildTestApp(tableScreen(controller), platform: platform),
+      );
+      controller.play(const NoHayMus());
+      while (controller.catchingUp) {
+        await tester.pump();
+        catchUp(controller);
+      }
+      await tester.pump();
+      return controller;
+    }
+
+    testWidgets('VoiceOver: one announcement for each thing, in order, '
+        'in the words of the history', (tester) async {
+      await cut(tester, TargetPlatform.iOS);
+      expect([
+        for (final said in tester.takeAnnouncements()) said.message,
+      ], containsAllInOrder(['Tú: No hay mus', 'Grande. Te toca']));
+    });
+
+    testWidgets('TalkBack: a live region that says the same', (tester) async {
+      final handle = tester.ensureSemantics();
+      await cut(tester, TargetPlatform.android);
+      expect(tester.takeAnnouncements(), isEmpty);
+      final live = find.bySemanticsLabel('Grande. Te toca');
+      expect(
+        tester.getSemantics(live),
+        matchesSemantics(label: 'Grande. Te toca', isLiveRegion: true),
+      );
+      expect(tester.getSemantics(live).rect.isEmpty, isFalse);
+      handle.dispose();
+    });
   });
 }

@@ -64,7 +64,10 @@ class CountView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     spacing: AppSpacing.md,
                     children: [
-                      Text(l10n.countTitle, style: text.displayMedium),
+                      Semantics(
+                        header: true,
+                        child: Text(l10n.countTitle, style: text.displayMedium),
+                      ),
                       _Hands(hand: hand, you: you, names: names),
                       _Lances(
                         hand: hand,
@@ -311,7 +314,10 @@ class _Deal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.md,
           children: [
-            Text(l10n.dealTitle, style: text.headlineSmall),
+            Semantics(
+              header: true,
+              child: Text(l10n.dealTitle, style: text.headlineSmall),
+            ),
             if (discarded.isEmpty)
               Text(l10n.dealNoDiscards, style: text.bodyMedium),
             for (final (title, cards) in groups) ...[

@@ -75,11 +75,17 @@ class HowToPlayScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: AppSpacing.md,
                     children: [
-                      Text(l10n.howTitle, style: text.displayMedium),
+                      Semantics(
+                        header: true,
+                        child: Text(l10n.howTitle, style: text.displayMedium),
+                      ),
                       for (final (title, paragraphs) in sections) ...[
                         Padding(
                           padding: const EdgeInsets.only(top: AppSpacing.md),
-                          child: Text(title, style: text.headlineSmall),
+                          child: Semantics(
+                            header: true,
+                            child: Text(title, style: text.headlineSmall),
+                          ),
                         ),
                         for (final paragraph in paragraphs)
                           Text(paragraph, style: text.bodyLarge),
@@ -114,9 +120,12 @@ class HowToPlayScreen extends StatelessWidget {
                       ],
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.md),
-                        child: Text(
-                          l10n.glossaryTitle,
-                          style: text.headlineSmall,
+                        child: Semantics(
+                          header: true,
+                          child: Text(
+                            l10n.glossaryTitle,
+                            style: text.headlineSmall,
+                          ),
                         ),
                       ),
                       for (final (term, meaning) in glossary)

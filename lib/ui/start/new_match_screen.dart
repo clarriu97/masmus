@@ -70,11 +70,18 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(l10n.newMatch, style: text.displayMedium),
+                      Semantics(
+                        header: true,
+                        child: Text(l10n.newMatch, style: text.displayMedium),
+                      ),
                       const SizedBox(height: AppSpacing.xl),
-                      Text(
-                        l10n.newMatchPartner.toUpperCase(),
-                        style: text.labelMedium,
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          l10n.newMatchPartner.toUpperCase(),
+                          semanticsLabel: l10n.newMatchPartner,
+                          style: text.labelMedium,
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       _Partners(
@@ -87,9 +94,13 @@ class _NewMatchScreenState extends State<NewMatchScreen> {
                         }),
                       ),
                       const SizedBox(height: AppSpacing.xl),
-                      Text(
-                        l10n.newMatchRivals.toUpperCase(),
-                        style: text.labelMedium,
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          l10n.newMatchRivals.toUpperCase(),
+                          semanticsLabel: l10n.newMatchRivals,
+                          style: text.labelMedium,
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       _Rivals(

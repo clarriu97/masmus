@@ -124,7 +124,13 @@ class _StartScreenState extends State<StartScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       spacing: AppSpacing.sm,
                       children: [
-                        Text(l10n.startTitle, style: text.displayMedium),
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            l10n.startTitle,
+                            style: text.displayMedium,
+                          ),
+                        ),
                         Text(
                           l10n.startSubtitle,
                           style: text.bodyLarge?.copyWith(
@@ -219,7 +225,14 @@ class _Saved extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.xs,
           children: [
-            Text(l10n.savedTitle.toUpperCase(), style: text.labelMedium),
+            Semantics(
+              header: true,
+              child: Text(
+                l10n.savedTitle.toUpperCase(),
+                semanticsLabel: l10n.savedTitle,
+                style: text.labelMedium,
+              ),
+            ),
             Text(
               l10n.savedScore(score[teamOf(0)], score[1 - teamOf(0)]),
               style: text.titleMedium,

@@ -52,7 +52,11 @@ class _Team extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final name = Text(label.toUpperCase(), style: text.labelMedium);
+    final name = Text(
+      label.toUpperCase(),
+      semanticsLabel: label,
+      style: text.labelMedium,
+    );
     final number = Text('$points', style: text.displaySmall);
     return MergeSemantics(
       child: Column(

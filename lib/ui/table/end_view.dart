@@ -53,19 +53,22 @@ class EndView extends StatelessWidget {
                     child: Column(
                       spacing: AppSpacing.xl,
                       children: [
-                        Text(
-                          !over
-                              ? l10n.endGameWon(
-                                  match.winner == us ? 'us' : 'them',
-                                )
-                              : match.matchWinner == us
-                              ? l10n.endWon
-                              : l10n.endLost,
-                          textAlign: TextAlign.center,
-                          style: text.displayMedium?.copyWith(
-                            color: match.winner == us && over
-                                ? AppColors.turn
-                                : AppColors.ink,
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            !over
+                                ? l10n.endGameWon(
+                                    match.winner == us ? 'us' : 'them',
+                                  )
+                                : match.matchWinner == us
+                                ? l10n.endWon
+                                : l10n.endLost,
+                            textAlign: TextAlign.center,
+                            style: text.displayMedium?.copyWith(
+                              color: match.winner == us && over
+                                  ? AppColors.turn
+                                  : AppColors.ink,
+                            ),
                           ),
                         ),
                         FittedBox(

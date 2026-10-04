@@ -31,7 +31,14 @@ class SettingsScreen extends StatelessWidget {
                   settings.settings = edit(settings.settings);
               Widget heading(String title) => Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.xl),
-                child: Text(title.toUpperCase(), style: text.labelMedium),
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    title.toUpperCase(),
+                    semanticsLabel: title,
+                    style: text.labelMedium,
+                  ),
+                ),
               );
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,7 +66,13 @@ class SettingsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         spacing: AppSpacing.md,
                         children: [
-                          Text(l10n.settingsTitle, style: text.displayMedium),
+                          Semantics(
+                            header: true,
+                            child: Text(
+                              l10n.settingsTitle,
+                              style: text.displayMedium,
+                            ),
+                          ),
                           heading(l10n.settingsRules),
                           SettingRow(
                             label: l10n.newMatchKings,

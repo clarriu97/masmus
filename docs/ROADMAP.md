@@ -32,9 +32,9 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M0 · Cimientos | ✅ done | #1 #2 #3 #4 | Agent guide, roadmap, skills, secrets out of git, reproducible CI, protected `master`, legacy cleanup, the v1 plan |
 | M1 · Reglas y motor | ✅ done | #11 #12 #13 #14 #15 #16 #17 | Rules spec (`docs/RULES.md`), a deterministic engine tested against it and thousands of simulated matches, a controller that owns the turns; the current table plays by the correct rules and the legacy engine is gone |
 | M2 · Producto y diseño | ✅ done | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
-| **M3 · Mesa jugable** | **in progress** (#22 → #30 done; the owner's first playtest, #31, asked for #77 #78 #79) | #22 … #31, #77 … #79 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
-| M4 · Bots y señas | in progress (all done but #103) | #32 … #37, #103 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
-| M5 · Calidad de lanzamiento | planned | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
+| M3 · Mesa jugable | in progress (#22 → #30 done; the owner's first playtest, #31, asked for #77 #78 #79) | #22 … #31, #77 … #79 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
+| M4 · Bots y señas | ✅ done | #32 … #37, #103 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
+| **M5 · Calidad de lanzamiento** | **in progress** (#38 done) | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
 | Post-v1 | backlog | #46 | Online with friends, catching señas, vacas and regional variants, statistics, tutorial, languages… |
 
@@ -44,11 +44,9 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** the owner's first playtest of the new table (#31) asked for
-a table that can be followed: #77 (one thing at a time, slower bots), #78
-(who speaks, what you said, what happened in the hand) and #79 (the deck
-by the mano and the deal). Then he plays again, and the rest of M4
-(#35 → #37) and M5. Work one issue per branch and PR, following
+**Next step:** M5, launch quality: #39 (motion, sound and haptics, with
+settings to turn them off), #40 (release configuration), #41 (e2e in CI).
+The owner keeps playtesting on his iPhone (#31). Work one issue per branch and PR, following
 AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
@@ -56,6 +54,27 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · The table, told to screen readers (#38).** An audit of
+  what VoiceOver and TalkBack get from every screen found:
+  - **The live summary of the table never reached them**: it had no size,
+    so Flutter dropped it, and VoiceOver ignores live regions anyway. Now
+    the table narrates each thing as it is shown, in the words of «Lo que
+    va de mano» («La Temeraria: Envido 5», «Grande», «→ Nosotros +1»),
+    then whose turn it is and what your partner advises: announcements on
+    iOS, a live region on Android, which has dropped announcements.
+  - **What they didn't hear**: that you are mano (now «Eres mano») and your
+    partner's advice (now on its seat too).
+  - **Headings**: the titles and sections of every screen, the count, the
+    end and the history are headings, so a screen reader can jump between
+    them.
+  - **Capitals**: the score and section labels, drawn in capitals, are read
+    in their own case.
+  Cards, señas, cuts, bets and buttons were already heard well; tap
+  targets, contrast and text at 200 % were already in the layout matrix.
+  Before each release, a pass by hand with VoiceOver and TalkBack (#40).
+- **2026-10-04 · #103 closed.** The owner accepted the finding below: what
+  the partner holds barely moves a match to 40, so reading señas can't win
+  measurably more.
 - **2026-10-04 · Reading señas no longer costs matches (#103, part 1).**
   Measured over 20,000 matches on the same deals, bots that read their
   partner's señas won 48.3 % (47.6–49.0) against bots that don't: knowing

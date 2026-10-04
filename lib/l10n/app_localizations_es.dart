@@ -245,9 +245,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tableStake => 'En la mesa';
 
   @override
-  String get tableStakeNone => 'Nada';
-
-  @override
   String get tableYourTurn => 'Te toca';
 
   @override
@@ -295,11 +292,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tableMano => 'Mano';
-
-  @override
-  String tableStakeIs(String stake) {
-    return 'En la mesa: $stake';
-  }
 
   @override
   String get actionMus => 'Mus';
@@ -879,6 +871,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get seatCut => 'cortó el mus';
+
+  @override
+  String get tableYouMano => 'Eres mano';
 
   @override
   String get tableYouCut => 'Cortaste el mus';

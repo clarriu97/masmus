@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
 import '../../bots/heuristic_bot.dart';
@@ -275,6 +276,11 @@ class _TableScreenState extends State<TableScreen>
       if (!view.youDiscard) {
         _marked.clear();
       }
+      final names = {
+        you: l10n.countYou,
+        for (final MapEntry(key: seat, value: bot) in bots.entries)
+          seat: l10n.personalityName(bot),
+      };
       WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
       final onTable = {
         for (final seat in [0, 1, 2, 3])
@@ -291,6 +297,23 @@ class _TableScreenState extends State<TableScreen>
               child: Stack(
                 key: _layer,
                 children: [
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    child: _Narration(
+                      log: match.hand.log.sublist(0, controller.shown),
+                      view: view,
+                      names: names,
+                      advice: switch (_advice) {
+                        final advice? => l10n.historyLine(
+                          names[(you + 2) % 4]!,
+                          advice,
+                        ),
+                        null => null,
+                      },
+                    ),
+                  ),
                   Column(
                     children: [
                       _TopBar(
@@ -309,12 +332,7 @@ class _TableScreenState extends State<TableScreen>
                           builder: (_) => HandHistory(
                             log: match.hand.log.sublist(0, controller.shown),
                             view: view,
-                            names: {
-                              you: l10n.countYou,
-                              for (final MapEntry(key: seat, value: bot)
-                                  in bots.entries)
-                                seat: l10n.personalityName(bot),
-                            },
+                            names: names,
                           ),
                         ),
                       ),
@@ -342,7 +360,6 @@ class _TableScreenState extends State<TableScreen>
                         onTable: onTable[you]!,
                         cardsKey: _cards[you],
                       ),
-                      _Status(view: view, bots: bots),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(
                           AppSpacing.lg,
@@ -813,8 +830,10 @@ class _YourHand extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: AppSpacing.sm,
               children: [
-                if (view.mano == view.you) const ManoToken(),
-                if (view.cutter == view.you) const CutBadge(),
+                if (view.mano == view.you)
+                  Semantics(label: l10n.tableYouMano, child: const ManoToken()),
+                if (view.cutter == view.you)
+                  Semantics(label: l10n.tableYouCut, child: const CutBadge()),
                 Flexible(child: Text(l10n.discardHint, style: text.bodySmall)),
               ],
             )
@@ -832,7 +851,10 @@ class _YourHand extends StatelessWidget {
                     spacing: AppSpacing.sm,
                     children: [
                       if (view.mano == view.you)
-                        const PopIn(child: ManoToken()),
+                        Semantics(
+                          label: l10n.tableYouMano,
+                          child: const PopIn(child: ManoToken()),
+                        ),
                       if (view.cutter == view.you)
                         Semantics(
                           label: l10n.tableYouCut,
@@ -916,34 +938,66 @@ class _YourHand extends StatelessWidget {
   }
 }
 
-/// What the table is at, for screen readers: the lance, whose turn it is
-/// and what is bet. Announced whenever it changes.
-class _Status extends StatelessWidget {
-  const _Status({required this.view, required this.bots});
+/// The table told to screen readers as it happens: each thing as it is
+/// shown, in the words of «Lo que va de mano», whose turn it is and what
+/// your partner advises. VoiceOver hears it as announcements; TalkBack,
+/// which has dropped them, as a live region.
+class _Narration extends StatefulWidget {
+  const _Narration({
+    required this.log,
+    required this.view,
+    required this.names,
+    required this.advice,
+  });
 
+  final List<GameEvent> log;
   final TableView view;
-  final Map<int, Personality> bots;
+  final Map<int, String> names;
+  final String? advice;
+
+  @override
+  State<_Narration> createState() => _NarrationState();
+}
+
+class _NarrationState extends State<_Narration> {
+  String _told = '';
+
+  String _now(AppLocalizations l10n) {
+    final view = widget.view;
+    final last = widget.log.lastOrNull;
+    return [
+      ?switch (last) {
+        LanceStarted(:final lance) => l10n.stepName(lance.name),
+        final GameEvent event => l10n.happened(event, view, widget.names),
+        null => null,
+      },
+      ?switch (view.turn) {
+        null => null,
+        _ when view.yourTurn => l10n.tableYourTurn,
+        final turn => l10n.tableTurnOf(widget.names[turn]!),
+      },
+      ?widget.advice,
+    ].join('. ');
+  }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final current = view.steps.firstWhere(
-      (step) => step.state == StepProgress.current,
-      orElse: () => view.steps.last,
-    );
-    final stake = view.bet;
+    final now = _now(AppLocalizations.of(context));
+    final announces = Theme.of(context).platform == TargetPlatform.iOS;
+    if (announces && now.isNotEmpty && now != _told) {
+      unawaited(
+        SemanticsService.sendAnnouncement(
+          View.of(context),
+          now,
+          Directionality.of(context),
+        ),
+      );
+    }
+    _told = now;
     return Semantics(
-      liveRegion: true,
-      label: [
-        l10n.stepLabel(current),
-        ?_turnText(l10n, view, bots),
-        l10n.tableStakeIs(switch (stake) {
-          null => l10n.tableStakeNone,
-          _ when stake.ordago => l10n.stepOrdago,
-          _ => '${stake.stake}',
-        }),
-      ].join('. '),
-      child: const SizedBox.shrink(),
+      liveRegion: !announces,
+      label: announces ? null : now,
+      child: const SizedBox(height: 1),
     );
   }
 }

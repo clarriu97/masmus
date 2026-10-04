@@ -115,7 +115,7 @@ dart format .                      # CI runs: dart format --set-exit-if-changed 
 flutter analyze
 flutter test                       # full suite — a partial pass is a failure
 tool/ci.sh                         # exactly what the PR checks run (~1 min): lint, tests, goldens (macOS)
-tool/ci.sh all                     # + release builds for Android and iOS, e2e on the simulator and emulator
+tool/ci.sh all                     # + release builds, e2e on both iPhone sizes and Android; reports local-e2e
 flutter test --update-goldens --tags golden   # after an intentional visual change (macOS); review the PNG diff
 tool/ci.sh e2e-ios small           # e2e flows (integration_test/) on the small iPhone simulator; also large, e2e-android
 flutter test --update-goldens --tags golden test/goldens/branding_test.dart && dart run flutter_launcher_icons && dart run flutter_native_splash:create   # icon and splash (see ROADMAP → Identity for the two files to restore)
@@ -125,7 +125,7 @@ flutter devices
 flutter run -d <device-id>         # simulator, emulator or device; keep it running for hot reload
 ```
 
-**Every change must pass `tool/ci.sh` (format, analyze, full `flutter test`, goldens) before it is considered done.** Iterate autonomously until green. Changes to dependencies or native config (`android/`, `ios/`) also pass `tool/ci.sh all` before merging. `git config core.hooksPath tool/git-hooks` runs `tool/ci.sh` before every push.
+**Every change must pass `tool/ci.sh` (format, analyze, full `flutter test`, goldens) before it is considered done.** Iterate autonomously until green. Before merging, `tool/ci.sh all` on the pushed head (release builds, e2e on both iPhone sizes and Android) reports the `local-e2e` status `master` requires. `git config core.hooksPath tool/git-hooks` runs `tool/ci.sh` before every push.
 
 When the app is running (via `flutter run` or the Dart MCP server), hot reload after editing UI in `lib/`, and hot restart after changing `main()`, `initState`, or global/static state.
 
@@ -136,5 +136,5 @@ When the app is running (via `flutter run` or the Dart MCP server), hot reload a
 - Conventional commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`, `build:`, `ci:`, `refactor:`).
 - PR body contains `Closes #<issue>`, a summary, and how it was verified (tests + simulator screenshot for UI changes). No co-author trailers and no mention of AI tools in commits or PRs.
 - When an issue's done criteria include the owner's review (rules defaults, wireframes, visual direction…), label its PR `owner-review` and never merge it without the owner's OK in chat or on the PR.
-- Merge with squash once the required checks (`analyze`, `test`) are green; `master` accepts nothing else. After merging, check the **Builds** run on `master`; if it fails, fix it in the next PR.
+- Merge with squash once the required checks (`analyze`, `test`, `goldens`, and `local-e2e` from `tool/ci.sh all` on the pushed head) are green; `master` accepts nothing else. After merging, check the **Builds** and **E2E** runs on `master`; if one fails, fix it in the next PR. Gates and releasing: `docs/RELEASING.md`.
 - Never commit secrets: `.env`, keystores, `key.properties` and provisioning profiles stay out of git. Stage files by path; never `git add -A` or `git add .` on a tree you haven't checked.

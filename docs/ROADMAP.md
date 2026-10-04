@@ -34,7 +34,7 @@ iPhone and Android phones, portrait, Spanish first. Owner: Carlos Larriu
 | M2 · Producto y diseño | ✅ done | #18 #19 #20 #21 | Flows and wireframes of v1, visual direction and design system, own Spanish deck, name, icon and splash |
 | M3 · Mesa jugable | in progress (#22 → #30 done; the owner's first playtest, #31, asked for #77 #78 #79) | #22 … #31, #77 … #79 | The whole match redesigned on the new engine: start, table, bets, discards, the count with every hand shown, end of match, exit and resume, settings and help; playtest with Mus players |
 | M4 · Bots y señas | ✅ done | #32 … #37, #103 | Bot arena, sensible mus/discards/bets, señas between partners, a partner who plays with you, personalities |
-| **M5 · Calidad de lanzamiento** | **in progress** (#38 #39 #40 done) | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
+| M5 · Calidad de lanzamiento | ✅ done | #38 #39 #40 #41 | Accessibility, motion and sound, release configuration, e2e in CI with the local gate and the Release workflow |
 | Fase 2 · Publicación | planned | #42 #43 #44 #45 | Store accounts and betas, closed beta with Mus players, store listings and privacy, business model |
 | Post-v1 | backlog | #46 | Online with friends, catching señas, vacas and regional variants, statistics, tutorial, languages… |
 
@@ -44,9 +44,10 @@ Then the design system, deck and identity (#19 → #21), the table (M3), the
 bots (M4; it can start once #15 and #17 are in if M3 is waiting on a
 review), quality (M5) and publication.
 
-**Next step:** M5, launch quality: #39 (motion, sound and haptics, with
-settings to turn them off), #40 (release configuration), #41 (e2e in CI).
-The owner keeps playtesting on his iPhone (#31). Work one issue per branch and PR, following
+**Next step:** phase 2, publication (#42 → #45): store accounts and
+betas, a closed beta with Mus players, store listings with the site and
+its privacy page, and the business model. The owner keeps playtesting on
+his iPhone (#31). Work one issue per branch and PR, following
 AGENTS.md → Workflow.
 
 **Open questions for the owner** (details in `docs/PRODUCT.md`): señas in v1
@@ -54,6 +55,21 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-04 · E2E in CI, the local gate and releases (#41), as in 1RM.**
+  How each gate works: `docs/RELEASING.md`.
+  - **E2E workflow**: after every merge, nightly, on demand and for every
+    tag, the e2e flows run on the small and the large iPhone and on
+    Android API 24 (small) and 35 (large), plus a smoke test of the release
+    build on API 35. Not on pull requests: device runs on shared machines
+    sometimes fail to attach.
+  - **Release smoke test** (`tool/ci.sh smoke-android-release`): the R8
+    build installed fresh starts a match, makes a move, is killed and
+    offers «Continuar».
+  - **`local-e2e`**: `tool/ci.sh all` now runs both iPhone sizes and, when
+    everything passes on a pushed commit with no local changes, reports
+    the `local-e2e` status, which `master` requires.
+  - **Release workflow**: on `v*` tags; the tag must match `pubspec.yaml`,
+    and the checks, builds and e2e must pass.
 - **2026-10-04 · Acerca de (#40, done).** At the end of Ajustes (a third
   button on the start screen didn't fit at large text): the version, that
   nothing leaves the phone, and the web, privacy, terms and contact on
@@ -673,8 +689,8 @@ or right after; business model; languages at launch; license.
 | App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`, UI `lib/ui/`, texts `lib/l10n/` |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
-| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`); `tool/ci.sh` runs the same locally |
-| Branch protection | `master`: required `analyze`, `test` and `goldens`; up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
+| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`), `e2e.yml` (e2e on 2 iPhones and 2 Android APIs, release smoke; after merges, nightly, tags), `release.yml` (`v*` tags); `tool/ci.sh` runs the same locally; gates and releasing in `docs/RELEASING.md` |
+| Branch protection | `master`: required `analyze`, `test`, `goldens` and `local-e2e` (reported by `tool/ci.sh all`); up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name «Más Mus» |
 | Icon and splash | `test/goldens/branding_test.dart` → `assets/branding/` → `dart run flutter_launcher_icons` and `dart run flutter_native_splash:create` |

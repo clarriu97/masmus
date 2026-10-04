@@ -3,9 +3,12 @@
 #
 #   tool/ci.sh                 lint + unit/widget tests + goldens (macOS)    ~1 min
 #   tool/ci.sh all             the above + release builds (Android, iOS) and
-#                              e2e on every target available               ~8 min
-#                              run it before merging changes to dependencies
-#                              or native config (android/, ios/)
+#                              e2e on every target available             ~10 min
+#                              and, when it all passes on a pushed commit
+#                              with no local changes, reports the
+#                              `local-e2e` status that merging into master needs
+#   tool/ci.sh report          report `local-e2e` for HEAD after pushing, if
+#                              `tool/ci.sh all` already passed on it
 #
 #   tool/ci.sh checks          lint + unit
 #   tool/ci.sh lint            format and analyze
@@ -14,6 +17,8 @@
 #   tool/ci.sh boot-ios SIZE   boot the simulator for SIZE (small|large), print its id
 #   tool/ci.sh e2e-ios SIZE    e2e flows on that simulator (boots it if needed)
 #   tool/ci.sh e2e-android     e2e flows on an Android emulator (starts one if needed)
+#   tool/ci.sh smoke-android-release  launch the release (R8) build on an
+#                              emulator: a match started, saved and resumed
 #   tool/ci.sh build-android   release app bundle
 #   tool/ci.sh build-ios       release iOS build without code signing
 set -euo pipefail
@@ -21,6 +26,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 E2E=integration_test/app_test.dart
+
+# Where `tool/ci.sh all` remembers the commits it passed on.
+STAMPS=.dart_tool/local-e2e
+
+# Set by e2e_android: the API level it ran on.
+ANDROID_API=""
 
 # Android SDK tools, installed by Android Studio.
 ANDROID_HOME=${ANDROID_HOME:-$HOME/Library/Android/sdk}
@@ -261,7 +272,8 @@ e2e_android() {
     adb -s "$device" shell pm path android >/dev/null 2>&1 && break
     sleep 2
   done
-  step "e2e on Android $device (API $(adb -s "$device" shell getprop ro.build.version.sdk | tr -d '\r'))"
+  ANDROID_API=$(adb -s "$device" shell getprop ro.build.version.sdk | tr -d '\r')
+  step "e2e on Android $device (API $ANDROID_API)"
   run_e2e "$device" || status=$?
   # Stop the emulator this run started; leave one you had open.
   if [[ -z "$was_running" ]]; then
@@ -270,7 +282,73 @@ e2e_android() {
   return "$status"
 }
 
+# Prints the centre of the first element on screen whose text or
+# description starts with [pattern], waiting up to a minute for it.
+android_find() {
+  local device=$1 pattern=$2 bounds _
+  for _ in $(seq 30); do
+    bounds=$(adb -s "$device" exec-out uiautomator dump /dev/tty 2>/dev/null |
+      tr '>' '\n' | grep -E "(text|content-desc)=\"($pattern)" |
+      grep -oE 'bounds="\[[0-9]+,[0-9]+\]\[[0-9]+,[0-9]+\]"' | head -1 || true)
+    if [[ -n "$bounds" ]]; then
+      echo "$bounds" | tr -c '0-9' ' ' | awk '{ print int(($1 + $3) / 2), int(($2 + $4) / 2) }'
+      return 0
+    fi
+    sleep 2
+  done
+  echo "Never showed: $pattern" >&2
+  return 1
+}
+
+# The e2e flows need `flutter test`, which only runs debug builds, and
+# `flutter drive` refuses release mode. So the release build (AOT + R8) gets a
+# smoke test instead: a new match, one move (a match is saved from its first
+# move), and after killing the app the start screen offers to continue it.
+# That covers what R8 breaks first: plugins (file storage, audio) and the app
+# starting at all.
+smoke_android_release() {
+  local device was_running app=dev.larri.masmus status=0 at _
+  was_running=$(android_device)
+  device=$(boot_android)
+  if [[ -z "$device" ]]; then
+    echo "No Android emulator available." >&2
+    return 1
+  fi
+  for _ in $(seq 60); do
+    adb -s "$device" shell pm path android >/dev/null 2>&1 && break
+    sleep 2
+  done
+  step "release smoke test on Android $device"
+  flutter build apk --release
+  {
+    adb -s "$device" install -r build/app/outputs/flutter-apk/app-release.apk >/dev/null &&
+      adb -s "$device" shell pm clear "$app" >/dev/null &&
+      adb -s "$device" logcat -c &&
+      adb -s "$device" shell am start -n "$app/.MainActivity" >/dev/null &&
+      at=$(android_find "$device" 'Nueva partida"') &&
+      adb -s "$device" shell input tap $at &&
+      at=$(android_find "$device" 'Empezar partida"') &&
+      adb -s "$device" shell input tap $at &&
+      at=$(android_find "$device" 'Mus"|Paso"|Quiero"') &&
+      adb -s "$device" shell input tap $at &&
+      sleep 2 &&
+      adb -s "$device" shell am force-stop "$app" &&
+      adb -s "$device" shell am start -n "$app/.MainActivity" >/dev/null &&
+      android_find "$device" 'Continuar"' >/dev/null
+  } || status=1
+  if adb -s "$device" logcat -d | grep -E "FATAL EXCEPTION|MissingPluginException"; then
+    status=1
+  fi
+  if [[ -z "$was_running" ]]; then
+    adb -s "$device" emu kill >/dev/null 2>&1 || true
+  fi
+  if ((status == 0)); then echo "Release build OK."; fi
+  return "$status"
+}
+
 all() {
+  local passed="" sha
+  sha=$(git rev-parse HEAD)
   checks
   goldens
   if [[ -d "$ANDROID_HOME" ]]; then
@@ -281,19 +359,58 @@ all() {
   if [[ "$(uname)" == Darwin ]]; then
     build_ios
     e2e_ios small
+    e2e_ios large
+    passed="iOS small, iOS large"
   else
     echo "⚠︎ iOS release build and e2e skipped: not on macOS. CI builds it on master."
   fi
   if android_available; then
     e2e_android
+    passed="${passed:+$passed, }Android API $ANDROID_API"
   else
     echo "⚠︎ Android e2e skipped: no emulator (Android Studio → Device Manager)."
+    passed="${passed:+$passed; }Android skipped"
   fi
+  if [[ -n "$(git status --porcelain)" || "$(git rev-parse HEAD)" != "$sha" ]]; then
+    echo "⚠︎ Not recording a pass: the tests ran on uncommitted changes." >&2
+    return 0
+  fi
+  mkdir -p "$STAMPS"
+  echo "e2e passed locally: $passed" >"$STAMPS/$sha"
+  report
+}
+
+# Reports the `local-e2e` commit status for HEAD on GitHub, which the master
+# branch protection requires before merging. Only for a commit that
+# `tool/ci.sh all` passed on, with no local changes, once it is pushed.
+report() {
+  local sha repo stamp
+  sha=$(git rev-parse HEAD)
+  stamp="$STAMPS/$sha"
+  if [[ ! -f "$stamp" ]]; then
+    echo "tool/ci.sh all has not passed on $sha; run it first." >&2
+    return 1
+  fi
+  if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Local changes on top of $sha; commit or stash them first." >&2
+    return 1
+  fi
+  git fetch -q origin 2>/dev/null || true
+  if [[ -z "$(git branch -r --contains "$sha" 2>/dev/null)" ]]; then
+    echo "⚠︎ $sha is not pushed yet: push it, then run tool/ci.sh report." >&2
+    return 0
+  fi
+  repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+  gh api -X POST "repos/$repo/statuses/$sha" \
+    -f state=success -f context=local-e2e \
+    -f description="$(head -c 140 "$stamp")" >/dev/null
+  step "local-e2e reported on $sha: $(cat "$stamp")"
 }
 
 case "${1:-}" in
   "") checks; goldens ;;
   all) all ;;
+  report) report ;;
   checks) checks ;;
   lint) lint ;;
   unit) unit ;;
@@ -301,7 +418,8 @@ case "${1:-}" in
   boot-ios) boot_ios "${2:?small|large}" ;;
   e2e-ios) e2e_ios "${2:?small|large}" ;;
   e2e-android) e2e_android ;;
+  smoke-android-release) smoke_android_release ;;
   build-android) build_android ;;
   build-ios) build_ios ;;
-  *) sed -n '2,18p' "$0"; exit 1 ;;
+  *) sed -n '2,25p' "$0"; exit 1 ;;
 esac

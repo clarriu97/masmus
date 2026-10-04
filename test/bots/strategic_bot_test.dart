@@ -88,6 +88,21 @@ void main() {
       );
       expect(_choices(match, 1), everyElement(isA<Mus>()));
     });
+
+    test('decides on its own cards: a partner who told duples, medias or 31 '
+        'stays strong through the mus, so a hand with nothing asks for it', () {
+      for (final partner in ['R R C C', 'R R R 7', 'R C S 1']) {
+        final match = _match({
+          0: '4 5 6 7',
+          1: '4 5 6 7',
+          2: partner,
+          3: '4 5 6 7',
+        });
+        expect(match.legalMoves(0), contains(MoveKind.mus));
+        expect(SeatView.of(match, 0).partnerSenas, isNotEmpty);
+        expect(_choices(match, 0), everyElement(isA<Mus>()), reason: partner);
+      }
+    });
   });
 
   group('discards', () {
@@ -374,10 +389,10 @@ void main() {
     });
 
     test('a partner\'s envite is a sign of strength: raised over it, the '
-        'same hand accepts more often', () {
+        'same hand accepts more often, unless its señas already told', () {
       const hands = {0: '4 5 6 1', 1: 'C C 6 5', 2: 'R C 7 6', 3: 'S 7 4 1'};
-      MatchState raised({required bool partnerBet}) =>
-          _playAll(_match(hands, mano: 2, rules: const Rules(senas: false)), [
+      MatchState raised({required bool partnerBet, bool senas = false}) =>
+          _playAll(_match(hands, mano: 2, rules: Rules(senas: senas)), [
             (2, const NoHayMus()),
             (2, const Paso()),
             (3, const Paso()),
@@ -394,6 +409,13 @@ void main() {
       expect(withPartner.hand.turn, 2);
       expect(alone.hand.turn, 2);
       expect(accepts(withPartner, 2), greaterThan(accepts(alone, 2)));
+      final told = raised(partnerBet: true, senas: true);
+      expect(SeatView.of(told, 2).partnerSenas, isNotNull);
+      expect(
+        accepts(told, 2),
+        accepts(raised(partnerBet: false, senas: true), 2),
+        reason: 'its señas already told what it holds',
+      );
     });
   });
 
@@ -464,7 +486,7 @@ void main() {
       final (low, _) = playArena(
         a: (random) => StrategicBot(personality, random),
         b: RandomBot.new,
-        pairs: 20,
+        pairs: 30,
       ).interval;
       expect(low, greaterThan(0.5), reason: '$personality beats random');
     }

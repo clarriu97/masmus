@@ -42,40 +42,15 @@ class HandHistory extends StatelessWidget {
     }
 
     for (final event in log) {
-      switch (event) {
-        case LanceStarted(:final lance) || Declared(:final lance):
-          step(l10n.stepName(lance.name));
-          if (event is Declared) {
-            line(l10n.historyLine(names[event.seat]!, l10n.said(event, view)));
-          }
-        case LanceClosed(:final outcome):
-          line(
-            l10n.stepStatus(
-                  StepView(
-                    TableStep.values.byName(outcome.lance.name),
-                    StepProgress.done,
-                    outcome: outcome,
-                  ),
-                  view,
-                ) ??
-                '',
-            result: true,
-          );
-        case ManoMoved(:final seat):
-          line(l10n.historyManoMoved(names[seat]!), result: true);
-        case Reshuffled():
-          line(l10n.historyReshuffled, result: true);
-        case MusSaid(:final seat) ||
-            NoHayMusSaid(:final seat) ||
-            Discarded(:final seat) ||
-            PasoSaid(:final seat) ||
-            EnvidoSaid(:final seat) ||
-            QuieroSaid(:final seat) ||
-            NoQuieroSaid(:final seat) ||
-            OrdagoSaid(:final seat):
-          line(l10n.historyLine(names[seat]!, l10n.said(event, view)));
-        default:
-          break;
+      if (event case LanceStarted(:final lance) || Declared(:final lance)) {
+        step(l10n.stepName(lance.name));
+      }
+      if (l10n.happened(event, view, names) case final said?) {
+        line(
+          said,
+          result:
+              event is LanceClosed || event is ManoMoved || event is Reshuffled,
+        );
       }
     }
     return SafeArea(
@@ -90,16 +65,23 @@ class HandHistory extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.sm,
           children: [
-            Text(l10n.historyTitle, style: text.headlineSmall),
+            Semantics(
+              header: true,
+              child: Text(l10n.historyTitle, style: text.headlineSmall),
+            ),
             if (groups.isEmpty) Text(l10n.historyEmpty, style: text.bodyMedium),
             for (final (name, lines) in groups) ...[
               Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.sm),
-                child: Text(name, style: text.titleSmall),
+                child: Semantics(
+                  header: true,
+                  child: Text(name, style: text.titleSmall),
+                ),
               ),
               for (final (said, result) in lines)
                 Text(
                   result ? '→ $said' : said,
+                  semanticsLabel: said,
                   style: result ? text.bodySmall : text.bodyMedium,
                 ),
             ],

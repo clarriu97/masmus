@@ -111,6 +111,33 @@ extension TableTexts on AppLocalizations {
     _ => throw ArgumentError.value(event, 'event', 'Nobody says it'),
   };
 
+  /// What [event] tells of the hand, as «Lo que va de mano» lists it, with
+  /// each seat called by its name in [names]: who said what, and how a
+  /// lance went. Null for what only starts something.
+  String? happened(GameEvent event, TableView view, Map<int, String> names) =>
+      switch (event) {
+        LanceClosed(:final outcome) => stepStatus(
+          StepView(
+            TableStep.values.byName(outcome.lance.name),
+            StepProgress.done,
+            outcome: outcome,
+          ),
+          view,
+        ),
+        ManoMoved(:final seat) => historyManoMoved(names[seat]!),
+        Reshuffled() => historyReshuffled,
+        Declared(:final seat) ||
+        MusSaid(:final seat) ||
+        NoHayMusSaid(:final seat) ||
+        Discarded(:final seat) ||
+        PasoSaid(:final seat) ||
+        EnvidoSaid(:final seat) ||
+        QuieroSaid(:final seat) ||
+        NoQuieroSaid(:final seat) ||
+        OrdagoSaid(:final seat) => historyLine(names[seat]!, said(event, view)),
+        _ => null,
+      };
+
   /// A move as it would be said at the table.
   String move(Move move, TableView view) => switch (move) {
     Mus() => saidMus,

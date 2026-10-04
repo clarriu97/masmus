@@ -276,10 +276,6 @@
   "@tableStake": {
     "description": "What is bet in the lance being played."
   },
-  "tableStakeNone": "Nada",
-  "@tableStakeNone": {
-    "description": "Nothing is bet in the lance being played, for screen readers."
-  },
   "tableYourTurn": "Te toca",
   "@tableYourTurn": {
     "description": "Your turn."
@@ -338,15 +334,6 @@
   "tableMano": "Mano",
   "@tableMano": {
     "description": "Marks that you are mano, next to your seat."
-  },
-  "tableStakeIs": "En la mesa: {stake}",
-  "@tableStakeIs": {
-    "description": "What is bet in the lance being played, for screen readers: «En la mesa: 2».",
-    "placeholders": {
-      "stake": {
-        "type": "String"
-      }
-    }
   },
   "actionMus": "Mus",
   "@actionMus": {
@@ -1084,6 +1071,10 @@
   "seatCut": "cortó el mus",
   "@seatCut": {
     "description": "Under the name of whoever cut the mus this hand."
+  },
+  "tableYouMano": "Eres mano",
+  "@tableYouMano": {
+    "description": "Read to screen readers by your cards when you are mano"
   },
   "tableYouCut": "Cortaste el mus",
   "@tableYouCut": {

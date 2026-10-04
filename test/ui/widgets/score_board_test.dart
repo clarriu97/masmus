@@ -58,7 +58,7 @@ void main() {
         ),
       ),
     );
-    expect(find.bySemanticsLabel('NOSOTROS\n12'), findsOneWidget);
-    expect(find.bySemanticsLabel('ELLOS\n20'), findsOneWidget);
+    expect(find.bySemanticsLabel('Nosotros\n12'), findsOneWidget);
+    expect(find.bySemanticsLabel('Ellos\n20'), findsOneWidget);
   });
 }

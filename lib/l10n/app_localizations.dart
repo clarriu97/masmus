@@ -388,12 +388,6 @@ abstract class AppLocalizations {
   /// **'En la mesa'**
   String get tableStake;
 
-  /// Nothing is bet in the lance being played, for screen readers.
-  ///
-  /// In es, this message translates to:
-  /// **'Nada'**
-  String get tableStakeNone;
-
   /// Your turn.
   ///
   /// In es, this message translates to:
@@ -435,12 +429,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Mano'**
   String get tableMano;
-
-  /// What is bet in the lance being played, for screen readers: «En la mesa: 2».
-  ///
-  /// In es, this message translates to:
-  /// **'En la mesa: {stake}'**
-  String tableStakeIs(String stake);
 
   /// Button: ask for mus.
   ///
@@ -1239,6 +1227,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'cortó el mus'**
   String get seatCut;
+
+  /// Read to screen readers by your cards when you are mano
+  ///
+  /// In es, this message translates to:
+  /// **'Eres mano'**
+  String get tableYouMano;
 
   /// For screen readers, by your cards when you cut the mus.
   ///

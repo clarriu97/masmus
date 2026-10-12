@@ -131,4 +131,20 @@ void main() {
       );
     });
   });
+
+  testWidgets('the Google Play icon', (tester) async {
+    tester.view
+      ..physicalSize = const Size(512, 512)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      const RepaintBoundary(
+        child: CustomPaint(size: Size(512, 512), painter: _Mark(felt: true)),
+      ),
+    );
+    await expectLater(
+      find.byType(RepaintBoundary).first,
+      matchesGoldenFile('goldens/store/play/icon.png'),
+    );
+  });
 }

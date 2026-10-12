@@ -55,6 +55,23 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-12 · Store listings, the site and the accounts (#44, part 1).**
+  - **Accounts**: the owner's Google Play account (`larridev`, personal)
+    holds «Más Mus» (`dev.larri.masmus`, a free game, `es-ES`) and «1RM»
+    (free, `en-US` with `es-ES`); both package names are registered for
+    Android developer verification. A personal account needs a closed test
+    with 12 testers for 14 days per app before production. The Apple
+    Developer Program enrolment is pending on the owner's side.
+  - **Site**: `masmus.larri.dev`, with `/privacy/` and `/terms/`, in its own
+    repo (`clarriu97/masmus-landing`), deployed by Cloudflare Workers on
+    every push, as 1RM's. `info.masmus@larri.dev` forwards to the owner.
+  - **Listings** in `fastlane/` (the layout `deliver` and `supply` read, for
+    a later upload from CI): the texts, checked against each store's limits
+    by `test/platform/store_listing_test.dart`, and six screenshots per
+    store, the Play feature graphic and its icon. The images are drawn by
+    golden tests from the app's real screens (`test/goldens/store_test.dart`)
+    and copied as JPEG by `tool/store_images.sh`, since both stores refuse
+    alpha.
 - **2026-10-04 · E2E in CI, the local gate and releases (#41), as in 1RM.**
   How each gate works: `docs/RELEASING.md`.
   - **E2E workflow**: after every merge, nightly, on demand and for every
@@ -700,6 +717,8 @@ or right after; business model; languages at launch; license.
 | Settings | `settings.json` next to the saved match (`SettingsController.open`) |
 | Sounds | `assets/sounds/` (Kenney's Casino Audio, CC0, converted to AAC), played by `lib/services/sounds.dart` |
 | Version and links | `lib/ui/about/about_screen.dart` (`appVersion`, `appBuild`, `masmus.larri.dev`, `info.masmus@larri.dev`); bump the version there and in `pubspec.yaml` together |
+| Store listings | `fastlane/` (texts and images, see its README); images drawn by `test/goldens/store_test.dart` and `branding_test.dart`, copied by `tool/store_images.sh` |
+| Website | `clarriu97/masmus-landing` → `masmus.larri.dev` (Cloudflare Workers, deploys on push) |
 | Saved match | `match.json` in the app's support directory (`MatchStore.open`); unreadable ones renamed `match.unreadable-<time>.json` beside it |
 | Texts | `lib/l10n/app_es.arb` (Spanish, the template); `AppLocalizations` is generated next to it |
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |

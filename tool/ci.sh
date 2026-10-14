@@ -47,6 +47,11 @@ E2E_TIMEOUT=${E2E_TIMEOUT:-1500}
 # Silence this long means the tool is stuck attaching to the app.
 STALL_TIMEOUT=${STALL_TIMEOUT:-120}
 
+# Release builds keep their debug symbols out of the app, in build/debug-info,
+# and obfuscate the Dart code: a smaller download. `flutter symbolize` reads a
+# stack trace back with the symbols of the same build.
+RELEASE_FLAGS=(--obfuscate --split-debug-info=build/debug-info)
+
 step() { printf '\n\033[1;33m▶ %s\033[0m\n' "$*"; }
 
 lint() {
@@ -85,12 +90,12 @@ goldens() {
 
 build_android() {
   step "release app bundle"
-  flutter build appbundle --release
+  flutter build appbundle --release "${RELEASE_FLAGS[@]}"
 }
 
 build_ios() {
   step "release iOS build (no code signing)"
-  flutter build ios --release --no-codesign
+  flutter build ios --release --no-codesign "${RELEASE_FLAGS[@]}"
 }
 
 checks() {
@@ -319,7 +324,7 @@ smoke_android_release() {
     sleep 2
   done
   step "release smoke test on Android $device"
-  flutter build apk --release
+  flutter build apk --release "${RELEASE_FLAGS[@]}"
   {
     adb -s "$device" install -r build/app/outputs/flutter-apk/app-release.apk >/dev/null &&
       adb -s "$device" shell pm clear "$app" >/dev/null &&

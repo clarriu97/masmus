@@ -76,6 +76,17 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
    mailbox `info.masmus@larri.dev`, answer: «Acerca de» and the stores link to
    them (#44).
 
+## Debug symbols
+
+Release builds obfuscate the Dart code and write its debug symbols to
+`build/debug-info/` instead of shipping them (`tool/ci.sh`). Keep the
+symbols of every version released: without them a crash's stack trace can't
+be read. To read one:
+
+```bash
+flutter symbolize -i trace.txt -d build/debug-info/app.android-arm64.symbols
+```
+
 ## Android release signing
 
 Release builds are signed with the upload key named in `android/key.properties`

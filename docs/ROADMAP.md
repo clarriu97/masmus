@@ -55,6 +55,15 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-14 · Uploads to Google Play from CI (#42).** The workflow
+  **Google Play** (`play.yml`) builds the bundle signed with the upload key
+  (rebuilt from secrets), keeps the debug symbols as an artifact and uploads
+  the bundle and the store listing in `fastlane/` with fastlane, as the
+  service account `play-publisher` of the Google Cloud project
+  `larridev-play`. The Release workflow runs it for every tag, to the
+  internal testing track; it can also be run by hand. The upload key
+  (`~/keys/masmus-upload-keystore.jks`) is backed up by the owner; Play App
+  Signing keeps the app signing key.
 - **2026-10-14 · A smaller app (#120).** The `.aab` uploaded to Play is
   ~50 MB because it carries every CPU architecture; an arm64 phone
   downloads ~9 MB, of which ~5.2 MB is the Flutter engine. Measured on the
@@ -720,7 +729,7 @@ or right after; business model; languages at launch; license.
 | App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`, UI `lib/ui/`, texts `lib/l10n/` |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
-| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`), `e2e.yml` (e2e on 2 iPhones and 2 Android APIs, release smoke; after merges, nightly, tags), `release.yml` (`v*` tags); `tool/ci.sh` runs the same locally; gates and releasing in `docs/RELEASING.md` |
+| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`), `e2e.yml` (e2e on 2 iPhones and 2 Android APIs, release smoke; after merges, nightly, tags), `release.yml` (`v*` tags, ends uploading to Play), `play.yml` (signed bundle and store listing to Google Play, by hand or from Release); `tool/ci.sh` runs the same locally; gates and releasing in `docs/RELEASING.md` |
 | Branch protection | `master`: required `analyze`, `test`, `goldens` and `local-e2e` (reported by `tool/ci.sh all`); up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name «Más Mus» |

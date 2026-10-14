@@ -55,6 +55,20 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-10-14 · A smaller app (#120).** The `.aab` uploaded to Play is
+  ~50 MB because it carries every CPU architecture; an arm64 phone
+  downloads ~9 MB, of which ~5.2 MB is the Flutter engine. Measured on the
+  arm64 split APK (gzip of its contents), the download goes from 8.9 to
+  8.1 MB:
+  - **Fonts**: subset to Latin, general punctuation and every character the
+    texts use (`tool/subset_fonts.sh`, from the full fonts kept in
+    `assets/fonts/source/`, which aren't bundled; it fails if the subset
+    drops a character the app uses): 0.64 → 0.19 MB.
+  - **Dart code**: release builds are obfuscated and keep their debug
+    symbols apart (`--obfuscate --split-debug-info`, in `tool/ci.sh`):
+    1.98 → 1.59 MB.
+  - **`cupertino_icons`**, bundled but never used, is gone.
+  Goldens are unchanged.
 - **2026-10-12 · Store listings, the site and the accounts (#44, part 1).**
   - **Accounts**: the owner's Google Play account (`larridev`, personal)
     holds «Más Mus» (`dev.larri.masmus`, a free game, `es-ES`) and «1RM»
@@ -724,6 +738,6 @@ or right after; business model; languages at launch; license.
 | Goldens | `test/goldens/golden_test.dart`, PNGs in `test/goldens/goldens/`; regenerate on macOS and review the diff |
 | Screens | `lib/ui/<feature>/`: `start/` (start and new match), `table/` (the table and `TableView`); layout matrix `test/ui/layout_matrix_test.dart`, table fixtures `test/helpers/table.dart` |
 | E2E flows | `integration_test/app_test.dart` (single entry point) and `integration_test/flows/` |
-| Design system | `lib/ui/theme/` (Tapete tokens and `ThemeData`), shared components in `lib/ui/widgets/` (golden: `test/goldens/goldens/components.*.png`), fonts in `assets/fonts/` with their OFL licenses (registered in `main.dart` for the licenses page) |
+| Design system | `lib/ui/theme/` (Tapete tokens and `ThemeData`), shared components in `lib/ui/widgets/` (golden: `test/goldens/goldens/components.*.png`), fonts in `assets/fonts/` with their OFL licenses (registered in `main.dart` for the licenses page), subset by `tool/subset_fonts.sh` from the full ones in `assets/fonts/source/` |
 | Visual directions | `docs/design/directions/`: Tapete (chosen), Noche and Tanteo on the same table (#19), source `index.html` and one JPG each |
 | Sister project | `clarriu97/1rm-mobile-app`: same owner, same way of working, reference for CI and testing |

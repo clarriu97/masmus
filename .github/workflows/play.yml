@@ -52,7 +52,7 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
@@ -77,7 +77,7 @@ jobs:
           path: build/debug-info
           retention-days: 90
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
         with:
           ruby-version: "3.3"
 

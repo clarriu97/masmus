@@ -2,8 +2,10 @@ name: Release
 
 # Runs for every version tag (v1.2.3). A release ships only if everything
 # passes: the tag matches pubspec.yaml, the checks, the goldens, the release
-# builds and the e2e flows on all four CI devices. Phase 2 adds the signed
-# store builds and their uploads here.
+# builds and the e2e flows on all four CI devices. Then the signed bundle and
+# the store listing go to Google Play's internal testing track; promoting a
+# version to other tracks is done in Play Console. The App Store upload comes
+# with the Apple Developer account.
 
 on:
   push:
@@ -30,3 +32,11 @@ jobs:
 
   e2e:
     uses: ./.github/workflows/e2e.yml
+
+  play:
+    needs: [version, checks, builds, e2e]
+    uses: ./.github/workflows/play.yml
+    with:
+      track: internal
+      status: completed
+    secrets: inherit

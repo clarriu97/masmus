@@ -63,16 +63,20 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
    ```bash
    git tag v1.2.3 && git push origin v1.2.3
    ```
-4. The **Release** workflow must go green. If it doesn't, fix it in a pull
+4. The **Release** workflow must go green. Its last job uploads the signed
+   bundle and the store listing to Google Play's **internal testing** track
+   (workflow **Google Play**). If it doesn't go green, fix it in a pull
    request and release the next patch version; never move a published tag.
-5. By hand, on a real iPhone (and an Android phone when available), with the
+5. Promote the version in Play Console (closed testing, then production)
+   once it has been tried on the internal track.
+6. By hand, on a real iPhone (and an Android phone when available), with the
    release build: a fresh install and an update over the previous version
    with a match in progress; text at 200 % and bold; sound and vibration on
    and off, and the phone's silent switch; and one pass over every screen
    and a whole hand with VoiceOver (and TalkBack): every card, seña, score
    and button is announced with a name that makes sense, and the table
    tells each thing as it is shown.
-6. The site `masmus.larri.dev` with `/privacy/` and `/terms/`, and the
+7. The site `masmus.larri.dev` with `/privacy/` and `/terms/`, and the
    mailbox `info.masmus@larri.dev`, answer: «Acerca de» and the stores link to
    them (#44).
 
@@ -81,32 +85,36 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
 Release builds obfuscate the Dart code and write its debug symbols to
 `build/debug-info/` instead of shipping them (`tool/ci.sh`). Keep the
 symbols of every version released: without them a crash's stack trace can't
-be read. To read one:
+be read. The **Google Play** workflow keeps them as the artifact
+`debug-symbols-android-<commit>` for 90 days; download and keep those of each
+release. To read a trace:
 
 ```bash
 flutter symbolize -i trace.txt -d build/debug-info/app.android-arm64.symbols
 ```
 
-## Android release signing
+## Android release signing and the Play upload
 
-Release builds are signed with the upload key named in `android/key.properties`
-(git-ignored, like the keystore). Without that file they fall back to the debug
-key, which is fine for local and CI builds but rejected by Google Play. Set it
-up once, before the first Play upload (#42), and keep both files in a
-password manager backup:
+Release bundles are signed with the upload key; Google Play re-signs them
+with the app signing key it keeps (Play App Signing), so a lost upload key
+can be replaced by asking Play for a new one.
 
-```bash
-keytool -genkey -v -keystore ~/masmus-upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-```
-
-`android/key.properties`:
-
-```properties
-storeFile=/Users/<you>/masmus-upload-keystore.jks
-storePassword=<password>
-keyAlias=upload
-keyPassword=<password>
-```
+- **Locally**: `android/key.properties` (git-ignored) points at
+  `~/keys/masmus-upload-keystore.jks` (PKCS12, alias `upload`, one password
+  for the store and the key). Without that file release builds fall back to
+  the debug key, fine for local and CI builds but refused by Google Play.
+  The keystore and its `key.properties` are backed up by the owner.
+- **In CI**: the **Google Play** workflow rebuilds the keystore and
+  `key.properties` from the secrets `ANDROID_UPLOAD_KEYSTORE_BASE64` and
+  `ANDROID_UPLOAD_KEYSTORE_PASSWORD`, builds with `tool/ci.sh build-android`
+  and uploads with fastlane's `upload_to_play_store`, authenticated by the
+  service account `play-publisher@larridev-play.iam.gserviceaccount.com`
+  (secret `PLAY_SERVICE_ACCOUNT_JSON`; Google Cloud project `larridev-play`).
+  It can also be run by hand from the Actions tab, choosing the track and
+  whether the release is a draft (required while the app has never been
+  published).
+- Each upload needs a build number (`+N` in `pubspec.yaml`) higher than any
+  uploaded before.
 
 ## When a run on master fails
 

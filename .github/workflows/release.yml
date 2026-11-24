@@ -5,8 +5,8 @@ name: Release
 # builds and the e2e flows on all four CI devices. Then the signed bundle and
 # the store listing go to Google Play's internal testing track, as a draft
 # until the app has been published once (docs/RELEASING.md); promoting a
-# version to other tracks is done in Play Console. The App Store upload comes
-# with the Apple Developer account.
+# version to other tracks is done in Play Console. TestFlight uploads are run
+# by hand (workflow TestFlight) until the first one has worked.
 
 on:
   push:

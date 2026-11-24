@@ -21,6 +21,12 @@
 #                              emulator: a match started, saved and resumed
 #   tool/ci.sh build-android   release app bundle
 #   tool/ci.sh build-ios       release iOS build without code signing
+#   tool/ci.sh build-ipa       release .ipa signed for the App Store
+#   tool/ci.sh upload-testflight  upload that .ipa to TestFlight
+#
+# build-ipa signs with the Apple account added in Xcode, or with an App Store
+# Connect API key when ASC_KEY_ID, ASC_ISSUER_ID and ASC_KEY_PATH (the .p8
+# file, kept outside the repo) are set; upload-testflight needs the key.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -96,6 +102,53 @@ build_android() {
 build_ios() {
   step "release iOS build (no code signing)"
   flutter build ios --release --no-codesign "${RELEASE_FLAGS[@]}"
+}
+
+IPA_ARCHIVE=build/ios/archive/Runner.xcarchive
+IPA_DIR=build/ios/ipa
+
+# `flutter build ipa` can't pass an API key to xcodebuild, so Flutter only
+# writes the build settings (version, obfuscation) and xcodebuild archives and
+# exports with automatic, cloud-managed signing.
+build_ipa() {
+  local signing=(-allowProvisioningUpdates)
+  if [[ -n "${ASC_KEY_ID:-}" && -n "${ASC_ISSUER_ID:-}" && -n "${ASC_KEY_PATH:-}" ]]; then
+    signing+=(-authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID"
+      -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+  fi
+  step "release .ipa for the App Store"
+  flutter build ios --release --config-only "${RELEASE_FLAGS[@]}"
+  rm -rf "$IPA_ARCHIVE" "$IPA_DIR"
+  xcodebuild -quiet -workspace ios/Runner.xcworkspace -scheme Runner \
+    -configuration Release -destination generic/platform=iOS \
+    -archivePath "$IPA_ARCHIVE" "${signing[@]}" archive
+  xcodebuild -quiet -exportArchive -archivePath "$IPA_ARCHIVE" \
+    -exportOptionsPlist ios/ExportOptions.plist -exportPath "$IPA_DIR" \
+    "${signing[@]}"
+  ls "$IPA_DIR"/*.ipa
+}
+
+upload_testflight() {
+  local ipa missing=()
+  for var in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH; do
+    if [[ -z "${!var:-}" ]]; then missing+=("$var"); fi
+  done
+  if ((${#missing[@]})); then
+    echo "Missing ${missing[*]}: the App Store Connect API key (docs/RELEASING.md)." >&2
+    return 1
+  fi
+  if [[ ! -f "$ASC_KEY_PATH" ]]; then
+    echo "ASC_KEY_PATH: no file at $ASC_KEY_PATH." >&2
+    return 1
+  fi
+  ipa=$(find "$IPA_DIR" -name '*.ipa' 2>/dev/null | head -1 || true)
+  if [[ -z "$ipa" ]]; then
+    echo "No .ipa in $IPA_DIR: run tool/ci.sh build-ipa first." >&2
+    return 1
+  fi
+  step "upload $ipa to TestFlight"
+  xcrun altool --upload-app -f "$ipa" -t ios \
+    --api-key "$ASC_KEY_ID" --api-issuer "$ASC_ISSUER_ID" --p8-file-path "$ASC_KEY_PATH"
 }
 
 checks() {
@@ -426,5 +479,7 @@ case "${1:-}" in
   smoke-android-release) smoke_android_release ;;
   build-android) build_android ;;
   build-ios) build_ios ;;
-  *) sed -n '2,25p' "$0"; exit 1 ;;
+  build-ipa) build_ipa ;;
+  upload-testflight) upload_testflight ;;
+  *) sed -n '2,31p' "$0"; exit 1 ;;
 esac

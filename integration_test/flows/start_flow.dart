@@ -14,15 +14,22 @@ void startFlows() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Empezar partida'));
     await waitFor(tester, find.byType(TableScreen));
-    expect(find.text('Te toca'), findsNothing, reason: 'still dealing');
-    expect(find.byType(ThinkingBubble), findsNothing);
-    await waitFor(
-      tester,
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is ThinkingBubble ||
-            (widget is Text && widget.data == 'Te toca'),
-      ),
+    final controller = tester
+        .widget<TableScreen>(find.byType(TableScreen))
+        .controller;
+    final someoneSpeaks = find.byWidgetPredicate(
+      (widget) =>
+          widget is ThinkingBubble ||
+          (widget is Text && widget.data == 'Te toca'),
     );
+    await waitUntil(tester, () {
+      final speaking = someoneSpeaks.evaluate().isNotEmpty;
+      expect(
+        speaking && controller.dealing != null,
+        isFalse,
+        reason: 'someone speaks while the cards are being dealt',
+      );
+      return speaking;
+    });
   });
 }

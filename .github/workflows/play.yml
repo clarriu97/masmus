@@ -30,7 +30,7 @@ on:
         default: internal
       status:
         type: string
-        default: completed
+        default: draft
 
 concurrency:
   group: play-${{ github.ref }}

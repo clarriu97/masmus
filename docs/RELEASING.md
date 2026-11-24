@@ -65,8 +65,9 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
    ```
 4. The **Release** workflow must go green. Its last job uploads the signed
    bundle and the store listing to Google Play's **internal testing** track
-   (workflow **Google Play**). If it doesn't go green, fix it in a pull
-   request and release the next patch version; never move a published tag.
+   (workflow **Google Play**), as a draft until the app has been published
+   once. If it doesn't go green, fix it in a pull request and release the
+   next patch version; never move a published tag.
 5. Promote the version in Play Console (closed testing, then production)
    once it has been tried on the internal track.
 6. By hand, on a real iPhone (and an Android phone when available), with the
@@ -111,8 +112,14 @@ can be replaced by asking Play for a new one.
   service account `play-publisher@larridev-play.iam.gserviceaccount.com`
   (secret `PLAY_SERVICE_ACCOUNT_JSON`; Google Cloud project `larridev-play`).
   It can also be run by hand from the Actions tab, choosing the track and
-  whether the release is a draft (required while the app has never been
-  published).
+  whether the release is a draft.
+- **Draft until published**: while the app has never been published, the
+  Play API only takes releases as drafts, so the **Release** workflow
+  uploads with status `draft` (the default of **Google Play**), and the
+  release is rolled out by hand in Play Console. Once a first release has
+  been rolled out there (Play no longer shows the app as a draft), switch
+  `status: draft` to `status: completed` in `release.yml` so tags roll out
+  to the internal track by themselves.
 - Each upload needs a build number (`+N` in `pubspec.yaml`) higher than any
   uploaded before.
 

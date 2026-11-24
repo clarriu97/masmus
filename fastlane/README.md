@@ -29,8 +29,10 @@ tool/store_images.sh
 
 - Category: Juegos › Cartas (both stores).
 - Price: free; no in-app purchases, no ads.
-- Age rating: no gambling with real money and no simulated gambling with
-  coins or prizes; nothing else to declare.
+- Age rating: simulated gambling is declared, since players bet (envites and
+  órdago) for points, with no money, coins or prizes; no gambling with real
+  money. That gives 18+ on the App Store and in Europe on Google Play, Teen
+  in the US; the app is not offered in South Korea.
 - Privacy: no data collected (App Store «Privacidad de la app», Play «Seguridad
   de los datos»), privacy policy https://masmus.larri.dev/privacy/.
 - Contact: info.masmus@larri.dev.

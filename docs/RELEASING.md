@@ -148,7 +148,7 @@ the owner's Apple account, authenticate with a team API key:
 1. The Account Holder requests API access once: App Store Connect → Users
    and Access → Integrations → App Store Connect API → Request Access.
 2. Team Keys → «+», name `masmus-ci` (one key can serve every app of the
-   team), access **App Manager**. Download the `.p8`: Apple offers it only
+   team), access **Admin** (see below). Download the `.p8`: Apple offers it only
    once. Note the Key ID and the Issuer ID shown above the list.
 3. Keep the `.p8` outside the repo, e.g. `~/keys/AuthKey_<KEY_ID>.p8`, and
    back it up with the upload keystore.
@@ -159,14 +159,15 @@ the owner's Apple account, authenticate with a team API key:
    base64 -i ~/keys/AuthKey_<KEY_ID>.p8 | pbcopy
    ```
 
-**App Manager or Admin.** App Manager is the least a key needs to upload.
-Signing in CI also needs the key to create the certificates and profiles
-cloud signing uses, and that may need **Admin**: Apple doesn't document it
-and it can't be tried without the key. If the first run fails at
-`build-ipa` with a signing or provisioning error (e.g. «No signing
-certificate», «not allowed to create»), create a new key with access Admin
-(a key's access can't be edited), replace the three secrets and revoke the
-old key. Nothing else changes.
+**Why Admin.** App Manager is enough to upload, but not to sign: tried on
+2026-11-24 with an App Manager key, the archive built and the export failed
+with «Cloud signing permission error: You haven't been given access to
+cloud-managed distribution certificates», and only the Account Holder and
+Admins get that access. A key's access can't be edited: create a new key
+with Admin, replace the three secrets and revoke the old key. Nothing else
+changes. The alternative, keeping App Manager, is to export a distribution
+certificate as a `.p12` and import it in CI, with two more secrets and
+manual signing.
 
 **Locally** (signs with the Apple account added in Xcode, or with the key
 when the three variables are set):

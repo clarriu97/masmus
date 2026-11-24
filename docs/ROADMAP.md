@@ -64,8 +64,8 @@ or right after; business model; languages at launch; license.
   key (secrets `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`) and keeps the
   debug symbols. It runs by hand until a first upload works, then joins
   **Release**. Build numbers are the `+N` of `pubspec.yaml`, as on Android.
-  The key is App Manager; if cloud signing in CI needs Admin, only the key
-  and its secrets change (`docs/RELEASING.md`). Also: tags upload to Play
+  The key must be Admin: with App Manager the export is refused access to
+  cloud-managed distribution certificates (tried on 2026-11-24). Also: tags upload to Play
   as drafts until the app is published, and both stores declare simulated
   gambling (bets for points): 18+ on the App Store and in Europe on Play,
   Teen in the US, not offered in South Korea.

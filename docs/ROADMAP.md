@@ -65,7 +65,8 @@ or right after; business model; languages at launch; license.
   debug symbols. It runs by hand until a first upload works, then joins
   **Release**. Build numbers are the `+N` of `pubspec.yaml`, as on Android.
   The key must be Admin: with App Manager the export is refused access to
-  cloud-managed distribution certificates (tried on 2026-11-24). Also: tags upload to Play
+  cloud-managed distribution certificates; with Admin it signs (tried on
+  2026-11-24). Also: tags upload to Play
   as drafts until the app is published, and both stores declare simulated
   gambling (bets for points): 18+ on the App Store and in Europe on Play,
   Teen in the US, not offered in South Korea.

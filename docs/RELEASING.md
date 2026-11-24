@@ -165,7 +165,8 @@ with «Cloud signing permission error: You haven't been given access to
 cloud-managed distribution certificates», and only the Account Holder and
 Admins get that access. A key's access can't be edited: create a new key
 with Admin, replace the three secrets and revoke the old key. Nothing else
-changes. The alternative, keeping App Manager, is to export a distribution
+changes. With an Admin key the same `build-ipa` exports an `.ipa` signed
+«Apple Distribution» with the App Store profile (tried the same day). The alternative, keeping App Manager, is to export a distribution
 certificate as a `.p12` and import it in CI, with two more secrets and
 manual signing.
 

@@ -3,9 +3,10 @@ name: Release
 # Runs for every version tag (v1.2.3). A release ships only if everything
 # passes: the tag matches pubspec.yaml, the checks, the goldens, the release
 # builds and the e2e flows on all four CI devices. Then the signed bundle and
-# the store listing go to Google Play's internal testing track; promoting a
-# version to other tracks is done in Play Console. The App Store upload comes
-# with the Apple Developer account.
+# the store listing go to Google Play's internal testing track, as a draft
+# until the app has been published once (docs/RELEASING.md); promoting a
+# version to other tracks is done in Play Console. TestFlight uploads are run
+# by hand (workflow TestFlight) until the first one has worked.
 
 on:
   push:
@@ -38,5 +39,5 @@ jobs:
     uses: ./.github/workflows/play.yml
     with:
       track: internal
-      status: completed
+      status: draft
     secrets: inherit

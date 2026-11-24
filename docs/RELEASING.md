@@ -65,18 +65,22 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
    ```
 4. The **Release** workflow must go green. Its last job uploads the signed
    bundle and the store listing to Google Play's **internal testing** track
-   (workflow **Google Play**). If it doesn't go green, fix it in a pull
-   request and release the next patch version; never move a published tag.
-5. Promote the version in Play Console (closed testing, then production)
-   once it has been tried on the internal track.
-6. By hand, on a real iPhone (and an Android phone when available), with the
+   (workflow **Google Play**), as a draft until the app has been published
+   once. If it doesn't go green, fix it in a pull request and release the
+   next patch version; never move a published tag.
+5. Run the **TestFlight** workflow by hand on the tag (Actions → TestFlight →
+   Run workflow → the tag). It isn't part of **Release** until a first run
+   has worked (see below).
+6. Promote the version in Play Console (closed testing, then production)
+   and in TestFlight once it has been tried on the internal tracks.
+7. By hand, on a real iPhone (and an Android phone when available), with the
    release build: a fresh install and an update over the previous version
    with a match in progress; text at 200 % and bold; sound and vibration on
    and off, and the phone's silent switch; and one pass over every screen
    and a whole hand with VoiceOver (and TalkBack): every card, seña, score
    and button is announced with a name that makes sense, and the table
    tells each thing as it is shown.
-7. The site `masmus.larri.dev` with `/privacy/` and `/terms/`, and the
+8. The site `masmus.larri.dev` with `/privacy/` and `/terms/`, and the
    mailbox `info.masmus@larri.dev`, answer: «Acerca de» and the stores link to
    them (#44).
 
@@ -85,13 +89,16 @@ links) and the app starting at all. CI runs it on API 35 after every merge.
 Release builds obfuscate the Dart code and write its debug symbols to
 `build/debug-info/` instead of shipping them (`tool/ci.sh`). Keep the
 symbols of every version released: without them a crash's stack trace can't
-be read. The **Google Play** workflow keeps them as the artifact
-`debug-symbols-android-<commit>` for 90 days; download and keep those of each
-release. To read a trace:
+be read. The **Google Play** and **TestFlight** workflows keep them as the
+artifacts `debug-symbols-android-<commit>` and `debug-symbols-ios-<commit>`
+for 90 days; download and keep those of each release. To read a trace:
 
 ```bash
 flutter symbolize -i trace.txt -d build/debug-info/app.android-arm64.symbols
+flutter symbolize -i trace.txt -d build/debug-info/app.ios-arm64.symbols
 ```
+
+The native symbols of iOS (dSYMs) go to Apple with the upload.
 
 ## Android release signing and the Play upload
 
@@ -111,10 +118,82 @@ can be replaced by asking Play for a new one.
   service account `play-publisher@larridev-play.iam.gserviceaccount.com`
   (secret `PLAY_SERVICE_ACCOUNT_JSON`; Google Cloud project `larridev-play`).
   It can also be run by hand from the Actions tab, choosing the track and
-  whether the release is a draft (required while the app has never been
-  published).
+  whether the release is a draft.
+- **Draft until published**: while the app has never been published, the
+  Play API only takes releases as drafts, so the **Release** workflow
+  uploads with status `draft` (the default of **Google Play**), and the
+  release is rolled out by hand in Play Console. Once a first release has
+  been rolled out there (Play no longer shows the app as a draft), switch
+  `status: draft` to `status: completed` in `release.yml` so tags roll out
+  to the internal track by themselves.
 - Each upload needs a build number (`+N` in `pubspec.yaml`) higher than any
   uploaded before.
+
+## iOS signing and the TestFlight upload
+
+Signing is automatic and cloud-managed: no certificate or profile is kept
+anywhere. `tool/ci.sh build-ipa` has Flutter write the build settings
+(version from `pubspec.yaml`, obfuscation) and archives and exports with
+`xcodebuild -allowProvisioningUpdates`, which fetches the «Apple
+Distribution» signing from Apple for the team `RQ236KP76M`
+(`ios/ExportOptions.plist`). The `.ipa` lands in `build/ios/ipa/`.
+`tool/ci.sh upload-testflight` uploads it with `xcrun altool --upload-app`,
+which comes with Xcode and needs no Ruby or fastlane; it uploads the build
+and nothing else: no listing, no submission to review. Store texts and screenshots are filled
+in App Store Connect from `fastlane/` by hand for now.
+
+**The App Store Connect API key.** Uploads, and signing on a machine without
+the owner's Apple account, authenticate with a team API key:
+
+1. The Account Holder requests API access once: App Store Connect → Users
+   and Access → Integrations → App Store Connect API → Request Access.
+2. Team Keys → «+», name `masmus-ci` (one key can serve every app of the
+   team), access **Admin** (see below). Download the `.p8`: Apple offers it only
+   once. Note the Key ID and the Issuer ID shown above the list.
+3. Keep the `.p8` outside the repo, e.g. `~/keys/AuthKey_<KEY_ID>.p8`, and
+   back it up with the upload keystore.
+4. Add three repository secrets (Settings → Secrets and variables →
+   Actions): `ASC_KEY_ID` (the Key ID), `ASC_ISSUER_ID` (the Issuer ID) and
+   `ASC_KEY_P8`, the `.p8` in base64:
+   ```bash
+   base64 -i ~/keys/AuthKey_<KEY_ID>.p8 | pbcopy
+   ```
+
+**Why Admin.** App Manager is enough to upload, but not to sign: tried on
+2026-11-24 with an App Manager key, the archive built and the export failed
+with «Cloud signing permission error: You haven't been given access to
+cloud-managed distribution certificates», and only the Account Holder and
+Admins get that access. A key's access can't be edited: create a new key
+with Admin, replace the three secrets and revoke the old key. Nothing else
+changes. With an Admin key the same `build-ipa` exports an `.ipa` signed
+«Apple Distribution» with the App Store profile (tried the same day). The alternative, keeping App Manager, is to export a distribution
+certificate as a `.p12` and import it in CI, with two more secrets and
+manual signing.
+
+**Locally** (signs with the Apple account added in Xcode, or with the key
+when the three variables are set):
+
+```bash
+tool/ci.sh build-ipa
+ASC_KEY_ID=<key id> ASC_ISSUER_ID=<issuer id> ASC_KEY_PATH=~/keys/AuthKey_<key id>.p8 tool/ci.sh upload-testflight
+```
+
+Without them, `upload-testflight` stops before uploading and says which
+are missing.
+
+**In CI**: the **TestFlight** workflow (Actions → TestFlight → Run
+workflow) runs the same two commands on a macOS runner, with the key
+rebuilt from the secrets in the runner's temporary folder. It keeps the
+Dart debug symbols as an artifact. It isn't called by **Release** yet: once
+a manual run has uploaded a build, add it to `release.yml` beside `play`
+(`uses: ./.github/workflows/testflight.yml`, `secrets: inherit`).
+
+**Build numbers.** Both stores refuse a build number they have already
+received, so iOS takes the same one as Android: `+N` in `pubspec.yaml`,
+bumped in the release pull request. Uploading the same version twice
+needs a new `+N`. After the upload, Apple processes the build for a few
+minutes; internal testers (up to 100 users of App Store Connect) get it
+without review, external groups after Beta App Review.
 
 ## When a run on master fails
 

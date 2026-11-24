@@ -55,6 +55,22 @@ or right after; business model; languages at launch; license.
 
 ## Decisions (newest first)
 
+- **2026-11-24 · Uploads to TestFlight (#42).** `tool/ci.sh build-ipa`
+  builds the `.ipa` with the release flags and automatic, cloud-managed
+  signing (`xcodebuild -allowProvisioningUpdates`, no certificate kept
+  anywhere); `tool/ci.sh upload-testflight` uploads it with `xcrun altool`,
+  which comes with Xcode and only uploads builds. The workflow **TestFlight**
+  (`testflight.yml`) runs both on macOS with a team App Store Connect API
+  key (secrets `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`) and keeps the
+  debug symbols. It runs by hand until a first upload works, then joins
+  **Release**. Build numbers are the `+N` of `pubspec.yaml`, as on Android.
+  The key must be Admin: with App Manager the export is refused access to
+  cloud-managed distribution certificates; with Admin it signs (tried on
+  2026-11-24). Also: tags upload to Play
+  as drafts until the app is published, and both stores declare simulated
+  gambling (bets for points): 18+ on the App Store and in Europe on Play,
+  Teen in the US, not offered in South Korea.
+
 - **2026-10-14 · Uploads to Google Play from CI (#42).** The workflow
   **Google Play** (`play.yml`) builds the bundle signed with the upload key
   (rebuilt from secrets), keeps the debug symbols as an artifact and uploads
@@ -729,7 +745,7 @@ or right after; business model; languages at launch; license.
 | App code | this repo; architecture and rules in AGENTS.md. Engine `lib/game/`, bots `lib/bots/`, match controller `lib/controllers/`, services `lib/services/`, UI `lib/ui/`, texts `lib/l10n/` |
 | Product: players, needs, v1 scope, sources | `docs/PRODUCT.md` |
 | Rules of the game | `docs/RULES.md`: rule ids `R-…`, examples `E-…`, whole hands `S-…` |
-| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`), `e2e.yml` (e2e on 2 iPhones and 2 Android APIs, release smoke; after merges, nightly, tags), `release.yml` (`v*` tags, ends uploading to Play), `play.yml` (signed bundle and store listing to Google Play, by hand or from Release); `tool/ci.sh` runs the same locally; gates and releasing in `docs/RELEASING.md` |
+| CI | `.github/workflows/`: `flutter.yml` (PR checks: `analyze`, `test`, `goldens` on macOS), `builds.yml` (release builds on `master`), `e2e.yml` (e2e on 2 iPhones and 2 Android APIs, release smoke; after merges, nightly, tags), `release.yml` (`v*` tags, ends uploading to Play), `play.yml` (signed bundle and store listing to Google Play, by hand or from Release), `testflight.yml` (signed `.ipa` to TestFlight, by hand); `tool/ci.sh` runs the same locally; gates and releasing in `docs/RELEASING.md` |
 | Branch protection | `master`: required `analyze`, `test`, `goldens` and `local-e2e` (reported by `tool/ci.sh all`); up to date with `master`; linear history; applies to admins; squash merge only, branches deleted on merge |
 | Agent skills | `.claude/skills/` (`.agents` symlink), third-party ones pinned in `skills-lock.json` |
 | App ids | bundle id / applicationId `dev.larri.masmus`; display name «Más Mus» |

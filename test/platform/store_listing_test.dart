@@ -51,6 +51,14 @@ void main() {
     );
   });
 
+  test('App Store category: Games › Card', () {
+    expect(_read('fastlane/metadata/primary_category.txt'), 'GAMES');
+    expect(
+      _read('fastlane/metadata/primary_first_sub_category.txt'),
+      'GAMES_CARD',
+    );
+  });
+
   test('the screenshots, the feature graphic and the icon are there, as '
       'JPEG where the stores refuse alpha', () {
     List<String> files(String dir) =>
